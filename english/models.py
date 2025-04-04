@@ -18,8 +18,8 @@ class AccountManager(BaseUserManager):
         return self.create_user(username, password, **extra_fields)
 
 
+
 class Account(AbstractBaseUser, PermissionsMixin):
-    # acc_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)  # Django will hash this
     role = models.CharField(max_length=20, choices=[
@@ -30,21 +30,22 @@ class Account(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    # objects = AccountManager()
+    objects = AccountManager()  # Đảm bảo bạn đã khai báo manager ở đây
+
     groups = models.ManyToManyField(
         'auth.Group',
-        related_name='account_groups',  # Thêm related_name cho groups
+        related_name='account_groups',
         blank=True
     )
     user_permissions = models.ManyToManyField(
         'auth.Permission',
-        related_name='account_user_permissions',  # Thêm related_name cho user_permissions
+        related_name='account_user_permissions',
         blank=True
     )
     USERNAME_FIELD = 'username'
 
-    # def __str__(self):
-    #     return self.username
+    def __str__(self):
+        return self.username
 
 
 class User(models.Model):
