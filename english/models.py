@@ -1,221 +1,175 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
-
-class AccountManager(BaseUserManager):
-    def create_user(self, username, password=None, **extra_fields):
-        if not username:
-            raise ValueError('The Username field must be set')
-        user = self.model(username=username, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, username, password=None, **extra_fields):
-        extra_fields.setdefault('role', 'admin')
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(username, password, **extra_fields)
-
-
-class Account(AbstractBaseUser, PermissionsMixin):
-    # acc_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=150, unique=True)
-    password = models.CharField(max_length=128)  # Django will hash this
-    role = models.CharField(max_length=20, choices=[
-        ('student', 'Student'),
-        ('teacher', 'Teacher'),
-        ('admin', 'Administrator')
-    ])
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-
-    # objects = AccountManager()
-    groups = models.ManyToManyField(
-        'auth.Group',
-        related_name='account_groups',  # Thêm related_name cho groups
-        blank=True
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        related_name='account_user_permissions',  # Thêm related_name cho user_permissions
-        blank=True
-    )
-    USERNAME_FIELD = 'username'
-
-    # def __str__(self):
-    #     return self.username
-
-
-class User(models.Model):
-    # user_id = models.AutoField(primary_key=True)
-    acc = models.OneToOneField(Account, on_delete=models.CASCADE, related_name='user_profile')
-    email = models.EmailField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    dob = models.DateField(null=True, blank=True)
-    sex = models.CharField(max_length=10, choices=[
-        ('male', 'Nam'),
-        ('female', 'Nữ'),
-        ('other', 'Khác')
-    ], null=True, blank=True)
-    image = models.ImageField(upload_to='user_images/', null=True, blank=True)
-
-    # def __str__(self):
-    #     return f"{self.first_name} {self.last_name}"
-
-
-class Course(models.Model):
-    """Khóa học"""
-    # course_id = models.AutoField(primary_key=True)
-    course_name = models.CharField(max_length=200)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField()
-    route = models.TextField() #kiểm tra lại
-    teacher_name = models.CharField(max_length=200)
-    des_teacher = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to='course_images/', null=True, blank=True)
-
-    # def __str__(self):
-    #     return self.course_name
-
-
-class Class(models.Model):
-    """Lớp học"""
-    # class_id = models.AutoField(primary_key=True)
-    class_name = models.CharField(max_length=200)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='classes')
-    # description = models.TextField(null=True, blank=True)
-    begin_time = models.DateTimeField()
-    end_time = models.DateTimeField()
-    # def __str__(self):
-    #     return self.class_name
-
-
-class UserClass(models.Model):
-    # userclass_id = models.AutoField(primary_key=True)
-    class_ref = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='enrollments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrolled_classes')
-
-    class Meta:
-        unique_together = ('class_ref', 'user')
-
-    # def __str__(self):
-    #     return f"{self.user} enrolled in {self.class_ref}"
-
-
-class LessonDetail(models.Model):
-    """Buổi chi tiết"""
-    # lessondetail_id = models.AutoField(primary_key=True)
-    lesson_name = models.CharField(max_length=200)
-    description = models.TextField(null=True, blank=True)
-    class_id = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='lessondetails')
-    ##############
-    # def __str__(self):
-    #     return self.lesson_name
-
-
-class Lesson(models.Model):
-    """Buổi học"""
-    # lesson_id = models.AutoField(primary_key=True)
-    lesson_name = models.CharField(max_length=200)
-    description = models.TextField(null=True, blank=True)
-    lesson_file = models.FileField(upload_to='lesson_files/', null=True, blank=True)
-    exercise_file = models.FileField(upload_to='exercise_files/', null=True, blank=True)
-    lessondetail = models.ForeignKey(LessonDetail, on_delete=models.CASCADE, related_name='lessons', null=True,
-                                        blank=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
-
-    # def __str__(self):
-    #     return self.lesson_name
-
-
-class Exercise(models.Model):
-    """Bài tập"""
-    # exercise_id = models.AutoField(primary_key=True)
-    lessondetail_id = models.ForeignKey(LessonDetail, on_delete=models.CASCADE, related_name='exercises')
-    submission = models.FileField(upload_to='submission_files/', null=True, blank=True)
-    review = models.TextField(null=True, blank=True)
-# cân nhắc trạng thái nộp bài
-    # def __str__(self):
-    #     return f"Exercise for {self.id_lessondetail}"
-
-
-class Payment(models.Model):
-    # id = models.AutoField(primary_key=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='payments')
-    QR = models.ImageField(upload_to='payment_images/', null=True, blank=True)
-    # payment_date = models.DateTimeField(auto_now_add=True)
-    # amount = models.DecimalField(max_digits=10, decimal_places=2)
-    # status = models.CharField(max_length=20, choices=[
-    #     ('pending', 'Pending'),
-    #     ('completed', 'Completed'),
-    #     ('failed', 'Failed')
-    # ], default='pending')
-
-    # def __str__(self):
-    #     return f"Payment {self.id} for {self.course}"
 
 
 class Test(models.Model):
-    # test_id = models.AutoField(primary_key=True)
-    test_name = models.CharField(max_length=200)
-    test_des = models.TextField(null=True, blank=True)
+    test_id = models.AutoField(primary_key=True)
+    test_name = models.CharField(max_length=100)
+    test_description = models.CharField(max_length=255, null=True, blank=True)  # Adding this field if needed
+    time = models.TimeField()
 
-    # def __str__(self):
-    #     return self.test_name
-
+    class Meta:
+        db_table = 'TEST'
 
 class Question(models.Model):
-    # question_id = models.AutoField(primary_key=True)
-    test_id = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='questions')
+    question_id = models.AutoField(primary_key=True)
     question_text = models.TextField()
     answer = models.TextField(null=True, blank=True)
-    correct_answer = models.TextField()
+    correct_answer = models.CharField(max_length=50, null=True, blank=True)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
 
-    # def __str__(self):
-    #     return f"Question for {self.test}"
+    class Meta:
+        db_table = 'Question'
+
+
+class Account(models.Model):
+    ROLE_CHOICES = (
+        ('admin', 'Admin'),
+        ('student', 'Student'),
+        ('teacher', 'Teacher'),
+    )
+
+    acc_id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=50)
+    password = models.CharField(max_length=255)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    class Meta:
+        db_table = 'ACCOUNT'
+
+
+class UserProfile(models.Model):
+    user_id = models.AutoField(primary_key=True)
+    email = models.EmailField(max_length=255)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    dob = models.DateField()
+    sex = models.CharField(max_length=10)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'USER_PROFILE'
 
 
 class Result(models.Model):
-    # result_id = models.AutoField(primary_key=True)
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='results')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='test_results')
-    results = models.TextField()  # Could be JSON or serialized data
+    result_id = models.AutoField(primary_key=True)
+    result = models.IntegerField()
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
 
-    # def __str__(self):
-    #     return f"Result for {self.test} by {self.user}"
+    class Meta:
+        db_table = 'RESULT'
 
 
 class Document(models.Model):
-    # doc_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents')
-    doc_name = models.CharField(max_length=255)
-    doc_file = models.FileField(upload_to='documents/')
+    doc_id = models.AutoField(primary_key=True)
+    doc_name = models.CharField(max_length=100)
+    doc_file = models.BinaryField(null=True)
 
-    # def __str__(self):
-    #     return self.doc_name
+    class Meta:
+        db_table = 'DOCUMENT'
+
+
+class Course(models.Model):
+    course_id = models.AutoField(primary_key=True)
+    course_name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    price = models.IntegerField(null=True, blank=True)
+    des_teacher = models.CharField(max_length=100, null=True, blank=True)
+    teacher_name = models.CharField(max_length=100, null=True, blank=True)
+    image = models.BinaryField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'COURSE'
+
+
+class Payment(models.Model):
+    payment_id = models.AutoField(primary_key=True)
+    qr = models.BinaryField(null=True, blank=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'PAYMENT'
+
+
+class Class(models.Model):
+    class_id = models.AutoField(primary_key=True)
+    class_name = models.CharField(max_length=50)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    begin_time = models.DateField()
+    end_time = models.DateField()
+
+    class Meta:
+        db_table = 'CLASS'
+
+
+class UserClass(models.Model):
+    userclass_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    class_instance = models.ForeignKey(Class, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'USER_CLASS'
+
+
+class Lesson(models.Model):
+    lesson_id = models.AutoField(primary_key=True)
+    lesson_name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    lesson_file = models.CharField(max_length=255, null=True, blank=True)
+    exercise_file = models.CharField(max_length=255, null=True, blank=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'LESSON'
+
+
+class LessonDetail(models.Model):
+    lessonDetail_id = models.AutoField(primary_key=True)
+    lesson_name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    class_instance = models.ForeignKey(Class, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'LessonDetail'
+
+
+class Exercise(models.Model):
+    exercise_id = models.AutoField(primary_key=True)
+    lesson_detail = models.ForeignKey(LessonDetail, on_delete=models.CASCADE)
+    duedate = models.DateField()
+
+    class Meta:
+        db_table = 'EXERCISE'
+
+
+class Submission(models.Model):
+    STATUS_CHOICES = (
+        ('done', 'Done'),
+        ('check', 'Check'),
+    )
+
+    submission_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+    submit_date = models.DateField(null=True, blank=True)
+    review = models.TextField(null=True, blank=True)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'SUBMISSION'
 
 
 class RollCall(models.Model):
-    """Điểm danh"""
-    # rollcall_id = models.AutoField(primary_key=True)
-    lessondetail_id = models.ForeignKey(LessonDetail, on_delete=models.CASCADE, related_name='roll_calls')
-    state = models.CharField(max_length=20, choices=[
-        ('present', 'Present'),
-        ('absent', 'Absent'),
-    ])
-    student_name = models.CharField(max_length=255)
+    rollcall_id = models.AutoField(primary_key=True)
+    lesson_detail = models.ForeignKey(LessonDetail, on_delete=models.CASCADE)
 
-    # def __str__(self):
-    #     return f"Roll call for {self.student_name} in {self.id_lessondetail}"
+    class Meta:
+        db_table = 'ROLL_CALL'
 
 
-class CatchUpLesson(models.Model):
-    """Học bù"""
-    # catch_up_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='catch_up_lessons')
-    lessondetail_id = models.ForeignKey(LessonDetail, on_delete=models.CASCADE, related_name='catch_ups')
+class RollCallUser(models.Model):
+    rollcall = models.ForeignKey(RollCall, on_delete=models.CASCADE)
+    userclass = models.ForeignKey(UserClass, on_delete=models.CASCADE)
 
-    # def __str__(self):
-    #     return f"Catch-up lesson for {self.user} on {self.id_lessondetail}"
+    class Meta:
+        db_table = 'ROLL_CALL_USER'

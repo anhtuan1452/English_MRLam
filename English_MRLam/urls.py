@@ -19,6 +19,5 @@ from django.urls import path, include
 from english import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include('english.urls')),
 ]
