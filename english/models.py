@@ -30,25 +30,34 @@ class Account(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    objects = AccountManager()
-
+    # objects = AccountManager()
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='account_groups',  # Thêm related_name cho groups
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='account_user_permissions',  # Thêm related_name cho user_permissions
+        blank=True
+    )
     USERNAME_FIELD = 'username'
 
-    def __str__(self):
-        return self.username
+    # def __str__(self):
+    #     return self.username
 
 
 class User(models.Model):
     # user_id = models.AutoField(primary_key=True)
     acc = models.OneToOneField(Account, on_delete=models.CASCADE, related_name='user_profile')
     email = models.EmailField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     dob = models.DateField(null=True, blank=True)
     sex = models.CharField(max_length=10, choices=[
-        ('male', 'Male'),
-        ('female', 'Female'),
-        ('other', 'Other')
+        ('male', 'Nam'),
+        ('female', 'Nữ'),
+        ('other', 'Khác')
     ], null=True, blank=True)
     image = models.ImageField(upload_to='user_images/', null=True, blank=True)
 
@@ -62,7 +71,7 @@ class Course(models.Model):
     course_name = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
-    route = models.CharField(max_length=255)
+    route = models.TextField() #kiểm tra lại
     teacher_name = models.CharField(max_length=200)
     des_teacher = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='course_images/', null=True, blank=True)
@@ -76,7 +85,7 @@ class Class(models.Model):
     # class_id = models.AutoField(primary_key=True)
     class_name = models.CharField(max_length=200)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='classes')
-    description = models.TextField(null=True, blank=True)
+    # description = models.TextField(null=True, blank=True)
     begin_time = models.DateTimeField()
     end_time = models.DateTimeField()
     # def __str__(self):
@@ -85,22 +94,23 @@ class Class(models.Model):
 
 class UserClass(models.Model):
     # userclass_id = models.AutoField(primary_key=True)
-    class_id = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='enrollments')
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrolled_classes')
+    class_ref = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='enrollments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrolled_classes')
 
-    # class Meta:
-    #     unique_together = ('class_ref', 'user')
-    #
+    class Meta:
+        unique_together = ('class_ref', 'user')
+
     # def __str__(self):
     #     return f"{self.user} enrolled in {self.class_ref}"
 
 
 class LessonDetail(models.Model):
     """Buổi chi tiết"""
-    # id_lessondetail = models.AutoField(primary_key=True)
+    # lessondetail_id = models.AutoField(primary_key=True)
     lesson_name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-# thieus fk
+    class_id = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='lessondetails')
+    ##############
     # def __str__(self):
     #     return self.lesson_name
 
@@ -112,9 +122,9 @@ class Lesson(models.Model):
     description = models.TextField(null=True, blank=True)
     lesson_file = models.FileField(upload_to='lesson_files/', null=True, blank=True)
     exercise_file = models.FileField(upload_to='exercise_files/', null=True, blank=True)
-    lessondetail_id = models.ForeignKey(LessonDetail, on_delete=models.CASCADE, related_name='lessons', null=True,
+    lessondetail = models.ForeignKey(LessonDetail, on_delete=models.CASCADE, related_name='lessons', null=True,
                                         blank=True)
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
 
     # def __str__(self):
     #     return self.lesson_name
@@ -126,7 +136,7 @@ class Exercise(models.Model):
     lessondetail_id = models.ForeignKey(LessonDetail, on_delete=models.CASCADE, related_name='exercises')
     submission = models.FileField(upload_to='submission_files/', null=True, blank=True)
     review = models.TextField(null=True, blank=True)
-
+# cân nhắc trạng thái nộp bài
     # def __str__(self):
     #     return f"Exercise for {self.id_lessondetail}"
 
@@ -134,7 +144,7 @@ class Exercise(models.Model):
 class Payment(models.Model):
     # id = models.AutoField(primary_key=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='payments')
-    QR = models.CharField(max_length=255, null=True, blank=True)
+    QR = models.ImageField(upload_to='payment_images/', null=True, blank=True)
     # payment_date = models.DateTimeField(auto_now_add=True)
     # amount = models.DecimalField(max_digits=10, decimal_places=2)
     # status = models.CharField(max_length=20, choices=[
@@ -169,8 +179,8 @@ class Question(models.Model):
 
 class Result(models.Model):
     # result_id = models.AutoField(primary_key=True)
-    test_id = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='results')
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='test_results')
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='results')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='test_results')
     results = models.TextField()  # Could be JSON or serialized data
 
     # def __str__(self):
@@ -180,7 +190,7 @@ class Result(models.Model):
 class Document(models.Model):
     # doc_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents')
-    doc_name = models.CharField(max_length=200)
+    doc_name = models.CharField(max_length=255)
     doc_file = models.FileField(upload_to='documents/')
 
     # def __str__(self):
@@ -195,7 +205,7 @@ class RollCall(models.Model):
         ('present', 'Present'),
         ('absent', 'Absent'),
     ])
-    student_name = models.CharField(max_length=200)
+    student_name = models.CharField(max_length=255)
 
     # def __str__(self):
     #     return f"Roll call for {self.student_name} in {self.id_lessondetail}"
