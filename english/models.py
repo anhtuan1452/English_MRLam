@@ -10,7 +10,7 @@ class AccountManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-
+###
     def create_superuser(self, username, password=None, **extra_fields):
         extra_fields.setdefault('role', 'admin')
         extra_fields.setdefault('is_staff', True)
@@ -139,7 +139,7 @@ class Exercise(models.Model):
 # cân nhắc trạng thái nộp bài
     # def __str__(self):
     #     return f"Exercise for {self.id_lessondetail}"
-
+    #kkk
 
 class Payment(models.Model):
     # id = models.AutoField(primary_key=True)
