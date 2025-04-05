@@ -18,7 +18,6 @@ class AccountManager(BaseUserManager):
         return self.create_user(username, password, **extra_fields)
 
 
-
 class Account(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)  # Django will hash this
@@ -176,7 +175,6 @@ class Question(models.Model):
 
     # def __str__(self):
     #     return f"Question for {self.test}"
-
 
 class Result(models.Model):
     # result_id = models.AutoField(primary_key=True)

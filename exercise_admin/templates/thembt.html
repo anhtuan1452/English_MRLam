@@ -1,0 +1,12 @@
+{% extends 'base-admin.html' %}
+{% block title %}Thêm Bài Tập{% endblock %}
+{% block content %}
+<h2>Thêm Bài Tập Mới</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" style="background-color: #dc2626; color: white; padding: 0.5rem 1.5rem; border: none; border-radius: 0.375rem; cursor: pointer;">
+        Lưu
+    </button>
+</form>
+{% endblock %}

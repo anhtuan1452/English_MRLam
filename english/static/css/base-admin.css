@@ -9,6 +9,8 @@ body {
       color: white;
       height: 100vh;
       position: fixed;
+      display: flex;
+      flex-direction: column;
     }
 
     .sidebar-item {
@@ -82,4 +84,10 @@ body {
 
     .search-input {
       padding-left: 40px;
+    }
+
+    .logout-container {
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 10px;
     }
