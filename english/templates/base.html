@@ -45,6 +45,12 @@
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        lucide.createIcons();
+      });
+    </script>
 
     <!-- Footer -->
     <footer class="footer">
