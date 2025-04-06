@@ -19,5 +19,7 @@ from django.urls import path, include
 from english import views
 
 urlpatterns = [
-    path('', include('english.urls')),
+    path('english', include('english.urls')),
+    path('exercise_admin/', include('exercise_admin.urls')),
+    path('course_user/', include('course_user.urls')),
 ]

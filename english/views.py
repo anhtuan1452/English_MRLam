@@ -4,9 +4,6 @@ from django.shortcuts import render
 def home(request):
     return render(request, 'home.html')
 
-def courses(request):
-    return render(request, 'courses.html')
-
 def materials(request):
     return render(request, 'materials.html')
 
@@ -18,3 +15,23 @@ def login(request):
 
 def signup(request):
     return render(request, 'signup.html')
+
+def admin_ql_baitest(request):
+    return render(request, 'ql_baitest.html')
+
+def admin_ql_lophoc(request):
+    return render(request, 'ql_lophoc.html')
+
+def admin_ql_nguoidung(request):
+    return render(request, 'ql_nguoidung.html')
+
+def admin_ql_tailieu(request):
+    return render(request, 'ql_tailieu.html')
+
+def admin_ql_thanhtoan(request):
+    return render(request, 'ql_thanhtoan.html')
+
+def admin_ql_khoahoc(request):
+    return render(request, 'ql_khoahoc.html')
+
+
