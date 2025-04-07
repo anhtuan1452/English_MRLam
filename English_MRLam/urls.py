@@ -31,6 +31,6 @@ urlpatterns = [
     path('manage_class/',include('ManageClass.urls')),
     path('document_management/',include('DocumentManagement.urls')),
     path('materials_free/',include('MaterialsFree.urls')),
-
-
+    path('qr_payment/',include('qrPayment.urls')),
+    path('course_admin/',include('course_admin.urls')),
 ]

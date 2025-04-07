@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'ManageClass',
     'DocumentManagement',
     'MaterialsFree',
+    'qrPayment',
+    'course_admin',
 ]
 
 MIDDLEWARE = [

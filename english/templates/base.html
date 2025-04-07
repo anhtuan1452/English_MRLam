@@ -21,16 +21,30 @@
                 <a href="#">Khóa học</a>
                 <a href="">Tài liệu</a>
                 <a href="{% url 'home_test' %}">Bài test</a>
-                <a href="">Lớp học</a>
+                {% if user.is_authenticated %}
+                    <a href="#">Lớp học</a>
+                {% endif %}
             </nav>
         </div>
 
         <div class="header-right">
             <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="search" placeholder="Search here" class="search-input">
+                {% block serch %}
+                    {% include 'search_dropdown.html' %}
+                {% endblock %}
             </div>
 
+
+            {% if user.is_authenticated %}
+      <!-- Đã đăng nhập -->
+            <a href="#" class="profile-link" style="display:flex;align-items:center;">
+            <img class="user-avatar" src="{% static 'images/facebook-icon.png' %}" alt="User Avatar" style="width: 30px; height: 30px; margin-right:8px">
+            <p class="user-name" style="margin-right:20px">Vũ</p>
+            </a>
+            <a href="#" class="login-btn">
+                    Log out <i class="fas fa-sign-in-alt"></i>
+            </a>
+            {% else %}
             <div class="auth-buttons">
                 <a href="{% url 'SignIn' %}" class="login-btn">
                     Log in <i class="fas fa-sign-in-alt"></i>
@@ -39,6 +53,7 @@
                     Sign up
                 </a>
             </div>
+            {% endif %}
         </div>
     </header>
 

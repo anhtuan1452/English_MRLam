@@ -36,9 +36,9 @@
          <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'admin_ql_baitap' %}">Bài tập</a>
        </div>
-       <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_thanhtoan' %}active{% endif %}">
+       <div class="sidebar-item {% if request.resolver_match.url_name == 'qr_payment' %}active{% endif %}">
          <i data-lucide="credit-card" style="width: 18px; height: 18px;"></i>
-         <a href="{% url 'admin_ql_thanhtoan' %}">Thanh toán</a>
+         <a href="{% url 'qr_payment' %}">Thanh toán</a>
        </div>
        <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_tailieu' %}active{% endif %}">
          <i data-lucide="file-spreadsheet" style="width: 18px; height: 18px;"></i>

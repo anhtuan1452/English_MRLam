@@ -34,7 +34,5 @@ def admin_ql_tailieu(request):
 def admin_ql_thanhtoan(request):
     return render(request, 'ql_thanhtoan.html')
 
-def admin_ql_khoahoc(request):
-    return render(request, 'ql_khoahoc.html')
 
 

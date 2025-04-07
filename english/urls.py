@@ -15,5 +15,4 @@ urlpatterns = [
     path('admin_ql_nguoidung/', views.admin_ql_nguoidung, name='admin_ql_nguoidung'),
     path('admin_ql_tailieu/', views.admin_ql_tailieu, name='admin_ql_tailieu'),
     path('admin_ql_thanhtoan/', views.admin_ql_thanhtoan, name='admin_ql_thanhtoan'),
-    path('admin_ql_khoahoc/', views.admin_ql_khoahoc, name='admin_ql_khoahoc'),
 ]
