@@ -1,0 +1,26 @@
+<!-- dashboard.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My class - Mr Lam English{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/myclass.css' %}">
+{% endblock %}
+{% block content %}
+    <main class="main-content">
+        <div class="lesson-container">
+            {% for lesson in lessons %}
+                <div class="lesson-block">
+                    <h2>{{ lesson.lessons.lesson_id }}</h2>
+                    <ul>
+                        <li><a href="">{{ lesson.lesson_file }}</a></li>
+                        <li><a href="">{{ lesson.exercise_file }}</a></li>
+                        <li><a href="">Nộp bài tập buổi {{ lesson.lesson_id }}</a></li>
+
+                    </ul>
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+{% endblock %}
