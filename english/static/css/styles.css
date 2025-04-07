@@ -23,10 +23,15 @@ a {
 .header {
   display: flex;
   justify-content: space-between;
+  width:100%;
   align-items: center;
   padding: 1rem 1.5rem;
   background-color: #ffffff;
   border-bottom: 1px solid #e5e5e5;
+  position: fixed; /* Để cố định phần header */
+  top: 0; /* Đặt header ở vị trí trên cùng */
+  left: 0; /* Đảm bảo header nằm bên trái */
+  z-index: 1000; /* Đảm bảo header luôn hiển thị trên các phần khác */
 }
 
 .header-left,
@@ -124,7 +129,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #d9d9d9;
+  background-color: #FFFFFF;
 }
 
 .main-content-container {

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quên mật khẩu{% endblock %}
+
+{% block content %}
+
+<div class="forgot-password-container">
+        <h1 class="welcome-title">Chào mừng bạn đến MR. LAM</h1>
+
+        <p class="instruction-text">Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một mã code để đặt lại mật khẩu của bạn.</p>
+
+        <div class="form-group">
+            <label class="form-label">Tên đăng nhập hoặc email</label>
+            <input type="text" class="form-input" placeholder="Tên đăng nhập hoặc email">
+        </div>
+
+        <a href="{% url 'RePassWord' %}" class="skip-link">Gửi mã</a>
+
+        <div class="form-group">
+            <label class="form-label">Mã xác nhận</label>
+            <input type="text" class="form-input" placeholder="Mã xác nhận">
+        </div>
+
+        <a href="{% url 'RePassWord' %}" class="confirm-btn">Xác nhận</a>
+
+    </div>
+<style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Container chính - chiều rộng 100% */
+        .main-container {
+            height:100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            min-height: calc(100vh - 150px); /* Điều chỉnh theo chiều cao header và footer */
+        }
+
+        /* Phần nội dung - căn giữa nhưng không giới hạn chiều rộng */
+        .content-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
+            flex: 1;
+        }
+
+        .forgot-password-container {
+            width: 100%;
+            max-width: 600px; /* Tăng chiều rộng tối đa */
+            padding: 30px 20px;
+            text-align: center;
+            background-color: #FFFFFF;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc0000;
+            margin-bottom: 20px;
+        }
+
+        .instruction-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .skip-link {
+            display: block;
+            text-align: right;
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .skip-link:hover {
+            text-decoration: underline;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            max-width: 150px;
+            padding: 10px;
+            background-color: #dc0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Giả lập header và footer để kiểm tra */
+        .header {
+            width: 100%;
+            background-color: #fff;
+            border-bottom: 1px solid #eaeaea;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer {
+            width: 100%;
+            background-color: #003366;
+            color: white;
+            padding: 30px 20px;
+        }
+
+        @media (max-width: 576px) {
+            .forgot-password-container {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+{% endblock %}
