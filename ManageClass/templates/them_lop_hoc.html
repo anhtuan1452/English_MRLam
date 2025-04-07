@@ -1,0 +1,190 @@
+{% extends 'base-admin.html' %}
+
+{% block title %}Mr Lam English - Thêm lớp học{% endblock %}
+
+{% block styles %}
+<style>
+    .nav-tabs {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .nav-tabs .nav-link {
+        margin-bottom: -1px;
+        border: none;
+        color: #6c757d;
+        padding: 0.75rem 1rem;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        border-bottom: 2px solid #0d6efd;
+        font-weight: 500;
+    }
+
+    .nav-tabs .nav-link.disabled {
+        color: #adb5bd;
+        cursor: not-allowed;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #212529;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 4px;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #ced4da;
+    }
+
+    .form-control::placeholder {
+        color: #adb5bd;
+        font-style: italic;
+    }
+
+    .input-group-text {
+        background-color: #fff;
+        border-left: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+    .btn-dark {
+        background-color: #212529;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Mô tả lớp học</h1>
+        <div>
+            <button type="submit" form="themLopHocForm" class="btn btn-danger px-4">Lưu</button>
+            <a href="{% url 'ManageClass:danh_sach_lop' %}" class="btn btn-dark px-4 ms-2">Hủy</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Mô tả lớp học</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Bài tập</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Điểm danh</a>
+                </li>
+            </ul>
+
+            <form id="themLopHocForm" method="post" action="{% url 'ManageClass:them_lop_hoc' %}">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label for="ten_lop" class="form-label">Tên lớp học</label>
+                    <input type="text" class="form-control" id="ten_lop" name="ten_lop"
+                           placeholder="Nhập tên lớp học" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="khoa_hoc" class="form-label">Tên khóa học</label>
+                    <select class="form-select" id="khoa_hoc" name="khoa_hoc" required>
+                        <option value="" selected disabled>Chọn khóa học</option>
+                        <option value="E_Lv1">English - Level 1</option>
+                        <option value="E_Lv2">English - Level 2</option>
+                        <option value="E_Lv3">English - Level 3</option>
+                        {% for khoa_hoc in khoa_hoc_list %}
+                            <option value="{{ khoa_hoc.id }}">{{ khoa_hoc.ten_khoa_hoc }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="ngay_bat_dau" class="form-label">Ngày bắt đầu</label>
+                        <div class="input-group">
+                            <input type="date" class="form-control" id="ngay_bat_dau" name="ngay_bat_dau"
+                                   placeholder="Chọn ngày bắt đầu" required>
+                            <span class="input-group-text">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ngay_ket_thuc" class="form-label">Ngày kết thúc</label>
+                        <div class="input-group">
+                            <input type="date" class="form-control" id="ngay_ket_thuc" name="ngay_ket_thuc"
+                                   placeholder="Chọn ngày kết thúc" required>
+                            <span class="input-group-text">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="si_so" class="form-label">Sĩ số</label>
+                    <input type="number" class="form-control" id="si_so" name="si_so"
+                           placeholder="Nhập sĩ số" min="1" value="50" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="trang_thai" class="form-label">Trạng thái</label>
+                    <select class="form-select" id="trang_thai" name="trang_thai" required>
+                        <option value="" selected disabled>Chọn trạng thái</option>
+                        <option value="Đang học">Đang học</option>
+                        <option value="Đã kết thúc">Đã kết thúc</option>
+                        <option value="Chưa bắt đầu">Chưa bắt đầu</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default dates
+        const today = new Date();
+        const endDate = new Date();
+        endDate.setMonth(today.getMonth() + 3); // Default end date is 3 months from now
+
+        // Format dates for date input
+        document.getElementById('ngay_bat_dau').value = formatDateForInput(today);
+        document.getElementById('ngay_ket_thuc').value = formatDateForInput(endDate);
+
+        // Helper function to format date for date input
+        function formatDateForInput(date) {
+            return date.getFullYear() + '-' +
+                   String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                   String(date.getDate()).padStart(2, '0');
+        }
+
+        // Auto-select first option in trang_thai dropdown
+        const trangThaiSelect = document.getElementById('trang_thai');
+        if (trangThaiSelect.options.length > 1) {
+            trangThaiSelect.selectedIndex = 1; // Select "Đang học"
+        }
+    });
+</script>
+{% endblock %}
+
+
+
+

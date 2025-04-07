@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1>Sửa tài liệu</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" action="{% url 'DocumentManagement:edit_document' document.id %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="ma_tai_lieu" class="form-label">Mã tài liệu</label>
+                            <input type="text" class="form-control" id="ma_tai_lieu" name="ma_tai_lieu" value="{{ document.ma_tai_lieu }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="ten_tai_lieu" class="form-label">Tên tài liệu</label>
+                            <input type="text" class="form-control" id="ten_tai_lieu" name="ten_tai_lieu" value="{{ document.ten_tai_lieu }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="khoa_hoc" class="form-label">Khóa học</label>
+                            <select class="form-select" id="khoa_hoc" name="khoa_hoc" required>
+                                {% for khoa_hoc in khoa_hoc_list %}
+                                <option value="{{ khoa_hoc.id }}" {% if document.khoa_hoc.id == khoa_hoc.id %}selected{% endif %}>
+                                    {{ khoa_hoc.ten_khoa_hoc }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="mo_ta" class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="mo_ta" name="mo_ta" rows="4">{{ document.mo_ta }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="file_tai_lieu" class="form-label">File tài liệu</label>
+                            <input type="file" class="form-control" id="file_tai_lieu" name="file_tai_lieu">
+                            <small class="form-text text-muted">Để trống nếu không muốn thay đổi file</small>
+                            {% if document.file_tai_lieu %}
+                            <p class="mt-2">File hiện tại: <a href="{{ document.file_tai_lieu.url }}" target="_blank">{{ document.file_tai_lieu.name }}</a></p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-danger me-2">Lưu thay đổi</button>
+                            <a href="{% url 'DocumentManagement:document_list' %}" class="btn btn-secondary">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

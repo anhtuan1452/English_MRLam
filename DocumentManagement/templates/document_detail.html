@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1>Chi tiết tài liệu</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ document.ma_tai_lieu }} - {{ document.ten_tai_lieu }}</h5>
+                    
+                    <div class="row mb-3 mt-4">
+                        <div class="col-md-3 fw-bold">Khóa học:</div>
+                        <div class="col-md-9">{{ document.khoa_hoc.ten_khoa_hoc }}</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">Mô tả:</div>
+                        <div class="col-md-9">{{ document.mo_ta|linebreaks|default:"Không có mô tả" }}</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">Định dạng:</div>
+                        <div class="col-md-9">{{ document.file_type }}</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">Ngày tạo:</div>
+                        <div class="col-md-9">{{ document.ngay_tao|date:"d/m/Y" }}</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3 fw-bold">Ngày cập nhật:</div>
+                        <div class="col-md-9">{{ document.ngay_cap_nhat|date:"d/m/Y" }}</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{{ document.file_tai_lieu.url }}" class="btn btn-success me-2" download>
+                            <i class="fas fa-download me-1"></i> Tải xuống
+                        </a>
+                        <a href="{% url 'DocumentManagement:document_list' %}" class="btn btn-secondary">Quay lại</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
