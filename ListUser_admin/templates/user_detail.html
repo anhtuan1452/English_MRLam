@@ -1,0 +1,119 @@
+{% extends 'base-admin.html' %}
+
+{% block title %}Chi tiết thông tin người dùng{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Chi tiết thông tin người dùng</h1>
+        <div class="title-underline"></div>
+    </div>
+
+    <div class="card mb-6">
+        <div class="card-header">
+            <h2 class="card-title">Thông tin người dùng</h2>
+        </div>
+        <div class="card-content">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Họ tên</div>
+                    <div class="info-value text-green">{{ user.first_name }} {{ user.last_name }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Ngày sinh</div>
+                    <div class="info-value">{{ user.dob|date:"d/m/Y" }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ user.email }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Tên tài khoản</div>
+                    <div class="info-value">{{ user.account.username }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Mật khẩu</div>
+                    <div class="info-value">••••••••</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Vai trò</div>
+                    <div class="info-value text-green">
+                        {% if user.account.role == 'student' %}
+                            Học viên
+                        {% elif user.account.role == 'teacher' %}
+                            Giáo viên
+                        {% else %}
+                            Admin
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header mb-4">
+        <h2 class="section-title">Lớp học đăng ký</h2>
+    </div>
+
+    <div class="table-container">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên lớp</th>
+                    <th>Thời gian bắt đầu</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user_class in user_classes %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ user_class.class_instance.class_name }}</td>
+                    <td>{{ user_class.class_instance.begin_time|date:"d M Y" }}</td>
+                    <td>
+                        {% if user_class.class_instance.begin_time|date:"Y-m-d" <= now|date:"Y-m-d" and user_class.class_instance.end_time|date:"Y-m-d" >= now|date:"Y-m-d" %}
+                            <span class="status-badge">Đang học</span>
+                        {% elif user_class.class_instance.begin_time|date:"Y-m-d" > now|date:"Y-m-d" %}
+                            <span class="status-badge status-pending">Chưa bắt đầu</span>
+                        {% else %}
+                            <span class="status-badge status-completed">Đã hoàn thành</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">Người dùng chưa đăng ký lớp học nào</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="action-buttons">
+        <a href="{% url 'user_edit' user.user_id %}" class="btn btn-success">Sửa</a>
+        <a href="#" class="btn btn-outline-danger" id="deleteBtn">Xóa</a>
+    </div>
+
+    <!-- Form ẩn để xóa người dùng -->
+    <form id="delete-form" method="POST" action="{% url 'user_delete' user.user_id %}" style="display: none;">
+        {% csrf_token %}
+    </form>
+</div>
+
+<script>
+    // Delete button functionality
+    document.getElementById('deleteBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
+            document.getElementById('delete-form').submit();
+        }
+    });
+</script>
+{% endblock %}
+

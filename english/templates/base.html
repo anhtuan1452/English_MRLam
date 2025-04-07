@@ -12,16 +12,16 @@
     <!-- Header -->
     <header class="header">
         <div class="header-left">
-            <a href="{% url 'home' %}" class="logo">
+            <a href="" class="logo">
                 <img src="{% static 'images/logo.png' %}" alt="Mr Lam Logo">
                 <span>Mr Lam</span>
             </a>
 
             <nav class="main-nav">
-                <a href="{% url 'courses' %}">Khóa học</a>
-                <a href="{% url 'materials' %}">Tài liệu</a>
-                <a href="{% url 'tests' %}">Bài test</a>
-                <a href="{% url 'classes' %}">Lớp học</a>
+                <a href="#">Khóa học</a>
+                <a href="">Tài liệu</a>
+                <a href="{% url 'home_test' %}">Bài test</a>
+                <a href="{% url 'class' %}">Lớp học</a>
             </nav>
         </div>
 
@@ -32,10 +32,10 @@
             </div>
 
             <div class="auth-buttons">
-                <a href="{% url 'login' %}" class="login-btn">
+                <a href="{% url 'SignIn' %}" class="login-btn">
                     Log in <i class="fas fa-sign-in-alt"></i>
                 </a>
-                <a href="{% url 'signup' %}" class="signup-btn">
+                <a href="{% url 'SignUp' %}" class="signup-btn">
                     Sign up
                 </a>
             </div>
