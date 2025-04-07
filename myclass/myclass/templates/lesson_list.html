@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title|default:"Khóa học" }} - Mr Lam English{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lesson_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lesson-container">
+    <!-- Introduction -->
+    <div class="intro-section">
+        <h2 class="section-title">{{ course.intro_title|default:"Lời mở đầu" }}</h2>
+        <p class="intro-text">{{ course.intro_text|default:"Học viên làm bài tập sau khi kết thúc mỗi buổi học" }}</p>
+    </div>
+
+    <!-- Lessons List -->
+    {% for lesson in lessons %}
+    <div class="lesson-section">
+        <h2 class="lesson-title">{{ lesson.title|default:"Buổi"|add:" "|add:lesson.number|default:forloop.counter }}</h2>
+        
+        {% if lesson.is_open|default:False %}
+            <!-- Lesson Documents -->
+            {% for document in lesson.documents.all %}
+                <div class="file-item">
+                    <span class="file-icon pdf-icon"></span>
+                    <span class="file-name">{{ document.name|default:document.title }}</span>
+                </div>
+            {% empty %}
+                {% if lesson.materials %}
+                    {% for material in lesson.materials %}
+                    <div class="file-item">
+                        <span class="file-icon pdf-icon"></span>
+                        <span class="file-name">{{ material.title }}</span>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                
+                {% if lesson.homework %}
+                    {% for hw in lesson.homework %}
+                    <div class="file-item">
+                        <span class="file-icon pdf-icon"></span>
+                        <span class="file-name">{{ hw.title }}</span>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            
+            <!-- Homework Submission Section -->
+            <a class="homework-section">
+                <div class="folder-icon"></div>
+                <span class="homework-text">Nộp bài tập buổi {{ lesson.number|default:forloop.counter }}</span>
+            </a>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="{% url 'request_absence' lesson.id %}" class="btn absence-btn">Xin nghỉ</a>
+                <a href="{% url 'do_homework' lesson.id %}" class="btn homework-btn">Làm bài</a>
+            </div>
+        {% else %}
+            <div class="not-open-label">Chưa mở</div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="no-lessons">
+        <p>Chưa có bài học nào được thêm vào khóa học này.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

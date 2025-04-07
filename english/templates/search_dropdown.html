@@ -1,0 +1,166 @@
+<!-- Hộp gợi ý (mặc định ẩn, sẽ hiển thị khi focus) -->
+<style>
+    /* Hộp gợi ý (dropdown) */
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 5px;
+  padding: 16px;
+  display: none; /* Ẩn mặc định, sẽ hiển thị qua JS */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 999; /* Để nổi lên trên */
+}
+
+/* Phần section trong dropdown */
+.section {
+  margin-bottom: 20px;
+}
+
+.section h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+/* Tìm kiếm gần đây */
+.recent-search-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tag {
+  background-color: #f1f1f1;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.tag:hover {
+  background-color: #e0e0e0;
+}
+
+/* Tìm kiếm phổ biến */
+.popular-list {
+  list-style: none;
+}
+.popular-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.popular-list .title {
+  font-size: 14px;
+  color: #333;
+}
+.popular-list .count {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Khóa học phổ biến */
+.popular-courses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.course-card {
+  display: flex;
+  align-items: center;
+  background-color: #f1f1f1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.course-card:hover {
+  background-color: #e0e0e0;
+}
+.course-badge {
+  width: 32px;
+  height: 32px;
+  background-color: #ff6f00; /* Màu badge tùy chọn */
+  border-radius: 6px;
+  color: #fff;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+.course-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+.course-subtitle {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Link xem tất cả */
+.see-all a {
+  display: inline-block;
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: none;
+}
+.see-all a:hover {
+  text-decoration: underline;
+}
+</style>
+<!-- templates/search_dropdown.html -->
+<div class="search-container">
+  <!-- Icon tìm kiếm -->
+  <li class="fas fa-search search-icon"></li>
+  <!-- Ô input -->
+  <input
+    type="search"
+    placeholder="Search here"
+    class="search-input"
+    id="searchInput"
+  />
+
+  <!-- Dropdown gợi ý -->
+  <div class="search-dropdown" id="searchDropdown">
+    <!-- Tìm kiếm gần đây -->
+    <div class="section">
+      <h4>Tìm kiếm gần đây</h4>
+      <div class="recent-search-tags">
+        <span class="tag">english basic</span>
+        <span class="tag">english communicate</span>
+        <span class="tag">english</span>
+        <span class="tag">english for new beginners</span>
+      </div>
+    </div>
+    <!-- ...Các phần khác: Tìm kiếm phổ biến, khóa học phổ biến... -->
+  </div>
+</div>
+
+<!-- Gắn script để handle hiển thị/ẩn dropdown -->
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const searchDropdown = document.getElementById('searchDropdown');
+
+  // Khi focus hoặc click vào input -> Hiển thị dropdown
+  searchInput.addEventListener('focus', () => {
+    searchDropdown.style.display = 'block';
+  });
+  searchInput.addEventListener('click', () => {
+    searchDropdown.style.display = 'block';
+  });
+
+  // Ẩn dropdown khi click ra ngoài
+  document.addEventListener('click', (event) => {
+    const isClickInside = searchDropdown.contains(event.target)
+      || searchInput.contains(event.target);
+    if (!isClickInside) {
+      searchDropdown.style.display = 'none';
+    }
+  });
+</script>

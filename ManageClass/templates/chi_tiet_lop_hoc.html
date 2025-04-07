@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="mt-4">Chi Tiết Lớp Học: {{ lop.ten_lop }}</h1>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>Tên Lớp</th>
+            <td>{{ lop.ten_lop }}</td>
+        </tr>
+        <tr>
+            <th>Khóa Học</th>
+            <td>{{ lop.khoa_hoc.ten_khoa_hoc }}</td>
+        </tr>
+        <tr>
+            <th>Sĩ Số</th>
+            <td>{{ lop.so_luong_hoc_vien }}</td>
+        </tr>
+        <tr>
+            <th>Trạng Thái</th>
+            <td>{{ lop.get_trang_thai_display }}</td>
+        </tr>
+        <tr>
+            <th>Ngày Bắt Đầu</th>
+            <td>{{ lop.ngay_bat_dau }}</td>
+        </tr>
+        <tr>
+            <th>Ngày Kết Thúc</th>
+            <td>{{ lop.ngay_ket_thuc }}</td>
+        </tr>
+    </table>
+
+    <a href="{% url 'ManageClass:cap_nhat_lop_hoc' lop.id %}" class="btn btn-warning">Cập Nhật</a>
+    <form method="post" action="{% url 'ManageClass:xoa_lop_hoc' lop.id %}" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa lớp học này?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Xóa Lớp</button>
+    </form>
+  </div>
+{% endblock %}
