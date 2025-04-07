@@ -19,10 +19,7 @@ from django.urls import path, include
 from english import views
 
 urlpatterns = [
-    path('english/', include('english.urls')),
-    path('Login/', include('Login.urls')),
-    path('Profile/', include('Profile_User.urls')),
+    path('english', include('english.urls')),
     path('exercise_admin/', include('exercise_admin.urls')),
     path('course_user/', include('course_user.urls')),
-    path('test_admin/',include('test_admin.urls')),
 ]

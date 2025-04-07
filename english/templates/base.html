@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Mr Lam English{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    {% block styles %}
-    {% endblock %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -20,9 +18,9 @@
             </a>
 
             <nav class="main-nav">
-                <a href="{% url 'home' %}">Khóa học</a>
-                <a href="{% url 'home' %}">Tài liệu</a>
-                <a href="{% url 'home' %}">Bài test</a>
+                <a href="{% url 'courses' %}">Khóa học</a>
+                <a href="{% url 'materials' %}">Tài liệu</a>
+                <a href="{% url 'tests' %}">Bài test</a>
             </nav>
         </div>
 
@@ -33,10 +31,10 @@
             </div>
 
             <div class="auth-buttons">
-                <a href="{% url 'SignIn' %}" class="login-btn">
+                <a href="{% url 'login' %}" class="login-btn">
                     Log in <i class="fas fa-sign-in-alt"></i>
                 </a>
-                <a href="{% url 'SignUp' %}" class="signup-btn">
+                <a href="{% url 'signup' %}" class="signup-btn">
                     Sign up
                 </a>
             </div>
@@ -45,10 +43,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        {% block content %}
-        {% block scripts %}
-        {% endblock %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Mr Lam English - Bài test{% endblock %}
+
+{% block content %}
+<style>
+    .test-intro-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .test-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .test-description {
+        color: #555;
+        line-height: 1.5;
+        margin-bottom: 25px;
+    }
+    .test-sections {
+        margin: 30px 0;
+    }
+    .test-section {
+        display: flex;
+        margin-bottom: 15px;
+        padding: 10px;
+    }
+    .section-name {
+        font-weight: bold;
+        width: 100px;
+        margin-right: 10px;
+    }
+    .section-description {
+        color: #555;
+    }
+    .test-duration {
+        text-align: center;
+        margin: 25px 0;
+        font-weight: 500;
+    }
+    .start-button-container {
+        text-align: center;
+    }
+    .start-button {
+        background-color: #dc2626;
+        color: white;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .start-button:hover {
+        background-color: #b91c1c;
+    }
+</style>
+
+<div class="main-content-container">
+    <div class="test-intro-container">
+        <h1 class="test-title">Kiểm Tra Trình Độ Tiếng Anh {{ test.test_name }}</h1>
+
+        <p class="test-description">
+            Chào mừng bạn đến với bài kiểm tra {{ test.test_name }}. Bài kiểm tra này sẽ đánh giá khả năng tiếng Anh của bạn thông qua hai phần: Reading và Listening. Hãy chuẩn bị sẵn sàng và làm bài một cách tập trung để có kết quả tốt nhất.
+        </p>
+
+        <div class="test-sections">
+            <div class="test-section">
+                <div class="section-name">Reading:</div>
+                <div class="section-description">Đánh giá khả năng đọc hiểu tiếng Anh</div>
+            </div>
+
+            <div class="test-section">
+                <div class="section-name">Listening:</div>
+                <div class="section-description">Đánh giá khả năng nghe hiểu tiếng Anh</div>
+            </div>
+
+            <div class="test-section">
+                <div class="section-name">Writing:</div>
+                <div class="section-description">Đánh giá khả năng viết tiếng Anh</div>
+            </div>
+
+            <div class="test-section">
+                <div class="section-name">Speaking:</div>
+                <div class="section-description">Đánh giá khả năng nói tiếng Anh</div>
+            </div>
+        </div>
+
+        <div class="test-duration">
+            Thời gian làm bài: {{ test.time }} phút
+        </div>
+
+        <div class="start-button-container">
+            <a href="{% url 'test_page' test_id=1 %}">
+                <button type="button" class="start-button">Bắt Đầu Làm Bài</button>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -40,9 +40,6 @@ INSTALLED_APPS = [
     'english',
     'exercise_admin',
     'course_user',
-    'Login',
-    'Profile_User',
-    'test_admin'
 ]
 
 MIDDLEWARE = [
