@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'course_user',
     'Login',
     'Profile_User',
+    'test_admin'
 ]
 
 MIDDLEWARE = [

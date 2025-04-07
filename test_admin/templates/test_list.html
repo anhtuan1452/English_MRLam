@@ -1,0 +1,89 @@
+<!-- test_admin/templates/test_admin/test_list.html -->
+{% extends 'base-admin.html' %}
+
+{% block title %}
+  Danh sách bài kiểm tra
+{% endblock %}
+
+{% block content %}
+  <style>
+    /* Màu chữ của tab đang được chọn */
+    .nav-tabs .nav-link.active {
+      color: #007bff;  /* Màu xanh */
+      font-weight: bold;  /* Làm đậm chữ cho tab đang chọn */
+    }
+
+    .nav-tabs .nav-link {
+      color: #495057;  /* Màu chữ mặc định cho các tab chưa chọn */
+    }
+
+    .nav-tabs .nav-link:hover {
+      color: #007bff;  /* Màu chữ khi hover vào tab */
+    }
+  </style>
+
+  <div class="container mt-4">
+    <h2>Bài kiểm tra</h2>
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <!-- Check if 'results' is not in the URL path -->
+        <span class="nav-link {% if 'results' not in request.path %}active{% endif %}" role="tab">Bài kiểm tra</span>
+      </li>
+      <li class="nav-item">
+        <!-- Check if 'results' is in the URL path -->
+        <span class="nav-link {% if 'results' in request.path %}active{% endif %}" role="tab">Kết quả</span>
+      </li>
+    </ul>
+    <!-- Navbar with search and button -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <!-- Search Bar -->
+      <div class="input-group" style="max-width: 400px;">
+        <input type="text" class="form-control" placeholder="Nhập tên bài kiểm tra" aria-label="Nhập tên bài kiểm tra">
+        <button class="btn btn-outline-secondary" type="button">
+          <i data-lucide="search"></i> <!-- Thêm biểu tượng tìm kiếm -->
+        </button>
+      </div>
+      <!-- Add New Button -->
+      <a href="{% url 'admin_test_add' %}" class="btn btn-danger">
+        + Thêm mới
+      </a>
+    </div>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tên bài kiểm tra</th>
+          <th>Số câu hỏi</th>
+          <th>Thời gian</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for test in tests %}
+          <tr>
+            <td>{{ test.test_id }}</td>
+            <td>{{ test.test_name }}</td>
+            <td>{{ test.question_set.count }}</td>
+            <td>{{ test.time }}</td>
+            <td>
+              <a href="" class="btn btn-primary">Xem</a>
+              <a href="" class="btn btn-warning">Sửa</a>
+              <a href="" class="btn btn-danger">Xóa</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5">Không có bài kiểm tra nào.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    // Initialize Lucide icons
+    document.addEventListener('DOMContentLoaded', function() {
+      lucide.createIcons();
+    });
+  </script>
+{% endblock %}

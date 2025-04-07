@@ -1,0 +1,182 @@
+{% extends 'base-admin.html' %}
+
+{% block title %}
+  Thêm bài kiểm tra
+{% endblock %}
+
+{% block content %}
+  <style>
+    /* Màu chữ của tab đang được chọn */
+    .nav-tabs .nav-link.active {
+      color: #007bff;  /* Màu xanh */
+      font-weight: bold;  /* Làm đậm chữ cho tab đang chọn */
+    }
+
+    .nav-tabs .nav-link {
+      color: #495057;  /* Màu chữ mặc định cho các tab chưa chọn */
+    }
+
+    .nav-tabs .nav-link:hover {
+      color: #007bff;  /* Màu chữ khi hover vào tab */
+    }
+  </style>
+
+  <div class="container mt-4">
+    <h2>Bài kiểm tra</h2>
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <!-- Check if 'results' is not in the URL path -->
+        <span class="nav-link {% if 'results' not in request.path %}active{% endif %}" role="tab">Bài kiểm tra</span>
+      </li>
+      <li class="nav-item">
+        <!-- Check if 'results' is in the URL path -->
+        <span class="nav-link {% if 'results' in request.path %}active{% endif %}" role="tab">Kết quả</span>
+      </li>
+    </ul>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Thông tin bài kiểm tra -->
+      <div class="form-group mb-3">
+        <label for="test_name">Tên bài kiểm tra</label>
+        <input type="text" class="form-control" id="test_name" name="test_name" placeholder="Nhập tên bài kiểm tra">
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="time_limit">Thời gian làm bài (phút)</label>
+        <input type="number" class="form-control" id="time_limit" name="time_limit" placeholder="Nhập thời gian làm bài">
+      </div>
+
+      <!-- Các câu hỏi -->
+      <div id="questions-container">
+        <h4>Câu hỏi</h4>
+        <!-- Các câu hỏi sẽ được thêm vào đây -->
+      </div>
+
+      <!-- Thêm câu hỏi mới -->
+      <button type="button" class="btn btn-primary mt-3" onclick="addQuestion()">+ Add question</button>
+
+      <button type="submit" class="btn btn-danger mt-3">Lưu</button>
+    </form>
+  </div>
+
+  <script>
+    let questionCount = 0; // Biến đếm số câu hỏi
+
+    // Hàm thêm câu hỏi mới
+    function addQuestion() {
+      questionCount++;  // Tăng số thứ tự câu hỏi
+      const newQuestion = document.createElement('div');
+      newQuestion.classList.add('form-group', 'mb-3');
+      newQuestion.id = `question-${questionCount}`;
+
+      newQuestion.innerHTML = `
+        <label for="question_text_${questionCount}">Câu hỏi ${questionCount}</label>
+        <input type="text" class="form-control" id="question_text_${questionCount}" name="question_text_${questionCount}" placeholder="Nhập câu hỏi">
+        <div class="form-group mb-3">
+          <label for="num_choices_${questionCount}">Lựa chọn</label>
+          <input type="number" class="form-control mb-3" id="num_choices_${questionCount}" name="num_choices_${questionCount}" value="2" onchange="updateChoices(${questionCount})">
+          <div id="choices_${questionCount}">
+            <div class="input-group mb-2">
+              <input type="text" class="form-control" name="choice_${questionCount}_0" placeholder="Lựa chọn A">
+              <button type="button" class="btn btn-danger" onclick="removeChoice(${questionCount}, 0)">Remove</button>
+            </div>
+            <div class="input-group mb-2">
+              <input type="text" class="form-control" name="choice_${questionCount}_1" placeholder="Lựa chọn B">
+              <button type="button" class="btn btn-danger" onclick="removeChoice(${questionCount}, 1)">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chọn đáp án đúng -->
+        <div>
+          <label for="correct_${questionCount}">Chọn đáp án đúng</label>
+          <div id="correct-choices-${questionCount}">
+            <!-- Các radio buttons cho đáp án đúng sẽ hiển thị ở đây -->
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-danger mt-2" onclick="removeQuestion(${questionCount})">Remove question</button>
+      `;
+
+      document.getElementById('questions-container').appendChild(newQuestion);
+      updateChoices(questionCount);  // Tạo đáp án đúng ngay lập tức khi tạo câu hỏi
+    }
+
+    // Hàm xóa câu hỏi
+    function removeQuestion(questionIndex) {
+      const question = document.getElementById(`question-${questionIndex}`);
+      question.remove();
+
+      // Cập nhật lại số câu hỏi sau khi xóa
+      questionCount = Math.max(questionCount - 1, 0); // Đảm bảo không giảm xuống âm
+    }
+
+    // Hàm xóa lựa chọn
+    function removeChoice(questionIndex, choiceIndex) {
+      const choicesContainer = document.getElementById(`choices_${questionIndex}`);
+      const choiceToRemove = choicesContainer.getElementsByClassName('input-group')[choiceIndex];
+      choiceToRemove.remove();
+
+      // Cập nhật lại số lượng lựa chọn
+      updateChoices(questionIndex);
+    }
+
+    // Cập nhật số lượng lựa chọn và khoảng cách cho các đáp án
+    function updateChoices(questionIndex) {
+      const numChoices = document.getElementById(`num_choices_${questionIndex}`).value;
+      const choicesContainer = document.getElementById(`choices_${questionIndex}`);
+      const correctChoicesContainer = document.getElementById(`correct-choices-${questionIndex}`);
+
+      // Xóa các lựa chọn và checkbox cũ
+      choicesContainer.innerHTML = '';
+      correctChoicesContainer.innerHTML = '';
+
+      // Tạo lại các lựa chọn mới
+      for (let i = 0; i < numChoices; i++) {
+        const choiceInput = document.createElement('div');
+        choiceInput.classList.add('input-group', 'mb-2');  // Đảm bảo rằng mỗi lựa chọn có khoảng cách giống nhau
+        choiceInput.innerHTML = `
+          <input type="text" class="form-control" name="choice_${questionIndex}_${i}" placeholder="Lựa chọn ${String.fromCharCode(65 + i)}">
+          <button type="button" class="btn btn-danger" onclick="removeChoice(${questionIndex}, ${i})">Remove</button>
+        `;
+        choicesContainer.appendChild(choiceInput);
+
+        // Thêm radio button cho đáp án đúng
+        const radioLabel = document.createElement('label');
+        radioLabel.innerHTML = `Lựa chọn ${String.fromCharCode(65 + i)} `;
+        const radioButton = document.createElement('input');
+        radioButton.type = 'radio';
+        radioButton.name = `correct_${questionIndex}`;
+        radioButton.value = i;
+        correctChoicesContainer.appendChild(radioLabel);
+        correctChoicesContainer.appendChild(radioButton);
+      }
+    }
+  </script>
+
+  <style>
+    /* Thêm margin-bottom cho ô nhập số lượng lựa chọn */
+    .form-group.mb-3 input[type="number"] {
+      margin-bottom: 10px; /* Khoảng cách dưới ô nhập số lượng lựa chọn */
+    }
+
+    /* Thêm margin-bottom cho các lựa chọn */
+    .input-group.mb-2 {
+      margin-bottom: 10px; /* Khoảng cách giữa các ô lựa chọn */
+    }
+
+    /* Thêm margin cho button Remove */
+    .btn.btn-danger {
+      margin-left: 10px; /* Thêm khoảng cách giữa nút Remove và ô nhập */
+    }
+
+    /* Thêm margin cho các radio button trong phần đáp án đúng */
+    #correct-choices-${questionCount} input[type="radio"] {
+      margin-right: 10px; /* Khoảng cách giữa radio và chữ */
+      margin-bottom: 10px; /* Khoảng cách giữa các radio */
+    }
+  </style>
+
+{% endblock %}
