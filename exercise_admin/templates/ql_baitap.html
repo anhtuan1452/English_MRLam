@@ -4,8 +4,67 @@
 {% block title %}Mr Lam English - Bài tập{% endblock %}
 
 {% block content %}
+<style>
+    .modal {
+        position: fixed;
+        z-index: 50;
+        inset: 0;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal.hidden {
+        display: none;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+    }
+
+    .modal-buttons {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .btn-delete {
+        background-color: #dc2626;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+    }
+
+    .btn-cancel {
+        background-color: #6b7280;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+</style>
+
 <div class="main-content-container">
-     <h1>Danh sách bài tập</h1>
+    <h1>Danh sách bài tập</h1>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <div style="position: relative; max-width: 500px; width: 100%;">
@@ -29,21 +88,21 @@
                     <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 500; color: #4b5563;">Tên khóa học</th>
                     <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 500; color: #4b5563;">Buổi học</th>
                     <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 500; color: #4b5563;">Nội dung bài tập</th>
-                    <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 500; color: #4b5563;">Trạng thái</th>
+                    <th style="text-align: left; padding: 0.75rem 1rem; font-weight: 500; color: #4b5563;"></th>
                 </tr>
             </thead>
             <tbody>
-                {% for exercise in exercises %}
+                {% for lesson in lessons %}
                 <tr style="border-bottom: 1px solid #e2e8f0;">
-                    <td style="padding: 0.75rem 1rem;">{{ exercise.course_name }}</td>
-                    <td style="padding: 0.75rem 1rem;">{{ exercise.session }}</td>
-                    <td style="padding: 0.75rem 1rem;">{{ exercise.content }}</td>
+                    <td style="padding: 0.75rem 1rem;">{{ lesson.course.course_name }}</td>
+                    <td style="padding: 0.75rem 1rem;">{{ lesson.lesson_name }}</td>
+                    <td style="padding: 0.75rem 1rem;">{{ lesson.description }}</td>
                     <td style="padding: 0.75rem 1rem;">
-                        {% if exercise.status == "Đang mở" %}
-                        <span style="background-color: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 0.25rem; font-size: 0.875rem;">Đang mở</span>
-                        {% else %}
-                        <span style="background-color: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 0.25rem; font-size: 0.875rem;">Chưa mở</span>
-                        {% endif %}
+                        <a href="{% url 'xem_baitap' lesson_id=lesson.lesson_id %}" class="btn btn-primary">Xem</a>
+                        <a href="{% url 'sua_baitap' lesson_id=lesson.lesson_id %}" class="btn btn-warning">Sửa</a>
+                        <button type="button" class="btn btn-danger open-delete-modal" data-lesson-id="{{ lesson.lesson_id }}" data-lesson-name="{{ lesson.lesson_name }}">
+                            Xóa
+                        </button>
                     </td>
                 </tr>
                 {% empty %}
@@ -54,5 +113,45 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Modal xác nhận xóa -->
+    <div id="deleteModal" class="modal hidden">
+        <div class="modal-content">
+            <button onclick="closeModal()" class="close-btn">×</button>
+            <h2>Xác nhận xóa bài tập</h2>
+            <p id="modalMessage">Bạn có chắc chắn muốn xóa bài này?</p>
+            <form method="POST" id="deleteForm">
+                {% csrf_token %}
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-delete">Xóa</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+<script>
+const modal = document.getElementById("deleteModal");
+const modalMessage = document.getElementById("modalMessage");
+const deleteForm = document.getElementById("deleteForm");
+
+document.querySelectorAll(".open-delete-modal").forEach(button => {
+    button.addEventListener("click", function () {
+        const lessonId = this.dataset.lessonId;
+        const lessonName = this.dataset.lessonName;
+
+        modal.classList.remove("hidden");
+        modalMessage.textContent = `Bạn có chắc chắn muốn xóa bài "${lessonName}" không?`;
+
+        // Cập nhật action cho form
+        deleteForm.action = `xoa_baitap/${lessonId}/`;
+    });
+});
+
+function closeModal() {
+    modal.classList.add("hidden");
+}
+</script>
+
 {% endblock %}

@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
-from english.models import Test
+from english.models import Test, Question
+
 
 def test_list(request):
     tests = Test.objects.all()  # Get all tests from the database

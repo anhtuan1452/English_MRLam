@@ -10,9 +10,6 @@ def materials(request):
 def tests(request):
     return render(request, 'tests.html')
 
-def classes(request):
-    return render(request, 'classes.html')
-
 def login(request):
     return render(request, 'login.html')
 
