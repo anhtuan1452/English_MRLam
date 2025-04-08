@@ -8,27 +8,27 @@ from .forms import TaiLieuForm
 
 def document_list(request):
     """Hiển thị danh sách tài liệu"""
-    search_term = request.GET.get('search', '')
+    # search_term = request.GET.get('search', '')
+    #
+    # if search_term:
+    #     documents = TaiLieu.objects.filter(
+    #         Q(ma_tai_lieu__icontains=search_term) |
+    #         Q(ten_tai_lieu__icontains=search_term) |
+    #         Q(khoa_hoc__ten_khoa_hoc__icontains=search_term)
+    #     ).order_by('-ngay_tao')  # Sắp xếp theo ngày tạo mới nhất
+    # else:
+    #     documents = TaiLieu.objects.all().order_by('-ngay_tao')  # Sắp xếp theo ngày tạo mới nhất
+    #
+    # # In ra số lượng tài liệu để debug
+    # print(f"Số lượng tài liệu: {documents.count()}")
+    #
+    # context = {
+    #     'title': 'Danh sách tài liệu',
+    #     'danh_sach_tai_lieu': documents,
+    #     'search_term': search_term
+    # }
 
-    if search_term:
-        documents = TaiLieu.objects.filter(
-            Q(ma_tai_lieu__icontains=search_term) |
-            Q(ten_tai_lieu__icontains=search_term) |
-            Q(khoa_hoc__ten_khoa_hoc__icontains=search_term)
-        ).order_by('-ngay_tao')  # Sắp xếp theo ngày tạo mới nhất
-    else:
-        documents = TaiLieu.objects.all().order_by('-ngay_tao')  # Sắp xếp theo ngày tạo mới nhất
-
-    # In ra số lượng tài liệu để debug
-    print(f"Số lượng tài liệu: {documents.count()}")
-
-    context = {
-        'title': 'Danh sách tài liệu',
-        'danh_sach_tai_lieu': documents,
-        'search_term': search_term
-    }
-
-    return render(request, 'ql_tailieu.html', context)
+    return render(request, 'document_list.html')
 
 
 def document_detail(request, document_id):

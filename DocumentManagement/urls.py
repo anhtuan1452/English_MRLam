@@ -1,8 +1,5 @@
 from django.urls import path
 from . import views
-
-app_name = 'DocumentManagement'
-
 urlpatterns = [
     # Danh sách tài liệu
     path('', views.document_list, name='document_list'),

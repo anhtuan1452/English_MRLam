@@ -1,60 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'base-admin.html' %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <h1 class="mb-4">DS tài liệu</h1>
-    
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="position-relative" style="max-width: 500px; width: 100%;">
-            <form method="get" action="{% url 'DocumentManagement:document_list' %}" class="d-flex">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0">
-                        <i class="fas fa-search text-muted"></i>
-                    </span>
-                    <input type="text" name="search" class="form-control border-start-0" 
-                           placeholder="Tìm kiếm tài liệu" value="{{ search_term }}">
-                </div>
-            </form>
-        </div>
-        <a href="{% url 'DocumentManagement:add_document' %}" class="btn btn-danger">
-            <i class="fas fa-plus me-1"></i> Thêm tài liệu
-        </a>
-    </div>
-    
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">STT</th>
-                    <th scope="col">Khóa học</th>
-                    <th scope="col">Nội dung tài liệu</th>
-                    <th scope="col">Định dạng</th>
-                    <th scope="col">Ngày cập nhật</th>
-                    <th scope="col">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tai_lieu in danh_sach_tai_lieu %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ tai_lieu.khoa_hoc.ten_khoa_hoc }}</td>
-                    <td>{{ tai_lieu.ten_tai_lieu }}</td>
-                    <td>{{ tai_lieu.file_type }}</td>
-                    <td>{{ tai_lieu.ngay_cap_nhat|date:"d/m/Y" }}</td>
-                    <td>
-                        <a href="{% url 'DocumentManagement:document_detail' tai_lieu.id %}" class="btn btn-sm btn-info">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center">Không tìm thấy tài liệu nào</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+
 {% endblock %}
 
