@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f9fafb;
+        font-family: 'Arial', sans-serif;
+        overflow-x: hidden; /* ✅ Ngăn tràn ngang toàn trang */
+    }
+
+    .course-container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 30px 20px;
+        margin-top: 80px;
+    }
+
+    .course-header {
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+    }
+
+    .course-header h1 {
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+    .author-info {
+        color: #2563eb;
+        margin-top: 8px;
+    }
+
+    .main-grid {
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+        align-items: flex-start;
+        min-width: 0; /* ✅ Ngăn tràn flex */
+        flex-wrap: wrap;
+    }
+
+    .left-column {
+        flex: 2;
+        min-width: 0; /* ✅ Ngăn tràn */
+    }
+
+    .right-column {
+        flex: 1;
+        min-width: 0; /* ✅ Ngăn tràn */
+        position: sticky;
+        top: 100px;
+    }
+
+    .course-description, .course-outline, .other-courses, .instructor-box {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .course-description h2, .course-outline h2, .other-courses h2, .instructor-box h2 {
+        font-size: 20px;
+        font-weight: bold;
+        color: #1f2937;
+        margin-bottom: 15px;
+    }
+
+    .lesson-list li {
+        margin-bottom: 6px;
+    }
+
+    .lesson-list li::marker {
+        color: red;
+    }
+
+    .course-scroll {
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding-bottom: 10px;
+        scroll-snap-type: x mandatory;
+        max-width: 100%;
+    }
+
+    .course-scroll::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .course-scroll::-webkit-scrollbar-thumb {
+        background-color: #d1d5db;
+        border-radius: 4px;
+    }
+
+    .course-card {
+        min-width: 225px;
+        max-width: 100%;
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 15px;
+        background-color: white;
+        text-align: center;
+    }
+
+    .course-card .price {
+        color: #dc2626;
+        font-weight: bold;
+        margin: 8px 0;
+    }
+
+    .btn-register {
+        background-color: #dc2626;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+    .instructor-info {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .instructor-info img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        max-width: 100%; /* ✅ Ngăn ảnh tràn */
+    }
+
+    .instructor-details {
+        font-size: 14px;
+        color: #374151;
+        word-break: break-word;
+    }
+    .price-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+}
+
+.price-box h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #1f2937;
+}
+
+.price-main {
+    font-size: 24px;
+    font-weight: bold;
+    color: #dc2626;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.price-old {
+    text-decoration: line-through;
+    color: #9ca3af;
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.price-discount {
+    background-color: #fef2f2;
+    color: #dc2626;
+    font-size: 14px;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.price-box .btn-register {
+    display: inline-block;
+    margin-top: 20px;
+    background-color: #dc2626;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.price-box .btn-register:hover {
+    background-color: #b91c1c;
+}
+
+
+    @media (max-width: 900px) {
+        .main-grid {
+            flex-direction: column;
+        }
+
+        .right-column {
+            position: relative;
+            top: auto;
+            width: 100%;
+        }
+
+        .left-column, .right-column {
+            width: 100%;
+        }
+
+        .instructor-info {
+            flex-direction: row;
+        }
+    }
+</style>
+
+<div class="course-container">
+    <div class="course-header">
+        <h1>Giới thiệu về Khóa học {{ course.name }}</h1>
+        <p class="author-info">Created by {{ course.teacher_name }}</p>
+    </div>
+
+    <div class="main-grid">
+        <!-- Left column -->
+        <div class="left-column">
+            <div class="course-description">
+                <h2>Mô tả khóa học</h2>
+                <p>{{ course.description|linebreaks }}</p>
+            </div>
+
+            <div class="course-outline">
+                <h2>Lộ trình</h2>
+                <h3 style="font-weight: bold;">Nội dung các buổi học</h3>
+                <ul class="lesson-list">
+                    {% for lesson in course.lessons.all %}
+                        <li><strong>Bài {{ forloop.counter }}:</strong> {{ lesson.lesson_name }} - {{ lesson.description }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="other-courses">
+                <h2>Khóa học khác</h2>
+                <div class="course-scroll">
+                    {% for other_course in courses %}
+                        {% if other_course.course_id != course.course_id %}
+                            <div class="course-card">
+                                <div class="label-new">Người mới</div>
+                                <h3>{{ other_course.name }}</h3>
+                                <p>GV: {{ other_course.teacher_name }}</p>
+                                <p class="price">{{ other_course.price|floatformat:0 }} vnđ</p>
+                                <a href="{% url 'course_detail' course_id=other_course.course_id %}" class="btn-register">Đăng ký ngay</a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="right-column">
+            <div class="price-box">
+                <h2>Học phí</h2>
+                <div>
+                    <span class="price-main">{{ course.price_discount|floatformat:0 }} vnđ</span>
+                    {% if course.price_original %}
+                        <span class="price-old">{{ course.price_original|floatformat:0 }} vnđ</span>
+                        <span class="price-discount">{{ course.discount_percent }}% Off</span>
+                    {% endif %}
+                </div>
+                <a href="#" class="btn-register">Đăng ký</a>
+            </div>
+        <div class="right-column">
+            <div class="instructor-box">
+                <h2>Người hướng dẫn</h2>
+                <div class="instructor-info">
+                    <img src="{% static 'images/teacher_avatar.png' %}" alt="Instructor">
+                    <div class="instructor-details">
+                        <strong>{{ course.teacher_name }}</strong><br>
+                        <span>Giảng viên</span><br>
+                        {{ course.teacher_bio|linebreaks }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

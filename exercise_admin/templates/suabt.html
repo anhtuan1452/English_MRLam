@@ -1,0 +1,188 @@
+{% extends "base-admin.html" %}
+{% load static %}
+{% block title %}Mr Lam English - Sửa Bài Tập{% endblock %}
+
+{% block content %}
+<style>
+    .main-content-container {
+        padding: 2rem;
+        background-color: #f9fafb;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    .lesson-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+    }
+
+    .button-container {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        justify-content: flex-end;
+        margin-bottom: 1.5rem;
+    }
+
+    .action-button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        color: white;
+    }
+
+    .save-button {
+        background-color: #10b981; /* Màu xanh lá */
+    }
+
+    .save-button:hover {
+        background-color: #059669;
+    }
+
+    .cancel-button {
+        background-color: #ef4444; /* Màu đỏ */
+    }
+
+    .cancel-button:hover {
+        background-color: #dc2626;
+    }
+
+    /* Full-width styles */
+    .info-container {
+        width: 100%;
+    }
+
+    .info-row {
+        background-color: white;
+        border-radius: 0.375rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    .info-content {
+        padding: 1rem;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .info-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        color: #1f2937;
+        font-weight: 500;
+    }
+
+    input[type="text"], textarea, input[type="file"] {
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        border-radius: 0.375rem;
+        border: 1px solid #e5e7eb;
+        font-size: 1rem;
+        background-color: white;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    .file-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .file-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="main-content-container">
+    <div class="info-container">
+        <h1 class="lesson-title">Sửa bài tập: {{ lesson.lesson_name }}</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Khóa học -->
+            <div class="info-row">
+                <div class="info-content">
+                    <div class="info-label">Khóa học</div>
+                    <input type="text" name="course_name" value="{{ course.course_name }}" class="info-value" >
+                </div>
+            </div>
+
+            <!-- Buổi học -->
+            <div class="info-row">
+                <div class="info-content">
+                    <div class="info-label">Buổi học</div>
+                    <input type="text" name="lesson_name" value="{{ lesson.lesson_name }}" class="info-value">
+                </div>
+            </div>
+
+            <!-- Nội dung bài tập -->
+            <div class="info-row">
+                <div class="info-content">
+                    <div class="info-label">Nội dung bài tập</div>
+                    <textarea name="description" class="info-value">{{ lesson.description }}</textarea>
+                </div>
+            </div>
+
+            <!-- File bài học -->
+            {% if lesson.lesson_file %}
+            <div class="info-row">
+                <div class="info-content">
+                    <div class="info-label">File Bài Học</div>
+                    <div class="info-value">
+                        <a href="#" class="file-link" target="_blank">{{ lesson.lesson_file }}</a>
+                        <input type="file" name="lesson_file">
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="info-row">
+                <div class="info-content">
+                    <div class="info-label">File Bài Học</div>
+                    <input type="file" name="lesson_file">
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- File bài tập -->
+            {% if lesson.exercise_file %}
+            <div class="info-row">
+                <div class="info-content">
+                    <div class="info-label">File Bài Tập</div>
+                    <div class="info-value">
+                        <a href="#" class="file-link" target="_blank">{{ lesson.exercise_file }}</a>
+                        <input type="file" name="exercise_file">
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="info-row">
+                <div class="info-content">
+                    <div class="info-label">File Bài Tập</div>
+                    <input type="file" name="exercise_file">
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="button-container">
+                <button type="submit" class="action-button save-button">Cập nhật</button>
+                <button type="button" class="action-button cancel-button" onclick="window.history.back();">Hủy</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

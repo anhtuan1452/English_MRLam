@@ -27,5 +27,6 @@ urlpatterns = [
     path('test_admin/',include('test_admin.urls')),
     path('listuser_admin/',include('ListUser_admin.urls')),
     path('test_user/',include('test_user.urls')),
-    path('myclass/',include('myclass.urls'))
+    path('myclass/',include('myclass.urls')),
+    path('course_admin/',include('course_admin.urls'))
 ]
