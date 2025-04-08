@@ -1,5 +1,8 @@
 {% extends 'base-admin.html' %}
-
+{% load static %}
+{% block styles %}
+<link href="{% static 'styles.css' %}" rel="stylesheet">
+{% endblock %}
 {% block title %}Thêm người dùng{% endblock %}
 
 {% block content %}
@@ -41,10 +44,8 @@
                                 <option value="Nữ">Nữ</option>
                                 <option value="Khác">Khác</option>
                             </select>
-                            <div class="select-arrow"></div>
                         </div>
                     </div>
-                    
                     <div class="form-group">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" id="email" name="email" class="form-input" placeholder="Nhập địa chỉ email" required>
