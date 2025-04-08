@@ -46,11 +46,7 @@ INSTALLED_APPS = [
     'ListUser_admin',
     'test_user',
     'myclass',
-    'ManageClass',
-    'DocumentManagement',
-    'MaterialsFree',
-    'qrPayment',
-    'course_admin',
+    'course_admin'
 ]
 
 MIDDLEWARE = [

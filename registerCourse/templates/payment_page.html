@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Payment for {{ course.course_name }}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/payment_page.css' %}">
+
+<!-- Parent container to hold the title and payment content -->
+<div class="main-container">
+    <!-- Title aligned to the top-left -->
+    <div class="page-title">
+        <h3>Trang thanh toán</h3>
+    </div>
+
+    <!-- Payment content container -->
+    <div class="payment-container">
+        <div class="payment-left">
+            <form action="{% url 'payment' %}" method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="name">Họ và Tên</label>
+                    <input type="text" id="name" name="name" placeholder="Nhập Họ và Tên" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Số điện thoại</label>
+                    <input type="text" id="phone" name="phone" placeholder="Nhập số điện thoại" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="schedule">Lịch học</label>
+                    <select id="schedule" name="schedule">
+                        <option value="option1">Lịch học 1</option>
+                        <option value="option2">Lịch học 2</option>
+                        <option value="option3">Lịch học 3</option>
+                    </select>
+                </div>
+
+
+            </form>
+        </div>
+
+        <div class="payment-right">
+            <div class="course-info">
+                <img src="{% static 'images/course.png' %}" alt="Course Image" class="course-img">
+                <p class="course-name">{{ course.course_name }}</p>
+                <p class="course-price">{{ course.price }} VND</p>
+                <div class="form-group">
+                    <button type="submit" class="payment-btn">Thanh Toán</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
