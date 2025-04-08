@@ -10,9 +10,6 @@ def materials(request):
 def tests(request):
     return render(request, 'tests.html')
 
-def classes(request):
-    return render(request, 'classes.html')
-
 def login(request):
     return render(request, 'login.html')
 
@@ -34,5 +31,7 @@ def admin_ql_tailieu(request):
 def admin_ql_thanhtoan(request):
     return render(request, 'ql_thanhtoan.html')
 
+def admin_ql_khoahoc(request):
+    return render(request, 'ql_khoahoc.html')
 
 

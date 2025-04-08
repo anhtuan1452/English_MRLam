@@ -3,87 +3,117 @@
 {% block title %}Mr Lam English - Khóa học{% endblock %}
 
 {% block content %}
-<div class="main-content-container">
-    <!-- My Class Section -->
-    <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">My class</h2>
-    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem;">
-        {% for course in courses %}
-            <div style="flex: 0 0 calc(33.333% - 1rem); max-width: calc(33.333% - 1rem); border-radius: 0.5rem; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; background-color: white;">
-                <div style="padding: 1rem;">
-                    <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                        <div style="width: 40px; height: 40px; background-color: #edf2ff; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; margin-right: 0.75rem;">
-                            <i data-lucide="book-open" style="width: 20px; height: 20px; color: #4263eb;"></i>
-                        </div>
-                        <div>
-                            <h5 style="margin: 0; font-weight: 600; font-size: 1rem;">{{ course.name }}</h5>
-                            <p style="margin: 0; font-size: 0.75rem; color: #6c757d;">{{ course.level }}</p>
-                        </div>
-                        <span style="margin-left: auto; background-color: #d1e7dd; color: #0f5132; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">{{ course.status }}</span>
-                    </div>
+<style>
+    .courses-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 24px;
+        padding: 30px 40px;
+        margin-top: 100px;
+    }
 
-                    <div style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #6c757d; display: flex; align-items: center;">
-                        <i data-lucide="user" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
-                        <span>Giảng viên: {{ course.instructor }}</span>
-                    </div>
+    .course-card {
+        flex: 1 1 280px;
+        max-width: 320px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease;
+        min-height: 280px;
+    }
 
-                    <div style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #6c757d; display: flex; align-items: center;">
-                        <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
-                        <span>{{ course.schedule }}</span>
-                    </div>
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
 
-                    <div style="margin-bottom: 1rem; font-size: 0.875rem; color: #6c757d; display: flex; align-items: center;">
-                        <i data-lucide="clock" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
-                        <span>Thời lượng: {{ course.duration }} giờ</span>
-                    </div>
+    .course-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #333;
+    }
 
-                    <a href="#" style="display: flex; align-items: center; justify-content: center; background-color: #dc3545; color: white; text-decoration: none; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
-                        Vào lớp học
-                        <i data-lucide="arrow-right" style="width: 16px; height: 16px; margin-left: 0.5rem;"></i>
-                    </a>
-                </div>
-            </div>
-        {% endfor %}
+    .course-teacher {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 12px;
+    }
+
+    .course-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #555;
+        margin-bottom: 16px;
+    }
+
+    .course-price {
+        color: #e53935;
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+
+    .register-btn {
+        margin-top: auto;
+        text-align: center;
+        background-color: #e53935;
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s;
+    }
+
+    .register-btn:hover {
+        background-color: #c62828;
+    }
+
+    .section-title {
+        width: 100%;
+        font-size: 26px;
+        font-weight: bold;
+        text-decoration: underline;
+        color: black;
+        margin-left: 40px;
+        text-decoration-color: red;
+    }
+</style>
+
+<div class="courses-container">
+    <h2 class="section-title">My Class</h2>
+    {% for class in classes %}
+    <div class="course-card">
+        <h3 class="course-title">{{ class.class_name }}</h3>
+        <p class="course-teacher">Ms. {{ course.teacher_name }}</p>
+        <p class="course-teacher">Thời gian: {{ class.begin_time }}</p>
+        <p class="course-teacher">Thời lượng: ⏰ 30 giờ </p>
+        <div class="course-info">
+            <span>📄 25 buổi học</span>
+            <span>⏰ 30 giờ</span>
+        </div>
+        <a href="#" class="register-btn">Tiếp tục học</a>
     </div>
+    {% endfor %}
 
-    <!-- English Course Section -->
-    <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">English Courses</h2>
-    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem;">
-        {% for english_course in english_courses %}
-            <div style="flex: 0 0 calc(33.333% - 1rem); max-width: calc(33.333% - 1rem); border-radius: 0.5rem; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; background-color: white;">
-                <div style="padding: 1rem;">
-                    <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                        <div style="width: 40px; height: 40px; background-color: #edf2ff; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; margin-right: 0.75rem;">
-                            <i data-lucide="book-open" style="width: 20px; height: 20px; color: #4263eb;"></i>
-                        </div>
-                        <div>
-                            <h5 style="margin: 0; font-weight: 600; font-size: 1rem;">{{ english_course.name }}</h5>
-                            <p style="margin: 0; font-size: 0.75rem; color: #6c757d;">{{ english_course.level }}</p>
-                        </div>
-                        <span style="margin-left: auto; background-color: #d1e7dd; color: #0f5132; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">{{ english_course.status }}</span>
-                    </div>
-
-                    <div style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #6c757d; display: flex; align-items: center;">
-                        <i data-lucide="user" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
-                        <span>Giảng viên: {{ english_course.instructor }}</span>
-                    </div>
-
-                    <div style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #6c757d; display: flex; align-items: center;">
-                        <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
-                        <span>{{ english_course.schedule }}</span>
-                    </div>
-
-                    <div style="margin-bottom: 1rem; font-size: 0.875rem; color: #6c757d; display: flex; align-items: center;">
-                        <i data-lucide="clock" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i>
-                        <span>Thời lượng: {{ english_course.duration }} giờ</span>
-                    </div>
-
-                    <a href="#" style="display: flex; align-items: center; justify-content: center; background-color: #dc3545; color: white; text-decoration: none; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
-                        Vào lớp học
-                        <i data-lucide="arrow-right" style="width: 16px; height: 16px; margin-left: 0.5rem;"></i>
-                    </a>
-                </div>
-            </div>
-        {% endfor %}
+    <h2 class="section-title">English Course</h2>
+    {% for course in courses %}
+    <div class="course-card">
+        <h3 class="course-title">{{ course.course_name }}</h3>
+        <p class="course-teacher">Ms. {{ course.teacher_name }}</p>
+        <div class="course-info">
+            <span>📄 25 buổi học</span>
+            <span>⏰ 30 giờ</span>
+        </div>
+        <p class="course-price">{{ course.price }} VNĐ</p>
+        <a href="{% url 'course_detail' course_id=course.course_id %}" class="register-btn">Đăng ký ngay</a>
     </div>
+    {% endfor %}
 </div>
 {% endblock %}
