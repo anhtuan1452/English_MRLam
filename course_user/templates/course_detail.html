@@ -43,12 +43,12 @@
 
     .left-column {
         flex: 2;
-        min-width: 0; /* ✅ Ngăn tràn */
+        min-width: 0;
     }
 
     .right-column {
         flex: 1;
-        min-width: 0; /* ✅ Ngăn tràn */
+        min-width: 0;
         position: sticky;
         top: 100px;
     }
@@ -104,6 +104,18 @@
         padding: 15px;
         background-color: white;
         text-align: center;
+        flex-direction: column;
+
+    }
+
+    .label-new {
+        background-color: #f97316;
+        color: white;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        display: inline-block;
+        margin-bottom: 5px;
     }
 
     .course-card .price {
@@ -119,6 +131,7 @@
         border-radius: 20px;
         font-size: 14px;
         text-decoration: none;
+        display: inline-block;
     }
 
     .instructor-info {
@@ -141,61 +154,61 @@
         color: #374151;
         word-break: break-word;
     }
+
     .price-box {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    margin-bottom: 20px;
-    text-align: center;
-    border: 1px solid #e5e7eb;
-}
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+    }
 
-.price-box h2 {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 16px;
-    color: #1f2937;
-}
+    .price-box h2 {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 16px;
+        color: #1f2937;
+    }
 
-.price-main {
-    font-size: 24px;
-    font-weight: bold;
-    color: #dc2626;
-    display: block;
-    margin-bottom: 8px;
-}
+    .price-main {
+        font-size: 24px;
+        font-weight: bold;
+        color: #dc2626;
+        display: block;
+        margin-bottom: 8px;
+    }
 
-.price-old {
-    text-decoration: line-through;
-    color: #9ca3af;
-    font-size: 16px;
-    margin-right: 8px;
-}
+    .price-old {
+        text-decoration: line-through;
+        color: #9ca3af;
+        font-size: 16px;
+        margin-right: 8px;
+    }
 
-.price-discount {
-    background-color: #fef2f2;
-    color: #dc2626;
-    font-size: 14px;
-    padding: 4px 10px;
-    border-radius: 20px;
-}
+    .price-discount {
+        background-color: #fef2f2;
+        color: #dc2626;
+        font-size: 14px;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
 
-.price-box .btn-register {
-    display: inline-block;
-    margin-top: 20px;
-    background-color: #dc2626;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
+    .price-box .btn-register {
+        display: inline-block;
+        margin-top: 20px;
+        background-color: #dc2626;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
 
-.price-box .btn-register:hover {
-    background-color: #b91c1c;
-}
-
+    .price-box .btn-register:hover {
+        background-color: #b91c1c;
+    }
 
     @media (max-width: 900px) {
         .main-grid {
@@ -203,7 +216,7 @@
         }
 
         .right-column {
-            position: relative;
+            position: static;
             top: auto;
             width: 100%;
         }
@@ -220,7 +233,7 @@
 
 <div class="course-container">
     <div class="course-header">
-        <h1>Giới thiệu về Khóa học {{ course.name }}</h1>
+        <h1>Giới thiệu về Khóa học {{ course.course_name }}</h1>
         <p class="author-info">Created by {{ course.teacher_name }}</p>
     </div>
 
@@ -234,9 +247,9 @@
 
             <div class="course-outline">
                 <h2>Lộ trình</h2>
-                <h3 style="font-weight: bold;">Nội dung các buổi học</h3>
+                <h3 style="font-weight: bold;">Nội dung các buổi học</h3> <br>
                 <ul class="lesson-list">
-                    {% for lesson in course.lessons.all %}
+                    {% for lesson in lessons %}
                         <li><strong>Bài {{ forloop.counter }}:</strong> {{ lesson.lesson_name }} - {{ lesson.description }}</li>
                     {% endfor %}
                 </ul>
@@ -246,13 +259,13 @@
                 <h2>Khóa học khác</h2>
                 <div class="course-scroll">
                     {% for other_course in courses %}
-                        {% if other_course.course_id != course.course_id %}
+                        {% if course_id != course.course_id %}
                             <div class="course-card">
                                 <div class="label-new">Người mới</div>
-                                <h3>{{ other_course.name }}</h3>
-                                <p>GV: {{ other_course.teacher_name }}</p>
-                                <p class="price">{{ other_course.price|floatformat:0 }} vnđ</p>
-                                <a href="{% url 'course_detail' course_id=other_course.course_id %}" class="btn-register">Đăng ký ngay</a>
+                                <h3>{{ course.course_name }}</h3>
+                                <p>GV: {{ course.teacher_name }}</p>
+                                <p class="price">{{ course.price|floatformat:0 }} vnđ</p>
+                                <a href="" class="btn-register">Đăng ký ngay</a>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -264,16 +277,10 @@
         <div class="right-column">
             <div class="price-box">
                 <h2>Học phí</h2>
-                <div>
-                    <span class="price-main">{{ course.price_discount|floatformat:0 }} vnđ</span>
-                    {% if course.price_original %}
-                        <span class="price-old">{{ course.price_original|floatformat:0 }} vnđ</span>
-                        <span class="price-discount">{{ course.discount_percent }}% Off</span>
-                    {% endif %}
-                </div>
-                <a href="#" class="btn-register">Đăng ký</a>
+                <span class="price-main">{{ course.price|floatformat:0 }} VNĐ</span>
+                <a href="" class="btn-register">ĐĂNG KÝ</a>
             </div>
-        <div class="right-column">
+
             <div class="instructor-box">
                 <h2>Người hướng dẫn</h2>
                 <div class="instructor-info">
@@ -281,7 +288,7 @@
                     <div class="instructor-details">
                         <strong>{{ course.teacher_name }}</strong><br>
                         <span>Giảng viên</span><br>
-                        {{ course.teacher_bio|linebreaks }}
+                        {{ course.des_teacher|linebreaks }}
                     </div>
                 </div>
             </div>
