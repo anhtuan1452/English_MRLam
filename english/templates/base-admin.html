@@ -8,12 +8,11 @@
  <!-- Bootstrap CSS -->
  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
  <!-- Lucide Icons -->
-    {% block styles %}
-  {% endblock %}
+ {% block styles %}{% endblock %}
  <script src="https://unpkg.com/lucide@latest"></script>
  <link href="{% static 'css/base-admin.css' %}" rel="stylesheet">
-
 </head>
+
 <body>
  <div class="d-flex" style="min-height: 100vh;">
    <!-- Sidebar -->
@@ -25,37 +24,43 @@
        <span>Hi, Lam</span>
      </div>
 
-
      <nav class="mt-2">
-       <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_khoahoc' %}active{% endif %}" >
+       <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_khoahoc' %}active{% endif %}">
          <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'admin_ql_khoahoc' %}">Khóa học</a>
        </div>
-       <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_lophoc' %}active{% endif %}">
-         <i data-lucide="layers" style="width: 18px; height: 18px;"></i>
-         <a href="">Lớp học</a>
-       </div>
+        <div class="sidebar-item {% if request.resolver_match.url_name == 'ManageClass' %}active{% endif %}">
+            <i data-lucide="layers" style="width: 18px; height: 18px;"></i>
+            <a href="{% url 'class_list' %}">Lớp học</a>
+        </div>
+
+
        <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_baitap' %}active{% endif %}">
          <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'admin_ql_baitap' %}">Bài tập</a>
        </div>
+
        <div class="sidebar-item {% if request.resolver_match.url_name == 'qr_payment' %}active{% endif %}">
          <i data-lucide="credit-card" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'qr_payment' %}">Thanh toán</a>
        </div>
+
        <div class="sidebar-item {% if request.resolver_match.url_name == 'document_list' %}active{% endif %}">
          <i data-lucide="file-spreadsheet" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'document_list' %}">Tài liệu</a>
        </div>
+
        <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_test_list' %}active{% endif %}">
          <i data-lucide="check-square" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'admin_test_list' %}">Bài kiểm tra</a>
        </div>
+
        <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_nguoidung' %}active{% endif %}">
          <i data-lucide="users" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'user_list' %}">Người dùng</a>
        </div>
      </nav>
+
      <!-- Logout button -->
      <div class="mt-auto" style="margin-top: auto; border-top: 1px solid rgba(0,0,0,.125); padding-top: 10px;">
        <div class="sidebar-item">
@@ -65,18 +70,14 @@
      </div>
    </div>
 
-
    <!-- Main content -->
    <div class="main-content flex-grow-1">
-     {% block content %}
-     {% endblock %}
+     {% block content %}{% endblock %}
    </div>
  </div>
 
-
  <!-- Bootstrap JS Bundle with Popper -->
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 
  <script>
    // Initialize Lucide icons
@@ -86,7 +87,3 @@
  </script>
 </body>
 </html>
-
-
-
-

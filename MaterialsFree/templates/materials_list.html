@@ -1,36 +1,123 @@
-{% extends "base.html" %}
+<!-- templates/MaterialsFree/materials_list.html -->
+{% extends 'base-admin.html' %}
+
+{% block title %}Tài liệu - HL Lam{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6">Tài liệu</h1>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {% for document in documents %}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <a href="{{ document.get_absolute_url }}">
-                <div class="h-40 overflow-hidden">
-                    {% if document.thumbnail %}
-                    <img src="{{ document.thumbnail.url }}" alt="{{ document.title }}" class="w-full h-full object-cover">
-                    {% else %}
-                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span class="text-gray-500">No image</span>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="p-4">
-                    <h2 class="text-lg font-semibold mb-2 line-clamp-2">{{ document.title }}</h2>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">{{ document.category.name }}</span>
+<div class="container">
+    <h1 class="mb-4">Tài liệu</h1>
+
+    <!-- Grammar Materials -->
+    <div class="mb-5">
+        <h2 class="category-title">ENGLISH GRAMMAR</h2>
+        <div class="row">
+            {% for doc in grammar_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://via.placeholder.com/300x200/5c6bc0/ffffff?text=Grammar" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu học ngữ pháp tiếng Anh</p>
+                        <a href="{% url 'material_detail' doc.doc_id %}" class="stretched-link"></a>
                     </div>
                 </div>
-            </a>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Không có tài liệu ngữ pháp.</p>
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="col-span-4 text-center py-8">
-            <p>Không có tài liệu nào. Vui lòng thêm tài liệu qua trang quản trị.</p>
-        </div>
-        {% endfor %}
     </div>
+
+    <!-- Vocabulary Materials -->
+    <div class="mb-5">
+        <h2 class="category-title">ENGLISH VOCABULARY</h2>
+        <div class="row">
+            {% for doc in vocabulary_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://via.placeholder.com/300x200/ff9800/ffffff?text=Vocabulary" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu học từ vựng tiếng Anh</p>
+                        <a href="{% url 'material_detail' doc.doc_id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Không có tài liệu từ vựng.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Speaking Materials -->
+    <div class="mb-5">
+        <h2 class="category-title">SPEAKING SKILLS</h2>
+        <div class="row">
+            {% for doc in speaking_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://via.placeholder.com/300x200/4caf50/ffffff?text=Speaking" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu luyện kỹ năng nói</p>
+                        <a href="{% url 'material_detail' doc.doc_id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Không có tài liệu kỹ năng nói.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Listening Materials -->
+    <div class="mb-5">
+        <h2 class="category-title">LISTENING SKILLS</h2>
+        <div class="row">
+            {% for doc in listening_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://via.placeholder.com/300x200/f44336/ffffff?text=Listening" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu luyện kỹ năng nghe</p>
+                        <a href="{% url 'material_detail' doc.doc_id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Không có tài liệu kỹ năng nghe.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Other Materials -->
+    {% if other_docs %}
+    <div class="mb-5">
+        <h2 class="category-title">OTHER MATERIALS</h2>
+        <div class="row">
+            {% for doc in other_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://via.placeholder.com/300x200/9c27b0/ffffff?text=Materials" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu học tiếng Anh</p>
+                        <a href="{% url 'material_detail' doc.doc_id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
-

@@ -1,146 +1,111 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.db.models import Q
-from django.urls import reverse
-from .models import TaiLieu, KhoaHoc
-from .forms import TaiLieuForm
+from .forms import DocumentForm
+from english.models import Document
+import os
 
 
 def document_list(request):
-    """Hiển thị danh sách tài liệu"""
-    # search_term = request.GET.get('search', '')
-    #
-    # if search_term:
-    #     documents = TaiLieu.objects.filter(
-    #         Q(ma_tai_lieu__icontains=search_term) |
-    #         Q(ten_tai_lieu__icontains=search_term) |
-    #         Q(khoa_hoc__ten_khoa_hoc__icontains=search_term)
-    #     ).order_by('-ngay_tao')  # Sắp xếp theo ngày tạo mới nhất
-    # else:
-    #     documents = TaiLieu.objects.all().order_by('-ngay_tao')  # Sắp xếp theo ngày tạo mới nhất
-    #
-    # # In ra số lượng tài liệu để debug
-    # print(f"Số lượng tài liệu: {documents.count()}")
-    #
-    # context = {
-    #     'title': 'Danh sách tài liệu',
-    #     'danh_sach_tai_lieu': documents,
-    #     'search_term': search_term
-    # }
-
-    return render(request, 'document_list.html')
-
-
-def document_detail(request, document_id):
-    """Hiển thị chi tiết tài liệu"""
-    document = get_object_or_404(TaiLieu, id=document_id)
-
+    documents = Document.objects.all().order_by('-doc_id')
     context = {
-        'title': 'Chi tiết tài liệu',
-        'document': document
+        'documents': documents,
+        'active_menu': 'documents',
+        'title': 'Danh sách tài liệu'
     }
+    return render(request, 'document_list.html', context)
 
+
+def document_detail(request, doc_id):
+    document = get_object_or_404(Document, doc_id=doc_id)
+    context = {
+        'document': document,
+        'active_menu': 'documents',
+        'title': document.doc_name
+    }
     return render(request, 'document_detail.html', context)
 
 
 def add_document(request):
-    """Thêm tài liệu mới"""
-    khoa_hoc_list = KhoaHoc.objects.all()
-
     if request.method == 'POST':
-        form = TaiLieuForm(request.POST, request.FILES)
+        form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            # Nếu có trường noi_dung, lưu vào mo_ta
-            noi_dung = request.POST.get('noi_dung', '')
-            if noi_dung:
-                form.instance.mo_ta = f"{form.instance.mo_ta}\n\n{noi_dung}" if form.instance.mo_ta else noi_dung
+            document = form.save(commit=False)
 
-            # Tự động xác định loại file nếu không được chọn
-            if not form.instance.file_type and form.instance.file_tai_lieu:
-                file_name = form.instance.file_tai_lieu.name
-                extension = file_name.split('.')[-1].upper()
-                if extension in ['PDF', 'DOC', 'DOCX', 'XLS', 'XLSX', 'PPT', 'PPTX', 'ZIP', 'RAR']:
-                    form.instance.file_type = extension
-                else:
-                    form.instance.file_type = 'OTHER'
+            # Nếu có file, xử lý loại file và dung lượng
+            doc_file = request.FILES.get('doc_file')
+            if doc_file:
+                ext = os.path.splitext(doc_file.name)[1][1:].upper()
+                document.file_type = ext
+                document.file_size = f"{doc_file.size // 1024}KB"
+                document.doc_file = doc_file
 
-            # Lưu tài liệu
-            tai_lieu = form.save()
-
-            # In thông tin tài liệu để debug
-            print(f"Đã lưu tài liệu: ID={tai_lieu.id}, Tên={tai_lieu.ten_tai_lieu}")
-
-            messages.success(request, 'Thêm tài liệu thành công!')
-
-            # Chuyển hướng đến trang danh sách tài liệu
-            return redirect('DocumentManagement:document_list')
+            document.save()
+            messages.success(request, 'Tài liệu đã được thêm thành công!')
+            return redirect('document_list')
         else:
             messages.error(request, 'Có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.')
-            print(f"Lỗi form: {form.errors}")  # In lỗi để debug
+    else:
+        form = DocumentForm()
 
-    context = {
-        'title': 'Thêm tài liệu',
-        'khoa_hoc_list': khoa_hoc_list
-    }
+    return render(request, 'add_document.html', {
+        'form': form,
+        'active_menu': 'documents',
+        'title': 'Thêm tài liệu mới'
+    })
 
-    return render(request, 'add_document.html', context)
 
-
-def edit_document(request, document_id):
-    """Sửa thông tin tài liệu"""
-    document = get_object_or_404(TaiLieu, id=document_id)
-    khoa_hoc_list = KhoaHoc.objects.all()
+def edit_document(request, doc_id):
+    document = get_object_or_404(Document, doc_id=doc_id)
 
     if request.method == 'POST':
-        form = TaiLieuForm(request.POST, request.FILES, instance=document)
+        form = DocumentForm(request.POST, request.FILES, instance=document)
         if form.is_valid():
-            # Nếu có trường noi_dung, lưu vào mo_ta
-            noi_dung = request.POST.get('noi_dung', '')
-            if noi_dung:
-                form.instance.mo_ta = f"{form.instance.mo_ta}\n\n{noi_dung}" if form.instance.mo_ta else noi_dung
+            updated_doc = form.save(commit=False)
 
-            # Nếu không có file mới được tải lên, giữ nguyên file cũ
-            if not request.FILES.get('file_tai_lieu'):
-                form.instance.file_tai_lieu = document.file_tai_lieu
-            else:
-                # Tự động xác định loại file nếu có file mới
-                file_name = request.FILES.get('file_tai_lieu').name
-                extension = file_name.split('.')[-1].upper()
-                if extension in ['PDF', 'DOC', 'DOCX', 'XLS', 'XLSX', 'PPT', 'PPTX', 'ZIP', 'RAR']:
-                    form.instance.file_type = extension
+            doc_file = request.FILES.get('doc_file')
+            if doc_file:
+                ext = os.path.splitext(doc_file.name)[1][1:].upper()
+                updated_doc.file_type = ext
+                updated_doc.file_size = f"{doc_file.size // 1024}KB"
+                updated_doc.doc_file = doc_file
 
-            form.save()
-            messages.success(request, 'Cập nhật tài liệu thành công!')
-
-            # Chuyển hướng đến trang danh sách tài liệu
-            return redirect('DocumentManagement:document_list')
+            updated_doc.save()
+            messages.success(request, 'Tài liệu đã được cập nhật thành công!')
+            return redirect('document_detail', doc_id=document.doc_id)
         else:
             messages.error(request, 'Có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.')
-            print(form.errors)  # In lỗi để debug
+    else:
+        form = DocumentForm(instance=document)
 
-    context = {
-        'title': 'Sửa tài liệu',
+    return render(request, 'edit_document.html', {
+        'form': form,
         'document': document,
-        'khoa_hoc_list': khoa_hoc_list
-    }
+        'active_menu': 'documents',
+        'title': f'Chỉnh sửa: {document.doc_name}'
+    })
 
-    return render(request, 'edit_document.html', context)
 
-
-def delete_document(request, document_id):
-    """Xóa tài liệu"""
-    document = get_object_or_404(TaiLieu, id=document_id)
+def delete_document(request, doc_id):
+    document = get_object_or_404(Document, doc_id=doc_id)
 
     if request.method == 'POST':
+        document_name = document.doc_name
         document.delete()
-        messages.success(request, 'Xóa tài liệu thành công!')
+        messages.success(request, f'Tài liệu "{document_name}" đã được xóa thành công!')
+        return redirect('document_list')
 
-        # Chuyển hướng đến trang danh sách tài liệu
-        return redirect('DocumentManagement:document_list')
+    return render(request, 'delete_document.html', {
+        'document': document,
+        'active_menu': 'documents',
+        'title': f'Xóa tài liệu: {document.doc_name}'
+    })
 
-    context = {
-        'title': 'Xóa tài liệu',
-        'document': document
-    }
 
-    return render(request, 'delete_document.html', context)
+def download_document(request, doc_id):
+    document = get_object_or_404(Document, doc_id=doc_id)
+
+    if document.doc_file and hasattr(document.doc_file, 'url'):
+        return redirect(document.doc_file.url)
+
+    messages.error(request, 'File không tồn tại hoặc đã bị xóa.')
+    return redirect('document_detail', doc_id=document.doc_id)

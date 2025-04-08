@@ -1,8 +1,10 @@
+# MaterialsFree/urls.py
 from django.urls import path
 from . import views
 
-urlpatterns = [
-    path('', views.materials_list, name='materials_list'),
-    path('<slug:slug>/', views.materials_detail, name='materials_detail'),
-]
+app_name = 'materials'
 
+urlpatterns = [
+    path('', views.materials_list, name='list'),
+    path('<int:doc_id>/', views.material_detail, name='detail'),
+]
