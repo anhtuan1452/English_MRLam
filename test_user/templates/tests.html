@@ -6,67 +6,80 @@
 <style>
     .test-container {
         max-width: 800px;
-        margin: 0 auto;
+        margin-top: 100px;
         padding: 0 100px;
     }
+
     .test-header {
         background-color: #f0f9ff;
         padding: 12px 16px;
         border-radius: 6px;
         margin-bottom: 20px;
     }
+
     .test-title {
         font-size: 18px;
         font-weight: 600;
         margin: 0;
         color: #0369a1;
     }
+
     .test-info {
         font-size: 13px;
         color: #64748b;
         margin: 4px 0 0 0;
     }
+
     .question-container {
         background-color: white;
         border: 1px solid #e2e8f0;
         border-radius: 6px;
-        padding: 16px;
+        padding: 16px 20px;
         margin-bottom: 16px;
-        padding-left: 20px;
-        padding-right: 20px;
+        display: flex;
+        flex-direction: column;
+
     }
+
     .question-header {
         display: flex;
         justify-content: space-between;
         margin-bottom: 12px;
     }
+
     .question-number {
         font-size: 14px;
         font-weight: 500;
         color: #0369a1;
     }
+
     .question-text {
         font-size: 14px;
         margin-bottom: 16px;
         line-height: 1.5;
         text-align: left;
     }
+
     .answer-options {
         margin-top: 10px;
     }
+
     .answer-option {
-        display: block;
+        display: flex;
         margin-bottom: 8px;
         text-align: left;
     }
+
     .answer-option input[type="radio"] {
         margin-top: 3px;
         margin-right: 10px;
     }
+
     .answer-option label {
         font-size: 14px;
         cursor: pointer;
     }
+
     .question-image {
         max-width: 100%;
         margin: 10px auto;
@@ -74,12 +87,14 @@
         border: 1px solid #e2e8f0;
         border-radius: 4px;
     }
+
     .submit-container {
         display: flex;
         justify-content: center;
         margin-top: 30px;
         margin-bottom: 40px;
     }
+
     .submit-button {
         background-color: #dc2626;
         color: white;
@@ -90,9 +105,11 @@
         font-weight: 500;
         cursor: pointer;
     }
+
     .submit-button:hover {
         background-color: #b91c1c;
     }
+
     .timer {
         background-color: #fee2e2;
         color: #b91c1c;
@@ -103,6 +120,7 @@
         display: inline-block;
         margin-bottom: 20px;
     }
+
     .part-header {
         display: flex;
         align-items: center;
@@ -110,13 +128,21 @@
         border-bottom: 1px solid #e2e8f0;
         padding-bottom: 8px;
     }
+
     .part-title {
         font-size: 16px;
         font-weight: 600;
         color: #0369a1;
         margin: 0;
     }
+
+    .main-content-container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
 </style>
+
 <div class="main-content-container">
     <div class="test-container">
         <!-- Test Header -->
@@ -129,47 +155,46 @@
         </div>
     </div>
 
-        <!-- Timer -->
-        <div class="timer">
-            Thời gian còn lại: <span id="time-remaining">{{ test.time|time:"H:i" }}</span>
-        </div>
+    <!-- Timer -->
+    <div class="timer">
+        Thời gian còn lại: <span id="time-remaining">{{ test.time|time:"H:i" }}</span>
+    </div>
 
     <div class="main-content-container">
-    <form method="POST">
-        {% csrf_token %}
-
-        {% for question in questions %}
-        <div class="question-container">
-            <div class="question-text">{{ question.question_text }}: </div>
-            <div class="answer-options">
-                <div class="answer-option">
-                    <input type="radio" id="q{{ question.question_id }}-a" name="answer_{{ question.question_id }}" value="A">
-                    <label for="q{{ question.question_id }}-a">A. {{ question.answer }}</label>
-                </div>
-                <div class="answer-option">
-                    <input type="radio" id="q{{ question.question_id }}-b" name="answer_{{ question.question_id }}" value="B">
-                    <label for="q{{ question.question_id }}-b">B. {{ question.answer }}</label>
-                </div>
-                <div class="answer-option">
-                    <input type="radio" id="q{{ question.question_id }}-c" name="answer_{{ question.question_id }}" value="C">
-                    <label for="q{{ question.question_id }}-c">C. {{ question.answer }}</label>
-                </div>
-                <div class="answer-option">
-                    <input type="radio" id="q{{ question.question_id }}-d" name="answer_{{ question.question_id }}" value="D">
-                    <label for="q{{ question.question_id }}-d">D. {{ question.answer }}</label>
+        <form method="POST">
+            {% csrf_token %}
+            {% for question in questions %}
+            <div class="question-container">
+                <div class="question-text">{{ question.question_text }}: </div>
+                <div class="answer-options">
+                    <div class="answer-option">
+                        <input type="radio" id="q{{ question.question_id }}-a" name="answer_{{ question.question_id }}" value="A">
+                        <label for="q{{ question.question_id }}-a">A. {{ question.answer }}</label>
+                    </div>
+                    <div class="answer-option">
+                        <input type="radio" id="q{{ question.question_id }}-b" name="answer_{{ question.question_id }}" value="B">
+                        <label for="q{{ question.question_id }}-b">B. {{ question.answer }}</label>
+                    </div>
+                    <div class="answer-option">
+                        <input type="radio" id="q{{ question.question_id }}-c" name="answer_{{ question.question_id }}" value="C">
+                        <label for="q{{ question.question_id }}-c">C. {{ question.answer }}</label>
+                    </div>
+                    <div class="answer-option">
+                        <input type="radio" id="q{{ question.question_id }}-d" name="answer_{{ question.question_id }}" value="D">
+                        <label for="q{{ question.question_id }}-d">D. {{ question.answer }}</label>
+                    </div>
                 </div>
             </div>
-        </div>
-        {% empty %}
-        <div class="question-container">
-            <p style="text-align: center; color: #6b7280;">Không có câu hỏi nào</p>
-        </div>
-        {% endfor %}
+            {% empty %}
+            <div class="question-container">
+                <p style="text-align: center; color: #6b7280;">Không có câu hỏi nào</p>
+            </div>
+            {% endfor %}
 
-        <div class="submit-container">
-            <button type="submit" class="submit-button">Nộp bài</button>
-        </div>
-    </form>
+            <div class="submit-container">
+                <button type="submit" class="submit-button">Nộp bài</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -195,11 +220,9 @@
     }
 
     window.onload = function () {
-        // Parse the time from HH:MM format to minutes
         var timeString = "{{ test.time|time:'H:i' }}";
         var parts = timeString.split(':');
         var minutes = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-
         var display = document.querySelector('#time-remaining');
         startTimer(minutes, display);
     };

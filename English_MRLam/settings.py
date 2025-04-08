@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'course_admin',
     'qrPayment',
     'DocumentManagement',
+    'registerCourse'
 ]
 
 MIDDLEWARE = [
