@@ -1,22 +1,33 @@
 from django import forms
-from .models import TaiLieu, KhoaHoc
+from english.models import Document  # Assuming models are in the same app
 
-class TaiLieuForm(forms.ModelForm):
+
+class DocumentForm(forms.ModelForm):
+    # Add a description field that's not in the model but needed for the form
+    description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'Mô tả nội dung của tài liệu',
+            'rows': 4
+        }),
+        label='Mô tả'
+    )
+
     class Meta:
-        model = TaiLieu
-        fields = ['ma_tai_lieu', 'ten_tai_lieu', 'mo_ta', 'khoa_hoc', 'file_tai_lieu']
+        model = Document
+        fields = ['doc_name', 'doc_file']
         widgets = {
-            'ma_tai_lieu': forms.TextInput(attrs={'class': 'form-control'}),
-            'ten_tai_lieu': forms.TextInput(attrs={'class': 'form-control'}),
-            'mo_ta': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
-            'khoa_hoc': forms.Select(attrs={'class': 'form-control'}),
-            'file_tai_lieu': forms.FileInput(attrs={'class': 'form-control'}),
+            'doc_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nhập tên tài liệu'
+            }),
+            'doc_file': forms.FileInput(attrs={
+                'class': 'form-control-file',
+                'style': 'display: none;'
+            }),
         }
         labels = {
-            'ma_tai_lieu': 'Mã tài liệu',
-            'ten_tai_lieu': 'Tên tài liệu',
-            'mo_ta': 'Mô tả',
-            'khoa_hoc': 'Khóa học',
-            'file_tai_lieu': 'File tài liệu',
+            'doc_name': 'Tên tài liệu',
+            'doc_file': 'File tài liệu',
         }
-

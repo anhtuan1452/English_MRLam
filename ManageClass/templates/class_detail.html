@@ -1,0 +1,21 @@
+{% extends "base-admin.html" %}
+
+{% block title %}Chi tiết lớp học{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>{{ class_instance.name }}</h3>
+    <p>Khóa học: {{ class_instance.course.name }}</p>
+
+    <h5>Danh sách học viên:</h5>
+    <ul class="list-group mt-3">
+        {% for uc in user_classes %}
+        <li class="list-group-item d-flex justify-content-between">
+            {{ uc.user.username }}
+        </li>
+        {% empty %}
+        <li class="list-group-item">Chưa có học viên nào trong lớp.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
