@@ -9,7 +9,6 @@ from django.db.models import Q
 
 
 def user_list(request):
-    # Tìm kiếm người dùng
     search_query = request.GET.get('search', '')
     if search_query:
         # Tìm kiếm theo first_name hoặc last_name

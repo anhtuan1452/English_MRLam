@@ -39,7 +39,9 @@ a {
   display: flex;
   align-items: center;
 }
-
+.search-add-container {
+    display: flex;
+}
 .logo {
   display: flex;
   align-items: center;
