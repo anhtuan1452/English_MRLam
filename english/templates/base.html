@@ -18,7 +18,7 @@
             </a>
 
             <nav class="main-nav">
-                <a href="#">Khóa học</a>
+                <a href="{% url 'course' %}">Khóa học</a>
                 <a href="">Tài liệu</a>
                 <a href="{% url 'home_test' %}">Bài test</a>
                 {% if user.is_authenticated %}
