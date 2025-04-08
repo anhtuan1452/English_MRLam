@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Breadcrumb -->
+        <div class="w-full lg:w-3/4">
+            <nav class="flex mb-4" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{% url 'materials_list' %}" class="text-gray-700 hover:text-blue-600">
+                            Tài liệu
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <span class="mx-2 text-gray-400">/</span>
+                            <span class="text-gray-500">{{ document.title }}</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            
+            <!-- Document Content -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h1 class="text-2xl font-bold mb-4">{{ document.title }}</h1>
+                
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-sm text-gray-600">{{ document.category.name }}</span>
+                    <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-4 rounded">
+                        DOWNLOAD
+                    </button>
+                </div>
+                
+                <div class="prose max-w-none">
+                    {{ document.content|safe }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Related Documents -->
+        <div class="w-full lg:w-1/4">
+            <h3 class="text-xl font-semibold mb-4">Tài liệu liên quan</h3>
+            <div class="space-y-4">
+                {% for related in related_documents %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <a href="{{ related.get_absolute_url }}">
+                        <img src="{{ related.thumbnail.url }}" alt="{{ related.title }}" class="w-full h-32 object-cover">
+                        <div class="p-3">
+                            <h4 class="font-medium text-sm line-clamp-2">{{ related.title }}</h4>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

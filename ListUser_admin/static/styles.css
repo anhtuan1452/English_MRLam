@@ -238,9 +238,7 @@ select {
   margin-left:5% !important;
   margin-right:5% !important;
 }
-select{
-    width:90% !important;
-}
+
 textarea {
   min-height: 150px;
   resize: vertical;
