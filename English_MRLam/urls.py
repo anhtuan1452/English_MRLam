@@ -29,9 +29,12 @@ urlpatterns = [
     path('test_user/',include('test_user.urls')),
     path('myclass/',include('myclass.urls')),
     path('course_admin/',include('course_admin.urls')),
-    path('qrpayment/',include('qrPayment.urls')),
-    path('documentmanagement/',include('DocumentManagement.urls')),
     path('registercourse/',include('registerCourse.urls')),
     path('class_admin/',include('ManageClass.urls')),
-    path('materials/',include('MaterialsFree.urls'))
+    path('materials/',include('MaterialsFree.urls')),
+    path('manage_class/',include('ManageClass.urls')),
+    path('document_management/',include('DocumentManagement.urls')),
+    path('materials_free/',include('MaterialsFree.urls')),
+    path('qr_payment/',include('qrPayment.urls')),
+    path('course_admin/',include('course_admin.urls')),
 ]
