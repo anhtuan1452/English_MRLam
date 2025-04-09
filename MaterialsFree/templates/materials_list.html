@@ -1,36 +1,326 @@
-{% extends "base.html" %}
+<!-- templates/MaterialsFree/materials_list.html -->
+{% extends 'base.html' %}
 
+{% block title %}Tài liệu - HL Lam{% endblock %}
+{% block styles %}
+<style>
+    /* Thiết lập chung */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f5f5;
+
+  width:100%;
+  padding: 0;
+}
+
+.container {
+  width:100%;
+   margin:20vh;
+   margin-top: 9vh;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 10px;
+}
+
+/* Tiêu đề danh mục */
+.category-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem;
+  padding: 8px 0;
+  position: relative;
+  color: #2c3e50;
+  border-bottom: 2px solid;
+}
+
+/* English Grammar */
+.category-title:nth-of-type(1) {
+  color: #5c6bc0;
+  border-color: #5c6bc0;
+}
+
+/* English Vocabulary */
+.category-title:nth-of-type(2) {
+  color: #ff9800;
+  border-color: #ff9800;
+}
+
+/* Speaking Skills */
+.category-title:nth-of-type(3) {
+  color: #4caf50;
+  border-color: #4caf50;
+}
+
+/* Listening Skills */
+.category-title:nth-of-type(4) {
+  color: #f44336;
+  border-color: #f44336;
+}
+
+/* Other Materials */
+.category-title:nth-of-type(5) {
+  color: #9c27b0;
+  border-color: #9c27b0;
+}
+
+/* Thẻ tài liệu */
+.material-card {
+  transition: all 0.3s ease;
+  height: 100%;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width:350px;
+}
+
+.material-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+  height: 160px;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 1.25rem;
+  background-color: white;
+  max-width:200px;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #2c3e50;
+}
+
+.card-text {
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+}
+
+/* Responsive */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+.col-md-3, .col-sm-6 {
+  padding: 0 15px;
+  margin-bottom: 30px;
+}
+
+.col-md-3 {
+}
+
+.col-sm-6 {
+}
+
+.col-12 {
+  width: 100%;
+  padding: 0 15px;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 992px) {
+  .col-md-3 {
+    width: 33.333%;
+  }
+}
+
+@media (max-width: 768px) {
+  .col-md-3, .col-sm-6 {
+    width: 50%;
+  }
+}
+
+@media (max-width: 576px) {
+  .col-md-3, .col-sm-6 {
+    width: 100%;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .category-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Link styles */
+a.stretched-link {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  content: "";
+}
+
+/* Empty state */
+.col-12 p {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  text-align: center;
+  color: #6c757d;
+}
+
+/* Màu nền cho các thẻ hình ảnh */
+[src*="Grammar"] {
+  background-color: #5c6bc0;
+}
+
+[src*="Vocabulary"] {
+  background-color: #ff9800;
+}
+
+[src*="Speaking"] {
+  background-color: #4caf50;
+}
+
+[src*="Listening"] {
+  background-color: #f44336;
+}
+
+[src*="Materials"] {
+  background-color: #9c27b0;
+}
+</style>
+{% endblock %}
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6">Tài liệu</h1>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {% for document in documents %}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <a href="{{ document.get_absolute_url }}">
-                <div class="h-40 overflow-hidden">
-                    {% if document.thumbnail %}
-                    <img src="{{ document.thumbnail.url }}" alt="{{ document.title }}" class="w-full h-full object-cover">
-                    {% else %}
-                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span class="text-gray-500">No image</span>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="p-4">
-                    <h2 class="text-lg font-semibold mb-2 line-clamp-2">{{ document.title }}</h2>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">{{ document.category.name }}</span>
+<div class="container">
+    <h1 class="mb-4">Tài liệu</h1>
+
+    <!-- Grammar Materials -->
+    <div class="mb-5">
+        <h2 class="category-title">ENGLISH GRAMMAR</h2>
+        <div class="row">
+            {% for doc in grammar_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu học ngữ pháp tiếng Anh</p>
+                        <a href="{% url 'materials:materials_detail' doc.doc_id %}" class="stretched-link"></a>
                     </div>
                 </div>
-            </a>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Không có tài liệu ngữ pháp.</p>
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="col-span-4 text-center py-8">
-            <p>Không có tài liệu nào. Vui lòng thêm tài liệu qua trang quản trị.</p>
-        </div>
-        {% endfor %}
     </div>
+
+    <!-- Vocabulary Materials -->
+    <div class="mb-5">
+        <h2 class="category-title">ENGLISH VOCABULARY</h2>
+        <div class="row">
+            {% for doc in vocabulary_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu học từ vựng tiếng Anh</p>
+                        <a href="{% url 'materials:materials_detail' doc.doc_id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Không có tài liệu từ vựng.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Speaking Materials -->
+    <div class="mb-5">
+        <h2 class="category-title">SPEAKING SKILLS</h2>
+        <div class="row">
+            {% for doc in speaking_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu luyện kỹ năng nói</p>
+                        <a href="{% url 'materials:materials_detail' doc.doc_id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Không có tài liệu kỹ năng nói.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Listening Materials -->
+    <div class="mb-5">
+        <h2 class="category-title">LISTENING SKILLS</h2>
+        <div class="row">
+            {% for doc in listening_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu luyện kỹ năng nghe</p>
+                        <a href="{% url 'materials:materials_detail' doc.doc_id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Không có tài liệu kỹ năng nghe.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Other Materials -->
+    {% if other_docs %}
+    <div class="mb-5">
+        <h2 class="category-title">OTHER MATERIALS</h2>
+        <div class="row">
+            {% for doc in other_docs %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card material-card">
+                    <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" class="card-img-top" alt="{{ doc.doc_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doc.doc_name }}</h5>
+                        <p class="card-text">Tài liệu học tiếng Anh</p>
+                        <a href="{% url 'materials:materials_detail' doc.doc_id %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
-
