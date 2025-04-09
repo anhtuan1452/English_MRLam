@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from english import views
+
 
 urlpatterns = [
     path('english/', include('english.urls')),
@@ -34,7 +34,6 @@ urlpatterns = [
     path('materials/',include('MaterialsFree.urls')),
     path('manage_class/',include('ManageClass.urls')),
     path('document_management/',include('DocumentManagement.urls')),
-    path('materials_free/',include('MaterialsFree.urls')),
     path('qr_payment/',include('qrPayment.urls')),
     path('course_admin/',include('course_admin.urls')),
 ]

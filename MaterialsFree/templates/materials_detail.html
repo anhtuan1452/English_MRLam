@@ -254,7 +254,7 @@ table td, table th {
 <div class="container">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
-            <a href="{% url 'materials:materials_detail' doc_id=document.doc_id %}">Tài liệu</a>
+            <a href="{% url 'materials_detail' doc_id=document.doc_id %}">Tài liệu</a>
             <li class="breadcrumb-item active">{{ document.doc_name }}</li>
         </ol>
     </nav>
