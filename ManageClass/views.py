@@ -1,109 +1,33 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, UpdateView
-from django.urls import reverse_lazy
-from django.db.models import Q
-from django.contrib import messages
-from django.http import JsonResponse
-from .models import LopHoc, KhoaHoc
+from django.shortcuts import render, get_object_or_404, redirect
+from english.models import Class, UserClass, UserProfile, Course
+from .forms import ClassForm  # Nếu bạn tạo form cho thêm lớp
 
+def class_list(request):
+    classes = Class.objects.all()
+    return render(request, 'class_list.html', {'classes': classes})
 
-class DanhSachLopHocView(ListView):
-    model = LopHoc
-    template_name = 'ql_lophoc.html'
-    context_object_name = 'danh_sach_lop'
-    paginate_by = 10
+def class_detail(request, class_id):
+    class_instance = get_object_or_404(Class, pk=class_id)
+    user_classes = UserClass.objects.filter(class_instance=class_instance).select_related('user')
+    return render(request, 'class_detail.html', {
+        'class_instance': class_instance,
+        'user_classes': user_classes
+    })
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search_term = self.request.GET.get('search', '')
-        if search_term:
-            queryset = queryset.filter(
-                Q(ten_lop__icontains=search_term) |
-                Q(khoa_hoc__ten_khoa_hoc__icontains=search_term)
-            )
-        return queryset
+def class_rollcall(request, class_id):
+    # logic hiển thị điểm danh (theo ảnh bạn gửi)
+    pass
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['search_term'] = self.request.GET.get('search', '')
-        context['khoa_hoc_list'] = KhoaHoc.objects.all()
-        return context
+def add_student_to_class(request, class_id):
+    # logic thêm học sinh vào lớp
+    pass
 
-
-def them_lop_hoc_view(request):
+def add_class(request):
     if request.method == 'POST':
-        ten_lop = request.POST.get('ten_lop')
-        khoa_hoc_id = request.POST.get('khoa_hoc')
-        ngay_bat_dau = request.POST.get('ngay_bat_dau')
-        ngay_ket_thuc = request.POST.get('ngay_ket_thuc')
-        si_so = request.POST.get('si_so')
-        trang_thai = request.POST.get('trang_thai')
-
-        try:
-            khoa_hoc = KhoaHoc.objects.get(id=khoa_hoc_id)
-
-            LopHoc.objects.create(
-                ten_lop=ten_lop,
-                khoa_hoc=khoa_hoc,
-                so_luong_hoc_vien=si_so,
-                ngay_bat_dau=ngay_bat_dau,
-                ngay_ket_thuc=ngay_ket_thuc,
-                trang_thai=trang_thai
-            )
-
-            messages.success(request, f'Lớp học "{ten_lop}" đã được tạo thành công!')
-            return redirect('ManageClass:danh_sach_lop')
-        except KhoaHoc.DoesNotExist:
-            messages.error(request, 'Khóa học không tồn tại.')
-        except Exception as e:
-            messages.error(request, f'Có lỗi xảy ra: {str(e)}')
-
-    context = {
-        'khoa_hoc_list': KhoaHoc.objects.all().order_by('ten_khoa_hoc')
-    }
-    return render(request, 'them_lop_hoc.html', context)
-
-
-def chi_tiet_lop_hoc(request, lop_id):
-    lop = get_object_or_404(LopHoc, id=lop_id)
-    return render(request, 'chi_tiet_lop_hoc.html', {'lop': lop})
-
-
-class CapNhatLopHocView(UpdateView):
-    model = LopHoc
-    template_name = 'cap_nhat_lop_hoc.html'
-    fields = ['ten_lop', 'khoa_hoc', 'so_luong_hoc_vien', 'trang_thai', 'ngay_bat_dau', 'ngay_ket_thuc']
-    success_url = reverse_lazy('ManageClass:danh_sach_lop')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['khoa_hoc_list'] = KhoaHoc.objects.all()
-        return context
-
-    def form_valid(self, form):
-        messages.success(self.request, f'Lớp học "{form.instance.ten_lop}" đã được cập nhật thành công!')
-        return super().form_valid(form)
-
-
-def xoa_lop_hoc(request, lop_id):
-    if request.method == 'POST':
-        lop = get_object_or_404(LopHoc, id=lop_id)
-        ten_lop = lop.ten_lop
-        lop.delete()
-        messages.success(request, f'Lớp học "{ten_lop}" đã được xóa thành công!')
-        return redirect('ManageClass:danh_sach_lop')
-    return redirect('ManageClass:danh_sach_lop')
-
-
-def xoa_lop_hoc_ajax(request, lop_id):
-    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        try:
-            lop = get_object_or_404(LopHoc, id=lop_id)
-            ten_lop = lop.ten_lop
-            lop.delete()
-            return JsonResponse({'success': True, 'message': f'Lớp học "{ten_lop}" đã được xóa thành công!'})
-        except LopHoc.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Lớp học không tồn tại.'}, status=404)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': f'Có lỗi xảy ra: {str(e)}'}, status=400)
-    return JsonResponse({'success': False, 'message': 'Phương thức không được hỗ trợ'}, status=405)
+        form = ClassForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('class_list')
+    else:
+        form = ClassForm()
+    return render(request, 'add_class.html', {'form': form})

@@ -1,41 +1,31 @@
+
 {% extends 'base-admin.html' %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <h1>Xác nhận xóa</h1>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Bạn có chắc chắn muốn xóa tài liệu này không?</h5>
-                    
-                    <div class="row mb-3 mt-4">
-                        <div class="col-md-4 fw-bold">Tên tài liệu:</div>
-                        <div class="col-md-8">{{ document.ten_tai_lieu }}</div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-4 fw-bold">Mã tài liệu:</div>
-                        <div class="col-md-8">{{ document.ma_tai_lieu }}</div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-4 fw-bold">Khóa học:</div>
-                        <div class="col-md-8">{{ document.khoa_hoc.ten_khoa_hoc }}</div>
-                    </div>
-                    
-                    <form method="post" action="{% url 'DocumentManagement:delete_document' document.id %}">
-                        {% csrf_token %}
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="submit" class="btn btn-danger me-2">Xác nhận xóa</button>
-                            <a href="{% url 'DocumentManagement:document_list' %}" class="btn btn-secondary">Hủy</a>
-                        </div>
-                    </form>
-                </div>
+<div class="container-fluid">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'document_detail' document.doc_id %}" class="btn btn-outline-secondary btn-sm me-3">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </a>
+        <h1 class="mb-0">Xác nhận xóa tài liệu</h1>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Bạn có chắc chắn muốn xóa tài liệu "<strong>{{ document.doc_name }}</strong>"?
+                <p class="mb-0 mt-2">Hành động này không thể hoàn tác.</p>
             </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex justify-content-end">
+                    <a href="{% url 'document_detail' document.doc_id %}" class="btn btn-outline-secondary me-2">Hủy</a>
+                    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 {% endblock %}
-

@@ -1,52 +1,119 @@
+
 {% extends 'base-admin.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Thêm tài liệu</h1>
+<div class="container-fluid">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'document_list' %}" class="btn btn-outline-secondary btn-sm me-3">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </a>
+        <h1 class="mb-0">Thêm tài liệu</h1>
+    </div>
 
-    <div class="d-flex justify-content-center">
-        <div class="card w-100" style="max-width: 1400px;">
-            <div class="card-body">
-                <form method="post" action="{% url 'DocumentManagement:add_document' %}" enctype="multipart/form-data">
-                    {% csrf_token %}
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
 
-                    <div class="mb-3">
-                        <label for="ma_tai_lieu" class="form-label">Mã tài liệu</label>
-                        <input type="text" class="form-control" id="ma_tai_lieu" name="ma_tai_lieu" required>
+                <div class="mb-3">
+                    <label for="{{ form.doc_name.id_for_label }}" class="form-label">Tên tài liệu:</label>
+                    {{ form.doc_name }}
+                    {% if form.doc_name.errors %}
+                    <div class="text-danger mt-1">{{ form.doc_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Mô tả:</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                    <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">File đính kèm:</label>
+                    <div class="border border-2 border-dashed rounded p-4 text-center" id="dropArea">
+                        <div class="py-3">
+                            <i class="fas fa-upload fa-2x text-muted mb-2"></i>
+                            <p class="mb-1">Kéo và thả file hoặc</p>
+                            <label class="btn btn-outline-secondary btn-sm position-relative">
+                                Chọn file
+                                {{ form.doc_file }}
+                            </label>
+                        </div>
+                        <div id="fileInfo" class="mt-2" style="display: none;">
+                            <span id="fileName" class="text-primary"></span>
+                        </div>
                     </div>
+                    {% if form.doc_file.errors %}
+                    <div class="text-danger mt-1">{{ form.doc_file.errors }}</div>
+                    {% endif %}
+                </div>
 
-                    <div class="mb-3">
-                        <label for="ten_tai_lieu" class="form-label">Tên tài liệu</label>
-                        <input type="text" class="form-control" id="ten_tai_lieu" name="ten_tai_lieu" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="khoa_hoc" class="form-label">Khóa học</label>
-                        <select class="form-select" id="khoa_hoc" name="khoa_hoc" required>
-                            <option value="" selected disabled>Chọn khóa học</option>
-                            {% for khoa_hoc in khoa_hoc_list %}
-                            <option value="{{ khoa_hoc.id }}">{{ khoa_hoc.ten_khoa_hoc }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="mo_ta" class="form-label">Mô tả</label>
-                        <textarea class="form-control" id="mo_ta" name="mo_ta" rows="4"></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="file_tai_lieu" class="form-label">File tài liệu</label>
-                        <input type="file" class="form-control" id="file_tai_lieu" name="file_tai_lieu" required>
-                    </div>
-
-                    <div class="d-flex justify-content-end mt-4">
-                        <button type="submit" class="btn btn-danger me-2">Lưu</button>
-                        <a href="{% url 'DocumentManagement:document_list' %}" class="btn btn-secondary">Hủy</a>
-                    </div>
-                </form>
-            </div>
+                <div class="d-flex justify-content-end">
+                    <a href="{% url 'document_list' %}" class="btn btn-outline-secondary me-2">Hủy</a>
+                    <button type="submit" class="btn btn-danger">Lưu</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('{{ form.doc_file.id_for_label }}');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+
+        // Handle drag and drop events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('border-primary');
+            dropArea.classList.add('bg-light');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('border-primary');
+            dropArea.classList.remove('bg-light');
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            updateFileInfo();
+        }
+
+        fileInput.addEventListener('change', updateFileInfo);
+
+        function updateFileInfo() {
+            if (fileInput.files.length > 0) {
+                fileName.textContent = fileInput.files[0].name;
+                fileInfo.style.display = 'block';
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        }
+    });
+</script>
 {% endblock %}

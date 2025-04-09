@@ -1,6 +1,74 @@
+
 {% extends 'base-admin.html' %}
 
 {% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Danh sách tài liệu</h1>
 
+    <div class="d-flex justify-content-between mb-4">
+        <div class="position-relative" style="width: 300px;">
+            <i class="fas fa-search position-absolute" style="left: 10px; top: 10px;"></i>
+            <input type="text" id="searchInput" class="form-control ps-4" placeholder="Tìm kiếm tài liệu">
+        </div>
+
+        <a href="{% url 'add_document' %}" class="btn btn-danger">
+            <i class="fas fa-plus me-1"></i> Thêm tài liệu
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-3">STT</th>
+                            <th>Tên tài liệu</th>
+                            <th>Mô tả tài liệu</th>
+                            <th>Định dạng</th>
+                            <th>Ngày cập nhật</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for document in documents %}
+                        <tr onclick="window.location='{% url 'document_detail' document.doc_id %}';" style="cursor: pointer;">
+                            <td class="ps-3">{{ forloop.counter }}</td>
+                            <td>
+                                <span class="text-primary">Eng - L{{ document.doc_id }}</span>
+                                {{ document.doc_name }}
+                            </td>
+                            <td>{{ document.description|default:"-"|truncatechars:50 }}</td>
+                            <td>{{ document.file_type|default:"PDF" }}</td>
+                            <td>{{ document.upload_date|date:"d/m/Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">Không có tài liệu nào.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('tbody tr');
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
-

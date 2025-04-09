@@ -1,58 +1,31 @@
+<!-- DocumentManagement/templates/DocumentManagement/delete_document.html -->
 {% extends 'base-admin.html' %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <h1>Danh sách tài liệu</h1>
+<div class="container-fluid">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'document_detail' document.doc_id %}" class="btn btn-outline-secondary btn-sm me-3">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </a>
+        <h1 class="mb-0">Xác nhận xóa tài liệu</h1>
+    </div>
     
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="position-relative" style="max-width: 500px; width: 100%;">
-            <form method="get" action="" class="d-flex">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm tài liệu" value="{{ search_term }}">
-                    <button type="submit" class="btn btn-danger">Tìm kiếm</button>
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Bạn có chắc chắn muốn xóa tài liệu "<strong>{{ document.doc_name }}</strong>"?
+                <p class="mb-0 mt-2">Hành động này không thể hoàn tác.</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex justify-content-end">
+                    <a href="{% url 'document_detail' document.doc_id %}" class="btn btn-outline-secondary me-2">Hủy</a>
+                    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
                 </div>
             </form>
         </div>
-        <a href="{% url 'DocumentManagement:add_document' %}" class="btn btn-danger">Thêm tài liệu</a>
     </div>
-    
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>STT</th>
-                <th>Khóa học <i class="fas fa-sort-down"></i></th>
-                <th>Nội dung tài liệu <i class="fas fa-sort-down"></i></th>
-                <th>Định dạng <i class="fas fa-sort-down"></i></th>
-                <th>Ngày cập nhật <i class="fas fa-sort-down"></i></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for tai_lieu in danh_sach_tai_lieu %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ tai_lieu.khoa_hoc.ten_khoa_hoc }}</td>
-                <td>{{ tai_lieu.ten_tai_lieu }}</td>
-                <td>{{ tai_lieu.file_type }}</td>
-                <td>{{ tai_lieu.ngay_cap_nhat|date:"d/m/Y" }}</td>
-                <td>
-                    <a href="{% url 'DocumentManagement:document_detail' tai_lieu.id %}" class="btn btn-sm btn-info">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                    <a href="{% url 'DocumentManagement:edit_document' tai_lieu.id %}" class="btn btn-sm btn-warning">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <a href="{% url 'DocumentManagement:delete_document' tai_lieu.id %}" class="btn btn-sm btn-danger">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="text-center">Không tìm thấy tài liệu nào</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
 {% endblock %}
-

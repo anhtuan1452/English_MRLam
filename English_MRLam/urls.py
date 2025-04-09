@@ -31,5 +31,6 @@ urlpatterns = [
     path('course_admin/',include('course_admin.urls')),
     path('qrpayment/',include('qrPayment.urls')),
     path('documentmanagement/',include('DocumentManagement.urls')),
-    path('registercourse/',include('registerCourse.urls'))
+    path('registercourse/',include('registerCourse.urls')),
+    path('class_admin/',include('ManageClass.urls'))
 ]

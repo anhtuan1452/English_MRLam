@@ -62,7 +62,7 @@ class Result(models.Model):
 class Document(models.Model):
     doc_id = models.AutoField(primary_key=True)
     doc_name = models.CharField(max_length=100)
-    doc_file = models.BinaryField(null=True)
+    doc_file = models.FileField(upload_to='documents/', null=True, blank=True)
 
     class Meta:
         db_table = 'DOCUMENT'
