@@ -1,12 +1,44 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
+
 
 # Create your views here.
 from english.models import Test, Question
+from .forms import TestForm, QuestionForm
 
 
 def test_list(request):
     tests = Test.objects.all()  # Get all tests from the database
     return render(request, 'test_list.html', {'tests': tests})
+
+
+def test_detail(request, test_id):
+    # Lấy bài kiểm tra theo test_id
+    test = get_object_or_404(Test, pk=test_id)
+
+    # Lấy tất cả các câu hỏi thuộc bài kiểm tra này
+    questions = Question.objects.filter(test=test)
+
+    # Nếu form được gửi lên, bạn có thể xử lý ở đây (tùy vào logic của bạn)
+    if request.method == 'POST':
+        test_form = TestForm(request.POST, instance=test)
+        question_forms = [QuestionForm(request.POST, instance=q) for q in questions]
+
+        if all(form.is_valid() for form in question_forms):
+            # Lưu lại các câu trả lời, đáp án ở đây (nếu cần)
+            for form in question_forms:
+                form.save()
+            # Thực hiện thêm logic sau khi lưu dữ liệu, như chuyển hướng hoặc thông báo thành công
+    else:
+        # Khởi tạo form mặc định cho test và câu hỏi
+        test_form = TestForm(instance=test)
+        question_forms = [QuestionForm(instance=q) for q in questions]
+
+    # Trả về template với dữ liệu của bài kiểm tra và câu hỏi
+    return render(request, 'test_detail.html', {
+        'test_form': test_form,
+        'question_forms': question_forms,
+        'test': test,
+    })
 
 
 def test_add(request):
