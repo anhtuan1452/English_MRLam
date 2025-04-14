@@ -160,7 +160,7 @@ class LESSON_DETAIL(models.Model):
     description = models.TextField(null=True, blank=True)
     lesson_id = models.ForeignKey(LESSON, on_delete=models.CASCADE)
     class_instance = models.ForeignKey(CLASS, on_delete=models.CASCADE)
-    session_number = models.IntegerField(null=True)
+    session_number = models.CharField(null=True)
     class Meta:
         db_table = 'LessonDetail'
 
