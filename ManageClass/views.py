@@ -1,13 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from english.models import Class, UserClass, UserProfile, Course, RollCall, RollCallUser, LessonDetail, Lesson, Submission, Exercise
+from english.models import CLASS, USER_CLASS, COURSE, ROLLCALL, ROLLCALL_USER, LESSON_DETAIL, LESSON, SUBMISSION, EXERCISE
 from .forms import ClassForm
 
 def class_list(request):
-    classes = Class.objects.all()
+    classes = CLASS.objects.all()
     return render(request, 'class_list.html', {'classes': classes})
 
 def class_detail(request, class_id):
-    classroom = get_object_or_404(Class, class_id=class_id)
+    classroom = get_object_or_404(CLASS, class_id=class_id)
     return render(request, 'class_detail.html', {'classroom': classroom})
 
 def add_student_to_class(request, class_id):
