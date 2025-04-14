@@ -6,5 +6,5 @@ urlpatterns = [
     # path('test/<int:id>/', views.test_view, name='test_view')
     path('add/', views.test_add, name='admin_test_add'),
     path('results/', views.test_results_view, name='results'),
-    # Thêm các URL khác nếu cần
+    path('test/<int:test_id>',views.test_detail,name='admin_test_details'),
 ]

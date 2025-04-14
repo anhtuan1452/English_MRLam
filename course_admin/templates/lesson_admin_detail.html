@@ -171,87 +171,69 @@
 }
 </style>
 <div class="course-detail-container">
-    <!-- Header / Title Bar -->
-    <div class="course-header">
-      <div class="course-info">
-        <h1>Thêm khóa học</h1>
-      </div>
-      <div class="action-buttons">
-        <button class="btn delete-btn">Delete</button>
-        <button class="btn save-btn">Save</button>
-      </div>
+  <!-- Header -->
+  <div class="course-header">
+    <div class="course-info" style="display: flex; align-items: center; gap: 12px; ">
+      <button onclick="history.back()" class="btn back-btn" style="
+          font-size: 20px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-bottom: 10px;
+        ">
+        ←
+      </button>
+      <h1>Thêm buổi học - {{ course.course_name }}</h1>
     </div>
-
-    <!-- Tab Navigation -->
-    <div class="tab-nav">
-      <button class="tab active">Tổng quan</button>
-      <!-- Add more tabs here if needed -->
+    <div class="action-buttons">
+      <button class="btn delete-btn">Hủy</button>
+      <button class="btn save-btn">Lưu</button>
     </div>
+  </div>
 
-    <!-- Course Overview Section -->
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab active">Tổng quan</button>
+  </div>
+
+  <!-- Form thêm buổi học -->
+  <form method="POST" action="">
+    {% csrf_token %}
     <div class="course-overview">
-      <!-- Tên khóa học -->
       <div class="form-group">
         <label for="weekLesson">Tuần</label>
-        <input
-          type="text"
-          id="weekLesson"
-          name="weekLesson"
-          value="8"
-        />
+        <input type="text" id="weekLesson" name="weekLesson" placeholder="Tuần 1">
       </div>
 
       <div class="form-group">
         <label for="topic">Chủ đề</label>
-        <input
-          type="text"
-          id="topic"
-          name="topic"
-          value="Thì Tương Lai Đơn và “Be Going To”"
-        />
+        <input type="text" id="topic" name="topic" placeholder="Chủ đề buổi học">
       </div>
 
       <div class="form-group">
         <label for="type">Loại</label>
-        <input
-          type="text"
-          id="type"
-          name="type"
-          value="Ngữ Pháp"
-        />
+        <input type="text" id="type" name="type" placeholder="Ngữ pháp, từ vựng,...">
       </div>
 
-        <!-- Mô tả -->
-      <div class="form-group">
-        <label for="courseDescription">Mô tả</label>
-        <textarea
-          id="courseDescription"
-          name="courseDescription"
-          rows="4"
-        >Lorem Ipsum is simply dummy text of the printing and typesetting industry...</textarea>
+      <div class="form-group" style="grid-column: 1 / 3;">
+        <label for="description">Mô tả</label>
+        <textarea id="description" name="description" rows="4" placeholder="Mô tả nội dung buổi học..."></textarea>
       </div>
 
-        <!-- Giáo viên -->
+      <!-- Giáo viên -->
       <div class="form-group">
         <label for="instructor">Giáo viên</label>
-        <input
-          type="text"
-          id="instructor"
-          name="instructor"
-          value="Ms. Huynh Linh"
-        />
+        <select id="instructor" name="instructor">
+          {% for teacher in teachers %}
+            <option value="{{ teacher.id }}">{{ teacher.first_name }} {{ teacher.last_name }}</option>
+          {% endfor %}
+        </select>
       </div>
-
       <!-- Thời gian -->
       <div class="form-group">
-        <label for="duration">Thời gian</label>
-        <input
-          type="text"
-          id="duration"
-          name="duration"
-          value="3 tháng"
-        />
+        <label for="lesson_time">Thời gian</label>
+        <input type="date" id="lesson_time" name="lesson_time">
       </div>
     </div>
+  </form>
 </div>
 {% endblock %}
