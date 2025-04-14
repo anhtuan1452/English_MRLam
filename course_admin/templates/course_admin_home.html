@@ -5,94 +5,48 @@
 
 {% block content %}
 <style xmlns:text-decoration="http://www.w3.org/1999/xhtml">
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
-.header h1 {
-  font-size: 24px;
-  font-weight: 600;
-}
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+    }
 
-/* Search Bar */
-.search-bar {
-  margin-bottom: 20px;
-  text-align: left;
-}
+    /* Search Bar */
+    .search-bar {
+      margin-bottom: 20px;
+      text-align: left;
+    }
 
-.search-bar input {
-  width: 100%;
-  max-width: 300px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-/* Courses Grid */
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-/* Course Card */
-.course-card {
-  background-color: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 16px;
-  text-align: center;
-  transition: box-shadow 0.2s ease;
-}
-
-.course-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.course-card img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-
-.course-card h2 {
-  font-size: 16px;
-  margin-bottom: 5px;
-  color: #333;
-}
-
-.instructor {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
-}
-
-.rating {
-  margin-bottom: 10px;
-}
-
-.stars {
-  color: #f7b519; /* Star color (adjust as needed) */
-  font-weight: bold;
-}
-
-.rating-count {
-  margin-left: 6px;
-  font-size: 14px;
-  color: #888;
-}
-
-.price {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  margin-top: 5px;
-}
+    .search-bar input {
+      width: 100%;
+      max-width: 300px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .course-container { display: flex; flex-wrap: wrap; gap: 20px; }
+    .course-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        width: 300px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .course-card img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+    }
+    .course-name { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+    .course-description { margin-bottom: 10px; }
+    .teacher-info { font-style: italic; color: #555; }
 </style>
 <div class="container">
     <!-- Header -->
@@ -109,104 +63,25 @@
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
         </div>
-        <a href="{% url 'admin_xemkhoahoc' %}" style="text-decoration: none;">
+        <a href="#" style="text-decoration: none;">
             <button class="btn add-course-btn" style="background-color: #dc2626; color: white; padding: 0.5rem 1.5rem; border: none; border-radius: 0.375rem; cursor: pointer;">
                 Thêm khóa học
             </button>
         </a>
     </div>
-
-    <!-- Courses Grid -->
-    <div class="courses-grid">
-      <!-- Course Card 1 -->
-        <a href="{% url 'admin_xemkhoahoc' %}" style="text-decoration: none;">
-          <div class="course-card">
-            <img src="course1.png" alt="English - Level 1" />
-            <h2>English - Level 1</h2>
-            <p class="instructor">Ms. Huynh Linh</p>
-            <div class="rating">
-              <!-- Example with Font Awesome -->
-              <!-- <i class="fa fa-star"></i>
-              <i class="fa fa-star"></i>
-              <i class="fa fa-star"></i>
-              <i class="fa fa-star"></i>
-              <i class="fa fa-star-half-alt"></i> -->
-              <span class="stars">★★★★☆</span>
-              <span class="rating-count">(561 ratings)</span>
-            </div>
-            <p class="price">1.450.000 vnd</p>
-          </div>
-        </a>
-
-
-      <!-- Course Card 2 -->
-      <div class="course-card">
-        <img src="course2.png" alt="English - Level 2" />
-        <h2>English - Level 2</h2>
-        <p class="instructor">Mr. Thanh Lâm</p>
-        <div class="rating">
-          <span class="stars">★★★★☆</span>
-          <span class="rating-count">(580 ratings)</span>
-        </div>
-        <p class="price">1.645.000 vnd</p>
-      </div>
-
-      <!-- Course Card 3 -->
-      <div class="course-card">
-        <img src="course3.png" alt="English - Level 3" />
-        <h2>English - Level 3</h2>
-        <p class="instructor">Ms. Linh Ni</p>
-        <div class="rating">
-          <span class="stars">★★★★★</span>
-          <span class="rating-count">(2031 ratings)</span>
-        </div>
-        <p class="price">1.750.000 vnd</p>
-      </div>
-
-      <!-- Course Card 4 -->
-      <div class="course-card">
-        <img src="course4.png" alt="English Communication" />
-        <h2>English Communication</h2>
-        <p class="instructor">Ms. John Doe</p>
-        <div class="rating">
-          <span class="stars">★★★★☆</span>
-          <span class="rating-count">(421 ratings)</span>
-        </div>
-        <p class="price">1.200.000 vnd</p>
-      </div>
-
-      <!-- Course Card 5 -->
-      <div class="course-card">
-        <img src="course5.png" alt="English for Beginners" />
-        <h2>English for Beginners</h2>
-        <p class="instructor">Mr. Huỳnh Hỉ</p>
-        <div class="rating">
-          <span class="stars">★★★★☆</span>
-          <span class="rating-count">(621 ratings)</span>
-        </div>
-        <p class="price">1.200.000 vnd</p>
-      </div>
-
-      <div class="course-card">
-        <img src="course5.png" alt="English for Beginners" />
-        <h2>English for Beginners</h2>
-        <p class="instructor">Mr. Huỳnh Hỉ</p>
-        <div class="rating">
-          <span class="stars">★★★★☆</span>
-          <span class="rating-count">(621 ratings)</span>
-        </div>
-        <p class="price">1.200.000 vnd</p>
-      </div>
-      <div class="course-card">
-        <img src="course5.png" alt="English for Beginners" />
-        <h2>English for Beginners</h2>
-        <p class="instructor">Mr. Huỳnh Hỉ</p>
-        <div class="rating">
-          <span class="stars">★★★★☆</span>
-          <span class="rating-count">(621 ratings)</span>
-        </div>
-        <p class="price">1.200.000 vnd</p>
-      </div>
+    <div class="course-container">
+        {% for course in courses %}
+            <a href="{% url 'admin_xemkhoahoc' course.course_id %}" style="text-decoration: none; color: inherit;">
+                <div class="course-card">
+                    <div class="course-name">{{ course.course_name }}</div>
+                    <div class="course-description">{{ course.description|default:"Không có mô tả" }}</div>
+                    <div>Giá: {{ course.price|default:"Miễn phí" }} VND</div>
+                    <div class="teacher-info">
+                        {{ course.teacher_name }} - {{ course.des_teacher|default:"Chưa có mô tả" }}
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
     </div>
   </div>
 {% endblock %}

@@ -1,21 +1,73 @@
 {% extends "base-admin.html" %}
-
 {% block title %}Chi tiết lớp học{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h3>{{ class_instance.name }}</h3>
-    <p>Khóa học: {{ class_instance.course.name }}</p>
+    <h3 class="mb-4">Mô tả lớp học</h3>
 
-    <h5>Danh sách học viên:</h5>
-    <ul class="list-group mt-3">
-        {% for uc in user_classes %}
-        <li class="list-group-item d-flex justify-content-between">
-            {{ uc.user.username }}
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3" id="classTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                Mô tả lớp học
+            </button>
         </li>
-        {% empty %}
-        <li class="list-group-item">Chưa có học viên nào trong lớp.</li>
-        {% endfor %}
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" href="{% url 'class_exercise' class_id=cls.class_id %}">Bài tập</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" href="{% url 'class_rollcall' class_id=cls.class_id %}">Điểm danh</a>
+        </li>
     </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content border p-3 rounded bg-white" id="classTabContent">
+        <div class="tab-pane fade show active" id="info" role="tabpanel">
+            <form>
+                <div class="mb-3">
+                    <label class="form-label">Tên lớp học</label>
+                    <input type="text" class="form-control" value="{{ cls.class_name }}" disabled>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tên khóa học</label>
+                    <input type="text" class="form-control" value="{{ cls.course.course_name }}" disabled>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label">Ngày bắt đầu</label>
+                        <input type="text" class="form-control" value="{{ cls.begin_time|date:'d M Y g:i a' }}" disabled>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Ngày kết thúc</label>
+                        <input type="text" class="form-control" value="{{ cls.end_time|date:'d M Y g:i a' }}" disabled>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Sĩ số</label>
+                    <input type="text" class="form-control" value="{{ cls.userclass_set.count }}" disabled>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Trạng thái</label><br>
+                    {% now "UTC" as now %}
+                    {% if cls.begin_time > now %}
+                        <span class="badge bg-warning text-dark">Chưa bắt đầu</span>
+                    {% elif cls.end_time < now %}
+                        <span class="badge bg-danger">Đã kết thúc</span>
+                    {% else %}
+                        <span class="badge bg-success">Đang học</span>
+                    {% endif %}
+                </div>
+
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-danger">Lưu</button>
+                    <a href="#" class="btn btn-dark">Xóa</a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
