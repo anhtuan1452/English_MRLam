@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from english.models import UserClass, UserProfile, Course, Class
+from english.models import USER_CLASS, COURSE, CLASS
 
 
 def course(request):
-    courses = Course.objects.all()
-    classes = Class.objects.all()
+    courses = COURSE.objects.all()
+    classes = CLASS.objects.all()
     context = {
         'courses': courses,
         'classes': classes,
@@ -36,12 +36,12 @@ def course(request):
 '''
 
 def course_detail(request, course_id):
-    course = get_object_or_404(Course, course_id=course_id)
+    course = get_object_or_404(COURSE, course_id=course_id)
 
     # Lấy danh sách bài học (giả sử bạn có liên kết course.lessons)
     lessons = course.lesson_set.all()
     # Lấy danh sách khóa học khác (giả sử bạn có liên kết course.other_courses)
-    other_courses = Course.objects.exclude(course_id=course_id)  # Lấy tất cả khóa học ngoại trừ khóa học hiện tại
+    other_courses = COURSE.objects.exclude(course_id=course_id)  # Lấy tất cả khóa học ngoại trừ khóa học hiện tại
 
 
     context = {
