@@ -13,6 +13,27 @@ def course(request):
 
     return render(request, 'courses.html', context)
 
+'''
+@login_required
+def course(request):
+    user = request.user
+    try:
+        user_profile = UserProfile.objects.get(account__username=user.username)
+    except UserProfile.DoesNotExist:
+        classes = []
+    else:
+        user_classes = UserClass.objects.filter(user=user_profile)
+        classes = [uc.class_instance for uc in user_classes]
+
+    courses = Course.objects.all()
+
+    context = {
+        'courses': courses,
+        'classes': classes,
+    }
+
+    return render(request, 'courses.html', context)
+'''
 
 def course_detail(request, course_id):
     course = get_object_or_404(Course, course_id=course_id)

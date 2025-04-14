@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Mr Lam English - Khóa học{% endblock %}
 
@@ -15,7 +16,7 @@
 
     .course-card {
         flex: 1 1 280px;
-        max-width: 320px;
+        max-width: 250px;
         background-color: #fff;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -29,7 +30,7 @@
 
     .course-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.01);
     }
 
     .course-title {
@@ -83,31 +84,36 @@
         font-size: 26px;
         font-weight: bold;
         text-decoration: underline;
-        color: black;
+        color: red;
         margin-left: 40px;
         text-decoration-color: red;
+    }
+    .course-card img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 </style>
 
 <div class="courses-container">
     <h2 class="section-title">My Class</h2>
     {% for class in classes %}
-    <div class="course-card">
+    <div class="course-card" style="height: 100px;">
         <h3 class="course-title">{{ class.class_name }}</h3>
         <p class="course-teacher">Ms. {{ course.teacher_name }}</p>
         <p class="course-teacher">Thời gian: {{ class.begin_time }}</p>
         <p class="course-teacher">Thời lượng: ⏰ 30 giờ </p>
-        <div class="course-info">
-            <span>📄 25 buổi học</span>
-            <span>⏰ 30 giờ</span>
-        </div>
-        <a href="#" class="register-btn">Tiếp tục học</a>
+        <p class="course-teacher">📄 25 buổi học</p>
+        <a href="#" class="register-btn">Tiếp tục học </a>
     </div>
     {% endfor %}
 
     <h2 class="section-title">English Course</h2>
     {% for course in courses %}
     <div class="course-card">
+        <img src="{% static 'images/course.png' %}" alt="Course Image" class="course-image">
         <h3 class="course-title">{{ course.course_name }}</h3>
         <p class="course-teacher">Ms. {{ course.teacher_name }}</p>
         <div class="course-info">
