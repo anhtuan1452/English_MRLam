@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
-from english.models import UserProfile, UserClass, Account
+from english.models import ACCOUNT, USER_CLASS
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
@@ -12,13 +12,13 @@ def user_list(request):
     search_query = request.GET.get('search', '')
     if search_query:
         # Tìm kiếm theo first_name hoặc last_name
-        users = UserProfile.objects.filter(
+        users = ACCOUNT.objects.filter(
             Q(first_name__icontains=search_query) |
             Q(last_name__icontains=search_query)
         )
     else:
         # Lấy tất cả người dùng
-        users = UserProfile.objects.all()
+        users = ACCOUNT.objects.all()
 
     context = {
         'users': users,
@@ -29,10 +29,10 @@ def user_list(request):
 
 def user_detail(request, user_id):
     # Lấy thông tin chi tiết của người dùng
-    user = get_object_or_404(UserProfile, user_id=user_id)
+    user = get_object_or_404(ACCOUNT, acc_id=user_id)
 
     # Lấy danh sách lớp học của người dùng
-    user_classes = UserClass.objects.filter(user=user)
+    user_classes = USER_CLASS.objects.filter(user=user)
 
     context = {
         'user': user,
@@ -55,14 +55,14 @@ def user_create(request):
         sex = request.POST.get('sex')
 
         # Tạo tài khoản mới
-        account = Account.objects.create(
+        account = ACCOUNT.objects.create(
             username=username,
             password=password,  # Trong thực tế, bạn nên mã hóa mật khẩu
             role=role
         )
 
         # Tạo hồ sơ người dùng
-        user = UserProfile.objects.create(
+        user = ACCOUNT.objects.create(
             email=email,
             first_name=first_name,
             last_name=last_name,
@@ -77,7 +77,7 @@ def user_create(request):
 
 
 def user_edit(request, user_id):
-    user = get_object_or_404(UserProfile, user_id=user_id)
+    user = get_object_or_404(ACCOUNT, user_id=user_id)
 
     if request.method == 'POST':
         # Cập nhật thông tin người dùng
@@ -109,7 +109,7 @@ def user_edit(request, user_id):
 
 
 def user_delete(request, user_id):
-    user = get_object_or_404(UserProfile, user_id=user_id)
+    user = get_object_or_404(ACCOUNT, user_id=user_id)
 
     if request.method == 'POST':
         # Xóa tài khoản sẽ tự động xóa hồ sơ người dùng do có khóa ngoại
