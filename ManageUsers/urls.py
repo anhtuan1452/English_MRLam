@@ -1,5 +1,5 @@
 from django.urls import path
-from ListUser_admin import views
+from ManageUsers import views
 
 urlpatterns = [
     path('user_list/', views.user_list, name='user_list'),

@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from english.models import Course, Lesson
+
 
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
-from english.models import Course, Lesson, Exercise, LessonDetail
+from english.models import COURSE, LESSON, EXERCISE, LESSON_DETAIL
 
 def student_submission(request, lesson_id):
     # # Lấy khóa học và bài học
@@ -14,17 +14,17 @@ def student_submission(request, lesson_id):
     # exercise = Exercise.objects.filter(lesson_id=lesson.lesson_detail_id).first()
 
     # Lấy bài học và kiểm tra tồn tại
-    lesson = get_object_or_404(Lesson, pk=lesson_id)
+    lesson = get_object_or_404(LESSON, pk=lesson_id)
     course = lesson.course  # Lấy course từ lesson
 
     # Lấy LessonDetail đầu tiên liên quan đến lesson (nếu có nhiều class)
-    lesson_detail = LessonDetail.objects.filter(lesson=lesson).first()
+    lesson_detail = LESSON_DETAIL.objects.filter(lesson=lesson).first()
 
     if not lesson_detail:
         return render(request, 'error.html', {'message': 'Chi tiết bài học chưa được cấu hình.'})
 
     # Lấy bài tập liên quan đến LessonDetail
-    exercise = Exercise.objects.filter(lesson_detail=lesson_detail).first()
+    exercise = EXERCISE.objects.filter(lesson_detail=lesson_detail).first()
     if not exercise:
         return render(request, 'error.html', {'message': 'Bài tập cho bài học này chưa được tạo.'})
 
@@ -65,10 +65,10 @@ def student_submission(request, lesson_id):
 
 def student_homework(request):
     # Lấy khóa học theo course_id
-    course = get_object_or_404(Course, pk=1)
+    course = get_object_or_404(COURSE, pk=1)
 
     # Lấy tất cả các bài học thuộc khóa học này
-    lessons = Lesson.objects.filter(course=course).order_by('lesson_id')
+    lessons = LESSON.objects.filter(course=course).order_by('lesson_id')
 
     # Chuẩn bị dữ liệu đơn giản cho template
     lesson_data = []
@@ -90,7 +90,7 @@ def student_homework(request):
 # from english.models import Lesson, Course
 #
 #
-# def myclass(request,course_id):
+# def MyClass(request,course_id):
 #     # Lấy danh sách bài học từ cơ sở dữ liệu
 #     course = Course.objects.get(course_id=course_id)
 #     lessons = Lesson.objects.filter(course=course)
@@ -112,7 +112,7 @@ def student_homework(request):
 #     #     })
 #
 #     # Truyền dữ liệu vào context để hiển thị trong template
-#     return render(request, 'myclass.html', {'lessons': lessons,'course':course})
+#     return render(request, 'MyClass.html', {'lessons': lessons,'course':course})
 
 
 # from django.shortcuts import render, get_object_or_404, redirect
