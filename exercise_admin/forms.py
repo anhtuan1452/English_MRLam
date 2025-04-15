@@ -1,10 +1,10 @@
 from django import forms
-from english.models import EXERCISE, COURSE, LESSON
+from english.models import Exercise, Course, Lesson
 
 
 class KhoaHocForm(forms.ModelForm):
     class Meta:
-        model = COURSE
+        model = Course
         fields = ['course_name']
         widgets = {
             'course_name': forms.TextInput(attrs={
@@ -14,7 +14,7 @@ class KhoaHocForm(forms.ModelForm):
         }
 class BuoiHocForm(forms.ModelForm):
     class Meta:
-        model = LESSON
+        model = Lesson
         fields = ['lesson_name', 'description', 'lesson_file', 'exercise_file']
         widgets = {
             'lesson_name': forms.TextInput(attrs={
