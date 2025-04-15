@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* Reset và font chữ */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+/* Container chính */
+.container {
+  width: 2000px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-top: 45px;
+}
+
+/* Tiêu đề chung */
+.page-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2c3e50;
+}
+
+.page-subtitle {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #7f8c8d;
+}
+
+/* Mỗi buổi học */
+.lesson-section {
+width: 90%; /* Chiếm 90% độ rộng phần tử cha */
+  max-width: 1200px; /* Giới hạn tối đa */
+  margin: 0 auto; /* Căn giữa */
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 2px solid #bdc3c7; /* Dày hơn và màu tối hơn */
+  padding-bottom: 25px;
+  margin-bottom: 25px;
+}
+
+.lesson-section:last-child {
+  border-bottom: none;
+}
+
+/* Tiêu đề buổi học */
+.lesson-header {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+/* Danh sách các mục */
+.task-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.task-item {
+  margin-bottom: 10px;
+  padding: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Link tài liệu */
+.material-link {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.material-link:hover {
+  text-decoration: underline;
+}
+
+.material-link.disabled {
+  color: #95a5a6;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* Nút action */
+.task-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.request-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.request-btn:hover {
+  background-color: #c0392b;
+}
+
+.reschedule-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.reschedule-btn:hover {
+  background-color: #2980b9;
+}
+</style>
+<div class="container">
+  <div class="lesson-section">
+  <h1 class="page-title">Bài tập về nhà</h1>
+  <p class="page-subtitle">Học viên làm bài tập sau khi kết thúc mỗi buổi học</p>
+  </div>
+  {% for lesson in lessons %}
+  <div class="lesson-section">
+    <h2 class="lesson-header">Buổi {{ lesson.lesson_id }}</h2>
+
+    <ul class="task-list">
+      <!-- Dòng tài liệu - chỉ là link -->
+      <li class="task-item">
+
+        <a href="{{ lesson.lesson_file }}"
+           class="material-link {% if lesson.lesson_file == '#' %}disabled{% endif %}"><span class="pdf-icon">📕</span>
+          Tài liệu học buổi {{ lesson.lesson_id }}
+        </a>
+        <div class="task-actions">
+          <button class="action-btn request-btn">Xin nghỉ</button>
+          <button class="action-btn reschedule-btn">Học bù</button>
+        </div>
+      </li>
+
+      <!-- Dòng bài tập - có 2 nút -->
+      <li class="task-item">
+        <a href="{{ lesson.exercise_file }}"
+           class="material-link {% if lesson.exercise_file == '#' %}disabled{% endif %}"><span class="pdf-icon">📕</span>
+          Bài tập buổi {{ lesson.lesson_id }}
+        </a>
+      </li>
+
+      <!-- Dòng nộp bài - chỉ là text -->
+      <li class="task-item">
+        <a href="{% url 'student_submission' lesson.lesson_id %}" class="material-link"><span class="folder-icon">📁</span>
+          Nộp bài tập buổi {{ lesson.lesson_id }}
+        </a>
+      </li>
+    </ul>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
