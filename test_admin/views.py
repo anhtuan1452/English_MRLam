@@ -2,21 +2,21 @@ from django.shortcuts import render, redirect,get_object_or_404
 
 
 # Create your views here.
-from english.models import Test, Question
+from english.models import TEST, QUESTION
 from .forms import TestForm, QuestionForm
 
 
 def test_list(request):
-    tests = Test.objects.all()  # Get all tests from the database
+    tests = TEST.objects.all()  # Get all tests from the database
     return render(request, 'test_list.html', {'tests': tests})
 
 
 def test_detail(request, test_id):
     # Lấy bài kiểm tra theo test_id
-    test = get_object_or_404(Test, pk=test_id)
+    test = get_object_or_404(TEST, pk=test_id)
 
     # Lấy tất cả các câu hỏi thuộc bài kiểm tra này
-    questions = Question.objects.filter(test=test)
+    questions = QUESTION.objects.filter(test=test)
 
     # Nếu form được gửi lên, bạn có thể xử lý ở đây (tùy vào logic của bạn)
     if request.method == 'POST':
@@ -48,12 +48,12 @@ def test_add(request):
         time_limit = request.POST.get('time_limit')
 
         # Tạo bài kiểm tra mới
-        test = Test.objects.create(test_name=test_name, time=time_limit)
+        test = TEST.objects.create(test_name=test_name, time=time_limit)
 
         # Lưu câu hỏi
         for i in range(int(request.POST.get('num_questions'))):
             question_text = request.POST.get(f'question_text_{i}')
-            question = Question.objects.create(test=test, question_text=question_text)
+            question = QUESTION.objects.create(test=test, question_text=question_text)
             # Thêm các lựa chọn câu hỏi
             for j in range(int(request.POST.get(f'num_choices_{i}'))):
                 choice_text = request.POST.get(f'choice_{i}_{j}')
@@ -67,12 +67,12 @@ def test_add(request):
 
 
 from django.shortcuts import render
-from english.models import Test, Result, UserProfile
+from english.models import  RESULT, ACCOUNT
 
 
 def test_results_view(request):
     # Get all results with related test and user information
-    results = Result.objects.select_related('test', 'user').all()
+    results = RESULT.objects.select_related('test', 'user').all()
 
     # Prepare data for the template
     test_results = []
