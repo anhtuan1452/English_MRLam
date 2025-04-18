@@ -2,12 +2,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from .forms import DocumentSearchForm
-from english.models import Document  # Adjust this import to match your actual model location
+from english.models import DOCUMENT
 
 
 def materials_list(request):
     """View to display all free materials/documents"""
-    documents = Document.objects.all()
+    documents = DOCUMENT.objects.all()
     search_form = DocumentSearchForm(request.GET)
 
     # Handle search
@@ -15,8 +15,7 @@ def materials_list(request):
         query = search_form.cleaned_data['search']
         documents = documents.filter(doc_name__icontains=query)
 
-    # Group documents by category (for display purposes)
-    # Since we don't have a category field, we'll categorize based on document name
+
     grammar_docs = documents.filter(
         Q(doc_name__icontains='Document 2') |
         Q(doc_name__icontains='Document 1') |
@@ -60,7 +59,7 @@ def materials_list(request):
 
 def materials_detail(request, doc_id):
     """View to display details of a specific document"""
-    document = get_object_or_404(Document, doc_id=doc_id)
+    document = get_object_or_404(DOCUMENT, doc_id=doc_id)
 
     # For demonstration, we'll create some dummy content based on the document name
     if 'present tense' in document.doc_name.lower() or 'hiện tại đơn' in document.doc_name.lower():

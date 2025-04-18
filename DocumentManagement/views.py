@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import DocumentForm
-from english.models import Document
+from english.models import DOCUMENT
 import os
 
 
 def document_list(request):
-    documents = Document.objects.all().order_by('-doc_id')
+    documents = DOCUMENT.objects.all().order_by('-doc_id')
     context = {
         'documents': documents,
         'active_menu': 'documents',
@@ -16,7 +16,7 @@ def document_list(request):
 
 
 def document_detail(request, doc_id):
-    document = get_object_or_404(Document, doc_id=doc_id)
+    document = get_object_or_404(DOCUMENT, doc_id=doc_id)
     context = {
         'document': document,
         'active_menu': 'documents',
@@ -55,7 +55,7 @@ def add_document(request):
 
 
 def edit_document(request, doc_id):
-    document = get_object_or_404(Document, doc_id=doc_id)
+    document = get_object_or_404(DOCUMENT, doc_id=doc_id)
 
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES, instance=document)
@@ -86,7 +86,7 @@ def edit_document(request, doc_id):
 
 
 def delete_document(request, doc_id):
-    document = get_object_or_404(Document, doc_id=doc_id)
+    document = get_object_or_404(DOCUMENT, doc_id=doc_id)
 
     if request.method == 'POST':
         document_name = document.doc_name
@@ -102,7 +102,7 @@ def delete_document(request, doc_id):
 
 
 def download_document(request, doc_id):
-    document = get_object_or_404(Document, doc_id=doc_id)
+    document = get_object_or_404(DOCUMENT, doc_id=doc_id)
 
     if document.doc_file and hasattr(document.doc_file, 'url'):
         return redirect(document.doc_file.url)

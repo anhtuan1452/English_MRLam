@@ -1,14 +1,14 @@
 from django import forms
-from english.models import Test, Question
+from english.models import TEST,QUESTION
 
 # Form để lấy bài kiểm tra
 class TestForm(forms.ModelForm):
     class Meta:
-        model = Test
+        model = TEST
         fields = ['test_name', 'test_description', 'time']
 
 # Form để lấy câu hỏi và đáp án
 class QuestionForm(forms.ModelForm):
     class Meta:
-        model = Question
+        model = QUESTION
         fields = ['question_text', 'answer', 'correct_answer']

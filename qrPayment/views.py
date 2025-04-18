@@ -2,7 +2,7 @@ import base64
 
 from django.shortcuts import render
 
-from english.models import Payment
+from english.models import PAYMENT
 
 
 # Create your views here.
@@ -10,7 +10,7 @@ def qr_payment(request):
     return render(request, 'qr_payment.html')
 
 def payment_list(request):
-    payments = Payment.objects.select_related('course')
+    payments = PAYMENT.objects.select_related('course')
 
     # Chuyển QR binary sang base64 để hiển thị ảnh
     for p in payments:

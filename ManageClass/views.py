@@ -1,14 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from english.models import Class, UserClass, UserProfile, Course
+from english.models import CLASS, USER_CLASS, ACCOUNT, COURSE
 from .forms import ClassForm  # Nếu bạn tạo form cho thêm lớp
 
 def class_list(request):
-    classes = Class.objects.all()
+    classes = CLASS.objects.all()
     return render(request, 'class_list.html', {'classes': classes})
 
 def class_detail(request, class_id):
-    class_instance = get_object_or_404(Class, pk=class_id)
-    user_classes = UserClass.objects.filter(class_instance=class_instance).select_related('user')
+    class_instance = get_object_or_404(CLASS, pk=class_id)
+    user_classes = USER_CLASS.objects.filter(class_instance=class_instance).select_related('user')
     return render(request, 'class_detail.html', {
         'class_instance': class_instance,
         'user_classes': user_classes
