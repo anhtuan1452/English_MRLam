@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from english.models import Class, UserClass, UserProfile, Course
+from english.models import CLASS, USER_CLASS, ACCOUNT, COURSE
 from .forms import ClassForm  # Nếu bạn tạo form cho thêm lớp
 
 def class_list(request):

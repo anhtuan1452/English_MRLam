@@ -1,5 +1,5 @@
 from django import forms
-from english.models import Document  # Assuming models are in the same app
+from english.models import DOCUMENT  # Assuming models are in the same app
 
 
 class DocumentForm(forms.ModelForm):
@@ -15,7 +15,7 @@ class DocumentForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Document
+        model = DOCUMENT
         fields = ['doc_name', 'doc_file']
         widgets = {
             'doc_name': forms.TextInput(attrs={

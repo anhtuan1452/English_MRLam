@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from .forms import DocumentSearchForm
-from english.models import Document  # Adjust this import to match your actual model location
+from english.models import DOCUMENT
 
 
 def materials_list(request):
@@ -15,8 +15,7 @@ def materials_list(request):
         query = search_form.cleaned_data['search']
         documents = documents.filter(doc_name__icontains=query)
 
-    # Group documents by category (for display purposes)
-    # Since we don't have a category field, we'll categorize based on document name
+
     grammar_docs = documents.filter(
         Q(doc_name__icontains='Document 2') |
         Q(doc_name__icontains='Document 1') |
