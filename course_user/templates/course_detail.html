@@ -83,8 +83,6 @@
         padding-bottom: 10px;
         scroll-snap-type: x mandatory;
         max-width: 100%;
-        justify-content: flex-start;
-        align-items: stretch;
     }
 
     .course-scroll::-webkit-scrollbar {
@@ -97,20 +95,30 @@
     }
 
     .course-card {
-        max-width: 225px;
+        min-width: 225px;
+        max-width: 100%;
         flex: 0 0 auto;
         scroll-snap-align: start;
         border: 1px solid #e5e7eb;
         border-radius: 8px;
         padding: 15px;
         background-color: white;
-        display: flex;
+        text-align: center;
         flex-direction: column;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        text-align: left;
-        align-items: flex-start;
+
     }
-     .course-card .price {
+
+    .label-new {
+        background-color: #f97316;
+        color: white;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+
+    .course-card .price {
         color: #dc2626;
         font-weight: bold;
         margin: 8px 0;
@@ -120,87 +128,17 @@
         background-color: #dc2626;
         color: white;
         padding: 8px 16px;
-        border-radius: 10px;
+        border-radius: 20px;
         font-size: 14px;
         text-decoration: none;
         display: inline-block;
-        align-self: center;
-        width: 100%;
-        text-align: center;
-    }
-
-    .price-box {
-        background: #fff;
-        padding: 24px;
-        border-radius: 10px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-        text-align: center;
-        transition: all 0.3s ease;
-        border: none;
-        min-height: 250px;
-        margin-bottom: 20px;
-    }
-    .price-box img {
-        width: 100%;
-        height: auto;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .price-box:hover {
-        transform: translateY(-4px);
-    }
-
-    .price-box h2 {
-        font-size: 22px;
-        color: #92400e;
-        margin-bottom: 10px;
-    }
-
-    .price-main {
-        font-size: 28px;
-
-        color: #dc2626;
-        margin-bottom: 12px;
-    }
-
-    .price-box .btn-register {
-        background-color: #dc2626;
-        color: #fff;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 15px;
-        border: none;
-        text-decoration: none;
-        display: inline-block;
-        transition: background-color 0.3s ease;
-        margin-top: 10px;
-    }
-
-    .price-box .btn-register:hover {
-        background-color: #b91c1c;
-    }
-
-    .instructor-box {
-        background-color: #f9fafb;
-        padding: 24px;
-        border-radius: 16px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
-    }
-
-    .instructor-box h2 {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 16px;
-        color: #1f2937;
     }
 
     .instructor-info {
         display: flex;
+        gap: 15px;
         align-items: center;
-        gap: 16px;
+        flex-wrap: wrap;
     }
 
     .instructor-info img {
@@ -208,21 +146,68 @@
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 100%; /* ✅ Ngăn ảnh tràn */
     }
 
     .instructor-details {
         font-size: 14px;
         color: #374151;
-        line-height: 1.5;
+        word-break: break-word;
     }
 
-    .course-card img {
-        width: 100%;
-        height: auto;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    .price-box {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+    }
+
+    .price-box h2 {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 16px;
+        color: #1f2937;
+    }
+
+    .price-main {
+        font-size: 24px;
+        font-weight: bold;
+        color: #dc2626;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .price-old {
+        text-decoration: line-through;
+        color: #9ca3af;
+        font-size: 16px;
+        margin-right: 8px;
+    }
+
+    .price-discount {
+        background-color: #fef2f2;
+        color: #dc2626;
+        font-size: 14px;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    .price-box .btn-register {
+        display: inline-block;
+        margin-top: 20px;
+        background-color: #dc2626;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .price-box .btn-register:hover {
+        background-color: #b91c1c;
     }
 
     @media (max-width: 900px) {
@@ -276,7 +261,7 @@
                     {% for other_course in courses %}
                         {% if course_id != course.course_id %}
                             <div class="course-card">
-                                <img src="{% static 'images/course.png' %}" alt="Course Image" class="course-image">
+                                <div class="label-new">Người mới</div>
                                 <h3>{{ course.course_name }}</h3>
                                 <p>GV: {{ course.teacher_name }}</p>
                                 <p class="price">{{ course.price|floatformat:0 }} vnđ</p>
@@ -291,7 +276,6 @@
         <!-- Right column -->
         <div class="right-column">
             <div class="price-box">
-                <img src="{% static 'images/course.png' %}" alt="Course Image" class="course-image">
                 <h2>Học phí</h2>
                 <span class="price-main">{{ course.price|floatformat:0 }} VNĐ</span>
                 <a href="{% url 'payment' %}" class="btn-register">ĐĂNG KÝ</a>
