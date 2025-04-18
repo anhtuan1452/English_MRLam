@@ -104,6 +104,7 @@
     </script>
 
     <!-- Footer -->
+    {% block footer %}
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-left">
@@ -138,6 +139,7 @@
             </div>
         </div>
     </footer>
+    {% endblock %}
     <script>
       const toggleBtn = document.getElementById("profileToggle");
       const dropdownMenu = document.getElementById("profileMenu");

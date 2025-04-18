@@ -5,125 +5,144 @@
 {% block content %}
 <style>
     /* Parent container for the title and payment content */
-.main-container {
-    display: flex;
-    flex-direction: column; /* Stack title and payment content vertically */
-    align-items: flex-start; /* Align items to the left */
-    margin-top: 20px;
-    margin-bottom: 50px;
-    gap: 20px; /* Space between title and payment content */
-}
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 70px;
+        margin-bottom: 50px;
+        gap: 20px;
+        width: 100%;
+        padding: 10px 20px;
+        box-sizing: border-box;
+    }
 
-/* Title at the top-left of the page */
-.page-title {
-    font-size: 30px;
-    font-weight: bold;
-    margin-left: 30px;
-    margin-top: 70px;
-}
+    /* Title at the top-left of the page */
+    .page-title {
+        font-size: 30px;
+        font-weight: bold;
+        margin-left: 10px;
+        margin-top: 20px;
+        width: 100%;
+    }
 
-/* Container for payment page */
-.payment-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    width: 100%; /* Ensures the container takes full width */
-    max-width: 2000px; /* Make the container wider, adjust as needed */
-    margin-left: auto;
-    margin-right: auto; /* Centers the container horizontally */
-    padding: 0 20px; /* Adds padding to the sides */
-}
+    /* Container for payment page */
+    .payment-container {
+        display: flex;
+        flex-wrap: wrap; /* Allow wrapping on small screens */
+        gap: 20px;
+        width: 100%;
+        max-width: 1320px;
+        margin: 0 auto;
+    }
 
-/* Style for the left form (name, phone, schedule) */
-.payment-left {
-    flex: 1;  /* Take up available space */
-    width: 1000px; /* Increased width for the left section */
-    max-width:60%;
-    padding: 20px;
-    margin-left: 30px;
+    /* Style for the left form (name, phone, schedule) */
+    .payment-left {
+        flex: 1;
+        min-width: 300px; /* Minimum width before wrapping */
+        flex-basis: 60%; /* Take 60% of available space */
+        padding: 20px;
+        background-color: #f8f8f8;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-    background-color: #f8f8f8; /* Soft background for form */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-}
+    .payment-left h3 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
 
-.payment-left h3 {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-.form-group {
-    margin-bottom: 20px;
-}
+    input, select {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        margin-top: 8px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: border 0.3s;
+        box-sizing: border-box;
+    }
 
-input, select {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    margin-top: 8px;
-    border: 1px solid #ddd;
-    border-radius: 8px; /* Rounded corners for inputs */
-    transition: border 0.3s;
-}
+    input:focus, select:focus {
+        border-color: #ff4c4c;
+    }
 
-input:focus, select:focus {
-    border-color: #ff4c4c; /* Highlight border color when focused */
-}
+    .payment-btn {
+        background-color: #ff4c4c;
+        color: white;
+        padding: 15px 20px;
+        font-size: 16px;
+        border: none;
+        width: 100%;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin: 20px 0;
+    }
 
-.payment-btn {
-    background-color: #ff4c4c;
-    color: white;
-    padding: 15px 20px;
-    font-size: 16px;
-    border: none;
-    width: 90%;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-left:20px;
-    margin-right:20px;
-}
+    .payment-btn:hover {
+        background-color: #d33d3d;
+    }
 
-.payment-btn:hover {
-    background-color: #d33d3d;
-}
+    /* Style for the right course info (image and price) */
+    .payment-right {
+        flex: 1;
+        min-width: 300px; /* Minimum width before wrapping */
+        flex-basis: 35%; /* Take 35% of available space (60% + 35% + gap = ~100%) */
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
 
-/* Style for the right course info (image and price) */
-.payment-right {
-    flex: 1;  /* Take up remaining space */
-    /* Increased width for the right section */
-    max-width:35%;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    text-align: center;
-    margin-right: 30px;
-}
+    .course-info {
+        margin-top: 20px;
+    }
 
-.course-info {
-    margin-top: 20px;
-}
+    .course-img {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        object-fit: contain;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
 
-.course-img {
-    width: 100%;
-    height: 70%;
-    max-width: 400px;  /* Limit image width */
-    margin-bottom: 20px;
-    border-radius: 10px; /* Rounded corners for the image */
-}
+    .course-name {
+        font-size: 22px;
+        margin-top: 10px;
+        font-weight: bold;
+    }
 
-.course-name {
-    font-size: 22px;
-    margin-top: 10px;
-    font-weight: bold;
-}
+    .course-price {
+        font-size: 18px;
+        color: #ff4c4c;
+        margin-top: 5px;
+    }
 
-.course-price {
-    font-size: 18px;
-    color: #ff4c4c;
-    margin-top: 5px;
-}
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .payment-container {
+            flex-direction: column;
+        }
 
+        .payment-left, .payment-right {
+            flex-basis: 100%; /* Take full width on small screens */
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .page-title {
+            margin-left: 0;
+            text-align: center;
+        }
+    }
 </style>
 
 <!-- Parent container to hold the title and payment content -->
@@ -158,7 +177,7 @@ input:focus, select:focus {
                     </select>
                 </div>
 
-
+                <button type="submit" class="payment-btn">Thanh Toán</button>
             </form>
         </div>
 
@@ -167,9 +186,6 @@ input:focus, select:focus {
                 <img src="{% static 'images/course.png' %}" alt="Course Image" class="course-img">
                 <p class="course-name">{{ course.course_name }}</p>
                 <p class="course-price">{{ course.price }} VND</p>
-                <div class="form-group">
-                    <button type="submit" class="payment-btn">Thanh Toán</button>
-                </div>
             </div>
         </div>
     </div>

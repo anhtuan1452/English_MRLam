@@ -2,237 +2,451 @@
 {% load static %}
 {% block title %}Quản Lý Thông Tin Cá Nhân{% endblock %}
 {% block styles %}
-<link rel="stylesheet" href="{% static 'styles.css' %}">
+<style>
+/* Reset mặc định */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Fixed Header */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+/* Profile page container */
+.profile-page-container {
+    flex: 1;
+    display: flex;
+    margin-top: 60px; /* Space for header */
+    height: calc(100vh - 60px); /* Full viewport height minus header */
+}
+
+/* Sidebar and Footer Wrapper - Fixed */
+.sidebar-footer-wrapper {
+    width: 280px;
+    position: fixed;
+    top: 60px; /* Below header */
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    background: #f8f9fa; /* Match sidebar background */
+}
+
+/* Sidebar */
+.sidebar {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto; /* Scroll sidebar if content overflows */
+    border-right: 1px solid #e0e0e0;
+}
+
+/* Footer */
+.footer {
+    background: #003366;
+    color: #ffffff;
+    padding: 20px;
+    border-top: 1px solid #e0e0e0;
+    width: 100%;
+    height: 80px; /* Fixed height for footer */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Main content - Scrollable */
+.main-content-wrapper {
+    flex: 1;
+    margin-left: 280px; /* Space for sidebar and footer wrapper */
+    overflow-y: auto; /* Only content scrolls */
+    height: calc(100vh - 60px); /* Fit below header */
+    padding: 20px;
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+    min-height: 100%; /* Ensure content takes full height */
+}
+
+/* Profile info styles */
+.profile-info {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 15px;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.nav-item {
+    padding: 12px 15px;
+    text-align: left;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.3s;
+}
+
+.nav-item:hover {
+    background: #e9ecef;
+}
+
+.nav-item.active {
+    background: #ff4c4c;
+    color: white;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.info-list {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.info-list li {
+    list-style-type: disc;
+    margin-left: 20px;
+    padding: 5px 0;
+}
+
+/* Form styles */
+.form {
+    max-width: 800px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper::after {
+    content: "▼";
+    font-size: 12px;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Avatar section */
+.avatar-section {
+    margin: 40px 0;
+}
+
+.section-title {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.avatar-container {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.avatar-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Button styles */
+.btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-outline {
+    border: 1px solid #ff4c4c;
+    background: transparent;
+    color: #ff4c4c;
+}
+
+.btn-outline:hover {
+    background: #ff4c4c;
+    color: white;
+}
+
+.btn-red {
+    background: #ff4c4c;
+    color: white;
+    border: none;
+}
+
+.btn-red:hover {
+    background: #d33d3d;
+}
+
+.form-actions {
+    margin-top: 30px;
+    text-align: right;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .profile-page-container {
+        flex-direction: column;
+    }
+
+    .sidebar-footer-wrapper {
+        width: 100%;
+        position: static;
+        height: auto;
+    }
+
+    .sidebar {
+        padding: 15px;
+        height: auto;
+    }
+
+    .footer {
+        height: auto;
+        padding: 15px;
+    }
+
+    .main-content-wrapper {
+        margin-left: 0;
+        padding: 20px;
+        height: auto; /* Adjust for responsive */
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .avatar-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
 {% endblock %}
+
 {% block content %}
-<main class="main-content">
-    <div class="container">
-        <div class="profile-layout">
-            {% block scripts %}
-            <script src="{% static 'script.js' %}"></script>
-            {% endblock %}
-            <!-- Mobile menu toggle -->
-            <div class="mobile-menu-toggle">
-                <button id="menuToggle">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                    <span>Menu</span>
-                </button>
+<div class="profile-page-container">
+    <!-- Sidebar and Footer Wrapper -->
+    <div class="sidebar-footer-wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="profile-info">
+                <div class="avatar">
+                    <img src="https://via.placeholder.com/96" alt="Đỗ Văn Vũ">
+                </div>
+                <h2 class="profile-name">Đỗ Văn Vũ</h2>
             </div>
 
-            <!-- Sidebar -->
-            <div class="sidebar" id="sidebar">
-                <div class="profile-info">
-                    <div class="avatar">
-                        <img src="https://via.placeholder.com/96" alt="Đỗ Văn Vũ">
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="personal-info">Chỉnh sửa thông tin cá nhân</button>
+                <button class="nav-item" data-tab="password">Mật khẩu</button>
+                <button class="nav-item" data-tab="email">Email</button>
+                <button class="nav-item" data-tab="classes">Lớp học của tôi</button>
+            </nav>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-left">
+                    <p class="copyright">Copyright ©MR Lam. All Rights Reserved</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Main content with single scroll -->
+    <div class="main-content-wrapper">
+        <div class="main-content">
+            <!-- Personal Info Tab -->
+            <div class="tab-content active" id="personal-info">
+                <h1 class="page-title">Thông tin cá nhân</h1>
+
+                <ul class="info-list">
+                    <li>Không được để trống trường nào.</li>
+                    <li>Ảnh phải là định dạng PNG, JPG.</li>
+                </ul>
+
+                <form class="form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">Họ và tên đệm</label>
+                            <input type="text" id="firstName" value="Đỗ Văn">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName">Tên</label>
+                            <input type="text" id="lastName" value="Vũ">
+                        </div>
                     </div>
-                    <h2 class="profile-name">Đỗ Văn Vũ</h2>
-                </div>
 
-                <nav class="sidebar-nav">
-                    <button class="nav-item active" data-tab="personal-info">Chỉnh sửa thông tin cá nhân</button>
-                    <button class="nav-item" data-tab="password">Mật khẩu</button>
-                    <button class="nav-item" data-tab="email">Email</button>
-                    <button class="nav-item" data-tab="classes">Lớp học của tôi</button>
-                </nav>
-            </div>
-
-            <!-- Main content -->
-            <div class="main-content">
-                <!-- Personal Info Tab -->
-                <div class="tab-content active" id="personal-info">
-                    <h1 class="page-title">Thông tin cá nhân</h1>
-
-                    <ul class="info-list">
-                        <li>Không được để trống trường này.</li>
-                        <li>Ảnh phải là định dạng PNG, JPG.</li>
-                    </ul>
-
-                    <form class="form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstName">Họ và tên đệm</label>
-                                <input type="text" id="firstName" value="Đỗ Văn">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="lastName">Tên</label>
-                                <input type="text" id="lastName" value="Vũ">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="birthDate">Ngày sinh</label>
-                                <input type="text" id="birthDate" value="01/01/2004">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="gender">Giới tính</label>
-                                <div class="select-wrapper">
-                                    <select id="gender">
-                                        <option value="male">Nam</option>
-                                        <option value="female">Nữ</option>
-                                        <option value="other">Khác</option>
-                                    </select>
-                                </div>
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="birthDate">Ngày sinh</label>
+                            <input type="text" id="birthDate" value="01/01/2004">
                         </div>
 
                         <div class="form-group">
-                            <label for="description">Mô tả</label>
-                            <textarea id="description" placeholder="Mô tả của bạn"></textarea>
-                        </div>
-
-                        <div class="avatar-section">
-                            <h2 class="section-title">Ảnh đại diện</h2>
-                            <div class="avatar-container">
-                                <div class="avatar-preview">
-                                    <img src="https://via.placeholder.com/300x200" alt="Ảnh đại diện">
-                                </div>
-                                <div class="avatar-actions">
-                                    <button type="button" class="btn btn-outline">Tải ảnh lên</button>
-                                    <button type="button" class="btn btn-red">Lưu Ảnh</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-red">Lưu</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Password Tab -->
-                <div class="tab-content" id="password">
-                    <h1 class="page-title">Đổi mật khẩu</h1>
-
-                    <ul class="info-list">
-                        <li>Mật khẩu ít nhất 8 ký tự bao gồm chữ, số, ký tự đặc biệt.</li>
-                        <li>Không được để trống trường nào.</li>
-                    </ul>
-
-                    <form class="form">
-                        <div class="form-group">
-                            <label for="currentPassword">Mật khẩu hiện tại</label>
-                            <input type="password" id="currentPassword">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="newPassword">Mật khẩu mới</label>
-                            <input type="password" id="newPassword">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="confirmPassword">Xác nhận mật khẩu</label>
-                            <input type="password" id="confirmPassword">
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-red">Lưu</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Email Tab -->
-                <div class="tab-content" id="email">
-                    <h1 class="page-title">Chỉnh sửa Email</h1>
-
-                    <ul class="info-list">
-                        <li>Tên đăng nhập không được thay đổi.</li>
-                        <li>Thiết lập đăng ký lần hệ thống.</li>
-                        <li>Email phải có dạng @gmail.com.</li>
-                    </ul>
-
-                    <form class="form">
-                        <div class="form-group">
-                            <label for="username">Tên đăng nhập</label>
-                            <input type="text" id="username" value="Dvv179" disabled>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <div class="input-group">
-                                <input type="email" id="emailL" value="Dvv177@gmail.com">
-                                <button type="button" class="btn btn-outline">Lấy mã</button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="verificationCode">Mã xác nhận</label>
-                            <div class="input-group">
-                                <input type="text" id="verificationCode" placeholder="Nhập mã xác nhận">
-                                <button type="submit" class="btn btn-red">Xác nhận</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Classes Tab -->
-                <div class="tab-content" id="classes">
-                    <h1 class="page-title">Danh sách lớp học đã đăng ký</h1>
-
-                    <ul class="info-list">
-                        <li>Danh sách lớp học và bài tập sẽ được hiển thị ở đây.</li>
-                    </ul>
-
-                    <div class="class-grid">
-                        <div class="class-card">
-                            <div class="class-header">
-                                KN241 - T5 - CN
-                            </div>
-                            <div class="class-sessions">
-                                <div class="session-item">
-                                    <span>Buổi 1 - Đã học</span>
-                                    <span class="badge badge-green">Đã học</span>
-                                </div>
-                                <div class="session-item">
-                                    <span>Buổi 2 - Đã học</span>
-                                    <span class="badge badge-green">Đã học</span>
-                                </div>
-                                <div class="session-item">
-                                    <span>Buổi 3 - Đang chờ</span>
-                                    <span class="badge badge-yellow">Chưa học</span>
-                                </div>
-                                <div class="session-item">
-                                    <span>Buổi 4 - Chưa mở</span>
-                                    <span class="badge badge-red">Chưa mở</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="class-card">
-                            <div class="class-header">
-                                KN252 - T3 - T7
-                            </div>
-                            <div class="class-sessions">
-                                <div class="session-item">
-                                    <span>Buổi 1 - Đã học</span>
-                                    <span class="badge badge-green">Đã học</span>
-                                </div>
-                                <div class="session-item">
-                                    <span>Buổi 2 - Đã học</span>
-                                    <span class="badge badge-green">Đã học</span>
-                                </div>
-                                <div class="session-item">
-                                    <span>Buổi 3 - Đang chờ</span>
-                                    <span class="badge badge-yellow">Chưa học</span>
-                                </div>
-                                <div class="session-item">
-                                    <span>Buổi 4 - Chưa mở</span>
-                                    <span class="badge badge-red">Chưa mở</span>
-                                </div>
+                            <label for="gender">Giới tính</label>
+                            <div class="select-wrapper">
+                                <select id="gender">
+                                    <option value="male" selected>Nam</option>
+                                    <option value="female">Nữ</option>
+                                    <option value="other">Khác</option>
+                                </select>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    <div class="form-group">
+                        <label for="description">Mô tả</label>
+                        <textarea id="description" placeholder="Mô tả của bạn"></textarea>
+                    </div>
+
+                    <div class="avatar-section">
+                        <h2 class="section-title">Ảnh đại diện</h2>
+                        <div class="avatar-container">
+                            <div class="avatar-preview">
+                                <img src="https://via.placeholder.com/300x200" alt="Ảnh đại diện">
+                            </div>
+                            <div class="avatar-actions">
+                                <button type="button" class="btn btn-outline">Tải ảnh lên</button>
+                                <button type="button" class="btn btn-red">Lưu Ảnh</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-red">Lưu</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</main>
+</div>
+
+<script>
+    // Tab switching functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Show corresponding content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    });
+</script>
 {% endblock %}
-
-
