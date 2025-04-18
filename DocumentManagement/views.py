@@ -1,111 +1,99 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import DocumentForm
-from english.models import DOCUMENT
+from english.models import LESSON, COURSE,LESSON_DETAIL
+from .forms import CombinedLessonForm  # Bạn sẽ tạo form mới này
 import os
 
-
 def document_list(request):
-    documents = DOCUMENT.objects.all().order_by('-doc_id')
+    lessons = LESSON.objects.select_related('course').all().order_by('-lesson_id')
     context = {
-        'documents': documents,
+        'documents': lessons,
         'active_menu': 'documents',
         'title': 'Danh sách tài liệu'
     }
     return render(request, 'document_list.html', context)
 
 
-def document_detail(request, doc_id):
-    document = get_object_or_404(DOCUMENT, doc_id=doc_id)
-    context = {
-        'document': document,
-        'active_menu': 'documents',
-        'title': document.doc_name
-    }
-    return render(request, 'document_detail.html', context)
-
-
 def add_document(request):
     if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
+        form = CombinedLessonForm(request.POST, request.FILES)
         if form.is_valid():
-            document = form.save(commit=False)
+            file = request.FILES.get('lesson_file')
+            if file:
+                ext = os.path.splitext(file.name)[1].lower()
+                if ext != '.pdf':
+                    messages.error(request, 'Chỉ được phép tải lên tệp PDF.')
+                    return render(request, 'add_document.html', {
+                        'form': form,
+                        'active_menu': 'documents',
+                        'title': 'Thêm tài liệu'
+                    })
 
-            # Nếu có file, xử lý loại file và dung lượng
-            doc_file = request.FILES.get('doc_file')
-            if doc_file:
-                ext = os.path.splitext(doc_file.name)[1][1:].upper()
-                document.file_type = ext
-                document.file_size = f"{doc_file.size // 1024}KB"
-                document.doc_file = doc_file
-
-            document.save()
+            # Gọi save() để xử lý tạo LESSON + LESSON_DETAIL
+            form.save()
             messages.success(request, 'Tài liệu đã được thêm thành công!')
             return redirect('document_list')
         else:
             messages.error(request, 'Có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.')
     else:
-        form = DocumentForm()
+        form = CombinedLessonForm()
 
     return render(request, 'add_document.html', {
         'form': form,
         'active_menu': 'documents',
-        'title': 'Thêm tài liệu mới'
+        'title': 'Thêm tài liệu'
     })
 
 
-def edit_document(request, doc_id):
-    document = get_object_or_404(DOCUMENT, doc_id=doc_id)
-
+def delete_document(request, lesson_id):
+    lesson = get_object_or_404(LESSON, lesson_id=lesson_id)
     if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES, instance=document)
-        if form.is_valid():
-            updated_doc = form.save(commit=False)
-
-            doc_file = request.FILES.get('doc_file')
-            if doc_file:
-                ext = os.path.splitext(doc_file.name)[1][1:].upper()
-                updated_doc.file_type = ext
-                updated_doc.file_size = f"{doc_file.size // 1024}KB"
-                updated_doc.doc_file = doc_file
-
-            updated_doc.save()
-            messages.success(request, 'Tài liệu đã được cập nhật thành công!')
-            return redirect('document_detail', doc_id=document.doc_id)
-        else:
-            messages.error(request, 'Có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.')
-    else:
-        form = DocumentForm(instance=document)
-
-    return render(request, 'edit_document.html', {
-        'form': form,
-        'document': document,
-        'active_menu': 'documents',
-        'title': f'Chỉnh sửa: {document.doc_name}'
-    })
-
-
-def delete_document(request, doc_id):
-    document = get_object_or_404(DOCUMENT, doc_id=doc_id)
-
-    if request.method == 'POST':
-        document_name = document.doc_name
-        document.delete()
-        messages.success(request, f'Tài liệu "{document_name}" đã được xóa thành công!')
+        lesson_name = lesson.course.course_name
+        lesson.delete()
+        messages.success(request, f'Tài liệu từ khóa học "{lesson_name}" đã được xóa thành công!')
         return redirect('document_list')
 
     return render(request, 'delete_document.html', {
-        'document': document,
+        'lesson': lesson,
         'active_menu': 'documents',
-        'title': f'Xóa tài liệu: {document.doc_name}'
+        'title': f'Xóa tài liệu: {lesson.course.course_name}'
     })
 
 
-def download_document(request, doc_id):
-    document = get_object_or_404(DOCUMENT, doc_id=doc_id)
+def download_document(request, lesson_id):
+    lesson = get_object_or_404(LESSON, lesson_id=lesson_id)
 
-    if document.doc_file and hasattr(document.doc_file, 'url'):
-        return redirect(document.doc_file.url)
+    if lesson.lesson_file and hasattr(lesson.lesson_file, 'url'):
+        return redirect(lesson.lesson_file.url)
 
     messages.error(request, 'File không tồn tại hoặc đã bị xóa.')
-    return redirect('document_detail', doc_id=document.doc_id)
+    return redirect('document_list')
+
+def document_detail(request, lesson_id):
+    lesson = get_object_or_404(LESSON, lesson_id=lesson_id)
+
+    # Lấy lesson_detail đầu tiên nếu có
+    lesson_detail = LESSON_DETAIL.objects.filter(lesson=lesson).first()
+
+    context = {
+        'document': lesson,
+        'lesson_detail': lesson_detail
+    }
+    return render(request, 'document_detail.html', context)
+def edit_document(request, doc_id):
+    lesson = get_object_or_404(LESSON, pk=doc_id)
+    detail = get_object_or_404(LESSON_DETAIL, lesson=lesson)
+
+    if request.method == 'POST':
+        form = CombinedLessonForm(request.POST, request.FILES, lesson_instance=lesson, detail_instance=detail)
+        if form.is_valid():
+            form.save()
+            return redirect('document_detail', lesson_id=doc_id)
+    else:
+        form = CombinedLessonForm(lesson_instance=lesson, detail_instance=detail)
+
+    return render(request, 'edit_document.html', {
+        'form': form,
+        'document': lesson,
+        'file_name': lesson.lesson_file.name.split('/')[-1]
+    })

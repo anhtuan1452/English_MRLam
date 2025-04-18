@@ -2,26 +2,36 @@
 {% extends 'base-admin.html' %}
 
 {% block content %}
+<style>
+    .custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
+</style>
 <div class="container-fluid">
     <div class="d-flex align-items-center mb-4">
         <a href="{% url 'document_list' %}" class="btn btn-outline-secondary btn-sm me-3">
             <i class="fas fa-arrow-left me-1"></i> Quay lại
         </a>
-        <h1 class="mb-0">Eng - L{{ document.doc_id }}</h1>
+        <h2 class="custom-title mb-0">Eng - L{{ document.lesson_id }}</h2>
     </div>
 
     <div class="card">
         <div class="card-body">
             <div class="mb-4">
                 <h6 class="text-muted mb-1">Tiêu đề:</h6>
-                <p class="mb-0 fw-medium">{{ document.doc_name }}</p>
+                <p class="mb-0 fw-medium">{{ lesson_detail.lesson_name }}</p>
             </div>
 
             <div class="mb-4">
                 <h6 class="text-muted mb-1">Mô tả:</h6>
                 <p class="mb-0">
-                    {% if document.description %}
-                        {{ document.description }}
+                    {% if lesson_detail and lesson_detail.description %}
+                        {{ lesson_detail.description }}
                     {% else %}
                         Tài liệu này cung cấp các kiến thức cơ bản về các từ vựng trong tiếng Anh, giúp người học hiểu rõ cách sử dụng, cấu trúc và các điều cần lưu ý khi sử dụng từ.
                     {% endif %}
@@ -44,13 +54,13 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center">
-                <a href="{% url 'download_document' document.doc_id %}" class="text-danger">
+                <a href="{% url 'download_document' document.lesson_id %}" class="text-danger">
                     <i class="fas fa-file-pdf me-1"></i> Tải xuống tài liệu
                 </a>
 
                 <div>
-                    <a href="{% url 'delete_document' document.doc_id %}" class="btn btn-danger me-2">Xóa</a>
-                    <a href="{% url 'edit_document' document.doc_id %}" class="btn btn-outline-secondary">Sửa</a>
+                    <a href="{% url 'delete_document' document.lesson_id %}" class="btn btn-danger me-2">Xóa</a>
+                    <a href="{% url 'edit_document' document.lesson_id %}" class="btn btn-outline-secondary">Sửa</a>
                 </div>
             </div>
         </div>
