@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'test_admin',
     'ManageUsers',
     'test_user',
-    'myclass',
+    'MyClass',
     'DocumentManagement',
     'course_admin',
     'qrPayment',

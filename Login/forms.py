@@ -1,19 +1,14 @@
-from django import forms
-from english.models import ACCOUNT
 
 from django import forms
-from english.models import ACCOUNT
-
-
-from django import forms
-from english.models import ACCOUNT
+# from english.models import ACCOUNT
+from django.contrib.auth.models import User
 
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-input', 'placeholder': 'Nhập mật khẩu', 'id': 'password'}))
     password_confirm = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-input', 'placeholder': 'Nhập lại mật khẩu', 'id': 'password_confirm'}))
 
     class Meta:
-        model = ACCOUNT
+        model = User
         fields = ['username', 'email', 'first_name', 'last_name']  # Đảm bảo đã bao gồm tất cả các trường
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Tên đăng nhập', 'id': 'username'}),

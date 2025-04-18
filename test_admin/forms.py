@@ -5,7 +5,7 @@ from english.models import TEST,QUESTION
 class TestForm(forms.ModelForm):
     class Meta:
         model = TEST
-        fields = ['test_name', 'test_description', 'time']
+        fields = ['test_name', 'test_description']
 
 # Form để lấy câu hỏi và đáp án
 class QuestionForm(forms.ModelForm):

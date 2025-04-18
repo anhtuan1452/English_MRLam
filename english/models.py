@@ -1,7 +1,23 @@
 import datetime
 
+from django.contrib.auth.models import User
 from django.db import models
 
+
+class USER_PROFILE(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    ROLE_CHOICES = (
+        ('admin', 'Admin'),
+        ('student', 'Student'),
+        ('teacher', 'Teacher'),
+    )
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        db_table = 'USER_PROFILE'
 
 class TEST(models.Model):
     test_id = models.AutoField(primary_key=True)
@@ -26,51 +42,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
-class CustomUserManager(BaseUserManager):
-    def create_user(self, username, password=None, **extra_fields):
-        if not username:
-            raise ValueError('Users must have a username')
-        user = self.model(username=username, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, username, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(username, password, **extra_fields)
-
-
-class ACCOUNT(AbstractBaseUser):
-    acc_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=100, unique=True)
-    email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=100,default='tuan')
-    last_name = models.CharField(max_length=100,default='anh')
-    date_joined = models.DateTimeField(default=datetime.datetime.now)
-    ROLE_CHOICES = (
-        ('admin', 'Admin'),
-        ('student', 'Student'),
-        ('teacher', 'Teacher'),
-    )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-
-    objects = CustomUserManager()
-
-    # REQUIRED_FIELDS sẽ là các trường bạn muốn yêu cầu khi tạo superuser
-    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
-
-    USERNAME_FIELD = 'username'
-
-    # `USERNAME_FIELD` mặc định là 'username', các trường yêu cầu khác là 'email' và 'first_name'
-
-    def __str__(self):
-        return self.username
-    class Meta:
-        db_table = 'ACCOUNT'
-
 
 
 class RESULT(models.Model):
@@ -78,7 +49,7 @@ class RESULT(models.Model):
     score = models.IntegerField()
     total_questions = models.IntegerField()
     test_id = models.ForeignKey(TEST, on_delete=models.CASCADE)
-    acc_id = models.ForeignKey(ACCOUNT, on_delete=models.CASCADE)
+    acc_id = models.ForeignKey(User, on_delete=models.CASCADE)
     correct_answers = models.IntegerField()
     incorrect_answers = models.IntegerField()
     create_at = models.DateTimeField(default=datetime.datetime.now)
@@ -120,7 +91,7 @@ class PAYMENT_INFO(models.Model):
     paymentinfo_id = models.AutoField(primary_key=True)
     time_at = models.DateTimeField(default=datetime.datetime.now())
     payment_id = models.ForeignKey(PAYMENT, on_delete=models.CASCADE)
-    acc_id = models.ForeignKey(ACCOUNT, on_delete=models.CASCADE)
+    acc_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class CLASS(models.Model):
     class_id = models.AutoField(primary_key=True)
@@ -135,7 +106,7 @@ class CLASS(models.Model):
 
 class USER_CLASS(models.Model):
     userclass_id = models.AutoField(primary_key=True)
-    acc_id = models.ForeignKey(ACCOUNT, on_delete=models.CASCADE)
+    acc_id = models.ForeignKey(User, on_delete=models.CASCADE)
     class_id = models.ForeignKey(CLASS, on_delete=models.CASCADE)
 
     class Meta:
@@ -160,7 +131,7 @@ class LESSON_DETAIL(models.Model):
     description = models.TextField(null=True, blank=True)
     lesson_id = models.ForeignKey(LESSON, on_delete=models.CASCADE)
     class_instance = models.ForeignKey(CLASS, on_delete=models.CASCADE)
-    session_number = models.CharField(null=True)
+    session_number = models.CharField(max_length=100,null=True)
     class Meta:
         db_table = 'LessonDetail'
 
