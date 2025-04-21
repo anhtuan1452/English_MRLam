@@ -68,7 +68,7 @@ class DOCUMENT(models.Model):
     doc_id = models.AutoField(primary_key=True)
     doc_name = models.CharField(max_length=100)
     doc_file = models.FileField(upload_to='documents/', null=True, blank=True)
-
+    auth_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     class Meta:
         db_table = 'DOCUMENT'
 
@@ -81,6 +81,8 @@ class COURSE(models.Model):
     des_teacher = models.CharField(max_length=100, null=True, blank=True)
     teacher_name = models.CharField(max_length=100, null=True, blank=True)
     image = models.CharField(max_length=100,null=True, blank=True)
+    def __str__(self):
+        return self.course_name
     class Meta:
         db_table = 'COURSE'
 
