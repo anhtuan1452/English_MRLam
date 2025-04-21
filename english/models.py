@@ -11,12 +11,16 @@ class USER_PROFILE(models.Model):
         ('F', 'Female'),
         ('O', 'Other'),
     ]
-    dob = models.DateField()  # ngày sinh
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES)  # giới tính (có choices)
+    dob = models.DateField(null=True, blank=True)  # Ngày sinh, tùy chọn
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, null=True, blank=True)  # Giới tính, tùy chọn
     description = models.TextField(blank=True, null=True)
-    image = models.CharField(max_length=100)
+    image = models.CharField(max_length=100, blank=True, null=True)
+    # Thêm các trường cho đặt lại mật khẩu
+    reset_password_token = models.CharField(max_length=36, blank=True, null=True)
+    reset_password_expiry = models.DateTimeField(blank=True, null=True)
+
     def __str__(self):
-        return self.user.username
+        return self.userprofile.username
 
     class Meta:
         db_table = 'USER_PROFILE'
@@ -81,8 +85,6 @@ class COURSE(models.Model):
     des_teacher = models.CharField(max_length=100, null=True, blank=True)
     teacher_name = models.CharField(max_length=100, null=True, blank=True)
     image = models.CharField(max_length=100,null=True, blank=True)
-    def __str__(self):
-        return self.course_name
     class Meta:
         db_table = 'COURSE'
 

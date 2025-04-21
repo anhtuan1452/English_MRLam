@@ -1,21 +1,10 @@
 {% extends "base-admin.html" %}
-
 {% block title %}Chi tiết lớp học{% endblock %}
 
 {% block content %}
-<style>
-    .custom-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #5c6bc0;
-        border-bottom: 2px solid;
-        margin: 1.5rem 0 1rem;
-        padding: 8px 0;
-    }
-</style>
-
 <div class="container mt-4">
-    <h2 class="custom-title">Chi tiết lớp học</h2>
+    <h3 class="mb-4">Mô tả lớp học</h3>
+
 
     <ul class="nav nav-tabs mb-3" id="classTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -24,48 +13,49 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link" href="{% url 'class_exercise' class_id=class_instance.pk %}">Bài tập</a>
+            <a class="nav-link" href="{% url 'class_exercise' class_id=cls.class_id %}">Bài tập</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link" href="{% url 'class_rollcall' class_id=class_instance.pk %}">Điểm danh</a>
+            <a class="nav-link" href="{% url 'class_rollcall' class_id=cls.class_id %}">Điểm danh</a>
         </li>
     </ul>
+
 
     <div class="tab-content border p-3 rounded bg-white" id="classTabContent">
         <div class="tab-pane fade show active" id="info" role="tabpanel">
             <form>
                 <div class="mb-3">
                     <label class="form-label">Tên lớp học</label>
-                    <input type="text" class="form-control" value="{{ class_instance.class_name }}" disabled>
+                    <input type="text" class="form-control" value="{{ cls.class_name }}" disabled>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Tên khóa học</label>
-                    <input type="text" class="form-control" value="{{ class_instance.course.course_name }}" disabled>
+                    <input type="text" class="form-control" value="{{ cls.course.course_name }}" disabled>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col">
                         <label class="form-label">Ngày bắt đầu</label>
-                        <input type="text" class="form-control" value="{{ class_instance.begin_time|date:'d/m/Y H:i' }}" disabled>
+                        <input type="text" class="form-control" value="{{ cls.begin_time|date:'d M Y g:i a' }}" disabled>
                     </div>
                     <div class="col">
                         <label class="form-label">Ngày kết thúc</label>
-                        <input type="text" class="form-control" value="{{ class_instance.end_time|date:'d/m/Y H:i' }}" disabled>
+                        <input type="text" class="form-control" value="{{ cls.end_time|date:'d M Y g:i a' }}" disabled>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Sĩ số</label>
-                    <input type="text" class="form-control" value="{{ user_classes|length }}" disabled>
+                    <input type="text" class="form-control" value="{{ cls.userclass_set.count }}" disabled>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Trạng thái</label><br>
-                    {% now "Y-m-d H:i" as current_time %}
-                    {% if class_instance.begin_time|date:"Y-m-d H:i" > current_time %}
+                    {% now "UTC" as now %}
+                    {% if cls.begin_time > now %}
                         <span class="badge bg-warning text-dark">Chưa bắt đầu</span>
-                    {% elif class_instance.end_time|date:"Y-m-d H:i" < current_time %}
+                    {% elif cls.end_time < now %}
                         <span class="badge bg-danger">Đã kết thúc</span>
                     {% else %}
                         <span class="badge bg-success">Đang học</span>
@@ -73,7 +63,7 @@
                 </div>
 
                 <div class="mt-4 d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-danger" disabled>Lưu</button>
+                    <button type="submit" class="btn btn-danger">Lưu</button>
                     <a href="#" class="btn btn-dark">Xóa</a>
                 </div>
             </form>

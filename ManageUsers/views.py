@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.core.checks import messages
 from django.shortcuts import render, get_object_or_404, redirect
 
 from english.models import USER_PROFILE, USER_CLASS
@@ -30,7 +32,7 @@ def user_list(request):
 
 def user_detail(request, user_id):
     # Lấy thông tin chi tiết của người dùng
-    user = get_object_or_404(User, acc_id=user_id)
+    user = get_object_or_404(User, id=user_id)
 
     # Lấy danh sách lớp học của người dùng
     user_classes = USER_CLASS.objects.filter(user=user)
@@ -72,36 +74,44 @@ def user_create(request):
             account=account
         )
 
-        return redirect('user_detail', user_id=user.user_id)
+        return redirect('user_detail', user_id=user.id)
 
     return render(request, 'user_create.html')
 
 
-def user_edit(request, user_id):
-    user = get_object_or_404(User, user_id=user_id)
+
+def user_edit(request, id):
+    user = get_object_or_404(User, id=id)
 
     if request.method == 'POST':
-        # Cập nhật thông tin người dùng
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
         user.email = request.POST.get('email')
-        user.dob = request.POST.get('dob')
-        user.sex = request.POST.get('sex')
         user.save()
 
-        # Cập nhật thông tin tài khoản
-        account = user.account
-        account.username = request.POST.get('username')
+        # Cập nhật USER_PROFILE
+        profile = user.profile
+        profile.dob = request.POST.get('dob')
+        profile.sex = request.POST.get('sex')
+        profile.role = request.POST.get('role')
+        profile.save()
 
-        # Chỉ cập nhật mật khẩu nếu có nhập mật khẩu mới
+        # Cập nhật username
+        new_username = request.POST.get('username')
+        if new_username != user.username:
+            if User.objects.filter(username=new_username).exclude(id=user.id).exists():
+                messages.error(request, 'Tên tài khoản đã tồn tại.')
+                return render(request, 'user_edit.html', {'user': user})
+            user.username = new_username
+
+        # Cập nhật mật khẩu nếu có
         new_password = request.POST.get('password')
         if new_password:
-            account.password = new_password  # Trong thực tế, bạn nên mã hóa mật khẩu
+            user.set_password(new_password)
+        user.save()
 
-        account.role = request.POST.get('role')
-        account.save()
-
-        return redirect('user_detail', user_id=user.user_id)
+        messages.success(request, 'Thông tin người dùng đã được cập nhật.')
+        return redirect('listuser_admin:user_detail', id=user.id)
 
     context = {
         'user': user
@@ -117,5 +127,5 @@ def user_delete(request, user_id):
         user.account.delete()
         return redirect('user_list')
 
-    return redirect('user_detail', user_id=user_id)
+    return redirect('user_detail', id=user_id)
 
