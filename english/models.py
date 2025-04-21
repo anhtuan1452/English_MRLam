@@ -81,6 +81,8 @@ class COURSE(models.Model):
     des_teacher = models.CharField(max_length=100, null=True, blank=True)
     teacher_name = models.CharField(max_length=100, null=True, blank=True)
     image = models.CharField(max_length=100,null=True, blank=True)
+    def __str__(self):
+        return self.course_name
     class Meta:
         db_table = 'COURSE'
 
