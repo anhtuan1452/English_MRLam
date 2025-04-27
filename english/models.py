@@ -11,16 +11,12 @@ class USER_PROFILE(models.Model):
         ('F', 'Female'),
         ('O', 'Other'),
     ]
-    dob = models.DateField(null=True, blank=True)  # Ngày sinh, tùy chọn
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES, null=True, blank=True)  # Giới tính, tùy chọn
+    dob = models.DateField()  # ngày sinh
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES)  # giới tính (có choices)
     description = models.TextField(blank=True, null=True)
-    image = models.CharField(max_length=100, blank=True, null=True)
-    # Thêm các trường cho đặt lại mật khẩu
-    reset_password_token = models.CharField(max_length=36, blank=True, null=True)
-    reset_password_expiry = models.DateTimeField(blank=True, null=True)
-
+    image = models.CharField(max_length=100)
     def __str__(self):
-        return self.userprofile.username
+        return self.user.username
 
     class Meta:
         db_table = 'USER_PROFILE'
@@ -48,7 +44,7 @@ class QUESTION(models.Model):
     answer = models.TextField(null=True, blank=True)
     correct_answer = models.CharField(max_length=50, null=True, blank=True)
     test = models.ForeignKey(TEST, on_delete=models.CASCADE)
-    questionmedia = models.ForeignKey(QUESTION_MEDIA, on_delete=models.CASCADE)
+    question_media = models.ForeignKey(QUESTION_MEDIA, on_delete=models.CASCADE)
     class Meta:
         db_table = 'QUESTION'
 from django.db import models
@@ -72,7 +68,7 @@ class DOCUMENT(models.Model):
     doc_id = models.AutoField(primary_key=True)
     doc_name = models.CharField(max_length=100)
     doc_file = models.FileField(upload_to='documents/', null=True, blank=True)
-    auth_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+
     class Meta:
         db_table = 'DOCUMENT'
 
@@ -85,6 +81,8 @@ class COURSE(models.Model):
     des_teacher = models.CharField(max_length=100, null=True, blank=True)
     teacher_name = models.CharField(max_length=100, null=True, blank=True)
     image = models.CharField(max_length=100,null=True, blank=True)
+    def __str__(self):
+        return self.course_name
     class Meta:
         db_table = 'COURSE'
 
@@ -113,6 +111,7 @@ class CLASS(models.Model):
     begin_time = models.DateField()
     end_time = models.DateField()
     status = models.CharField(max_length=100)
+    timetable = models.CharField(max_length=1000)
     class Meta:
         db_table = 'CLASS'
 
@@ -130,6 +129,8 @@ class LESSON(models.Model):
     lesson_id = models.AutoField(primary_key=True)
     lesson_file = models.FileField()
     exercise_file = models.FileField()
+    lesson_name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
     course = models.ForeignKey(COURSE, on_delete=models.CASCADE)
 
     class Meta:
@@ -138,8 +139,6 @@ class LESSON(models.Model):
 
 class LESSON_DETAIL(models.Model):
     lessondetail_id = models.AutoField(primary_key=True)
-    lesson_name = models.CharField(max_length=100)
-    description = models.TextField(null=True, blank=True)
     lesson = models.ForeignKey(LESSON, on_delete=models.CASCADE)
     classes = models.ForeignKey(CLASS, on_delete=models.CASCADE)
     session_number = models.CharField(max_length=100,null=True)

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from english.models import LESSON, COURSE,LESSON_DETAIL
-from .forms import CombinedLessonForm  # Bạn sẽ tạo form mới này
+from english.models import LESSON, COURSE, LESSON_DETAIL
+from .forms import CombinedLessonForm
 import os
 
 def document_list(request):
@@ -18,18 +18,21 @@ def add_document(request):
     if request.method == 'POST':
         form = CombinedLessonForm(request.POST, request.FILES)
         if form.is_valid():
-            file = request.FILES.get('lesson_file')
-            if file:
-                ext = os.path.splitext(file.name)[1].lower()
-                if ext != '.pdf':
-                    messages.error(request, 'Chỉ được phép tải lên tệp PDF.')
-                    return render(request, 'add_document.html', {
-                        'form': form,
-                        'active_menu': 'documents',
-                        'title': 'Thêm tài liệu'
-                    })
+            lesson_file = request.FILES.get('lesson_file')
+            exercise_file = request.FILES.get('exercise_file')
 
-            # Gọi save() để xử lý tạo LESSON + LESSON_DETAIL
+            # Kiểm tra định dạng PDF cho cả 2 file
+            for file in [lesson_file, exercise_file]:
+                if file:
+                    ext = os.path.splitext(file.name)[1].lower()
+                    if ext != '.pdf':
+                        messages.error(request, 'Chỉ được phép tải lên tệp PDF.')
+                        return render(request, 'add_document.html', {
+                            'form': form,
+                            'active_menu': 'documents',
+                            'title': 'Thêm tài liệu'
+                        })
+
             form.save()
             messages.success(request, 'Tài liệu đã được thêm thành công!')
             return redirect('document_list')
@@ -69,31 +72,37 @@ def download_document(request, lesson_id):
     messages.error(request, 'File không tồn tại hoặc đã bị xóa.')
     return redirect('document_list')
 
-def document_detail(request, lesson_id):
-    lesson = get_object_or_404(LESSON, lesson_id=lesson_id)
 
-    # Lấy lesson_detail đầu tiên nếu có
-    lesson_detail = LESSON_DETAIL.objects.filter(lesson=lesson).first()
-
-    context = {
-        'document': lesson,
-        'lesson_detail': lesson_detail
-    }
-    return render(request, 'document_detail.html', context)
-def edit_document(request, doc_id):
-    lesson = get_object_or_404(LESSON, pk=doc_id)
-    detail = get_object_or_404(LESSON_DETAIL, lesson=lesson)
+def document_detail_edit(request, lesson_id):
+    lesson = get_object_or_404(LESSON, pk=lesson_id)
+    detail = LESSON_DETAIL.objects.filter(lesson=lesson).first()
 
     if request.method == 'POST':
         form = CombinedLessonForm(request.POST, request.FILES, lesson_instance=lesson, detail_instance=detail)
         if form.is_valid():
-            form.save()
-            return redirect('document_detail', lesson_id=doc_id)
+            lesson_file = request.FILES.get('lesson_file')
+            exercise_file = request.FILES.get('exercise_file')
+
+            # Kiểm tra định dạng file
+            for file in [lesson_file, exercise_file]:
+                if file:
+                    ext = os.path.splitext(file.name)[1].lower()
+                    if ext != '.pdf':
+                        messages.error(request, 'Chỉ được phép tải lên tệp PDF.')
+                        break
+            else:
+                form.save()
+                messages.success(request, 'Tài liệu đã được cập nhật thành công!')
+                return redirect('document_detail_edit', lesson_id=lesson_id)
     else:
         form = CombinedLessonForm(lesson_instance=lesson, detail_instance=detail)
 
-    return render(request, 'edit_document.html', {
+    return render(request, 'document_detail_edit.html', {
         'form': form,
         'document': lesson,
-        'file_name': lesson.lesson_file.name.split('/')[-1]
+        'lesson_detail': detail,
+        'file_name': lesson.lesson_file.name.split('/')[-1] if lesson.lesson_file else '',
+        'exercise_name': lesson.exercise_file.name.split('/')[-1] if lesson.exercise_file else '',
+        'active_menu': 'documents',
+        'title': f'Tài liệu - {lesson.course.course_name} - {lesson.lesson_name}'
     })

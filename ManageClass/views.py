@@ -1,53 +1,102 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from english.models import CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL, ROLLCALL_USER
-from .forms import ClassForm  # Form tạo lớp học
+from english.models import CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL, ROLLCALL_USER, SUBMISSION, EXERCISE,LESSON_DETAIL
+from .forms import ClassForm
 from django.contrib.auth.models import User
+from django.utils.timezone import now
+from django.db.models import Count
 
+# Danh sách lớp học
 def class_list(request):
-    classes = CLASS.objects.select_related('course').all()
-    return render(request, 'class_list.html', {'classes': classes})
+    query = request.GET.get("q")
+    classes = CLASS.objects.all()
 
+    if query:
+        classes = classes.filter(class_name__icontains=query)
 
-def class_detail(request, class_id):
-    class_instance = get_object_or_404(CLASS, pk=class_id)
-    user_classes = USER_CLASS.objects.filter(classes=class_instance).select_related('user')
+    classes = classes.annotate(student_count=Count('user_class'))
 
-    return render(request, 'class_detail.html', {
-        'class_instance': class_instance,
-        'user_classes': user_classes
+    return render(request, 'class_list.html', {
+        'classes': classes
     })
 
+# Chi tiết lớp học - Tab "Mô tả lớp học"
+def class_detail(request, class_id):
+    class_instance = get_object_or_404(CLASS, pk=class_id)
+    if request.method == 'POST':
+        form = ClassForm(request.POST, instance=class_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('class_detail', class_id=class_instance.pk)
+    else:
+        form = ClassForm(instance=class_instance)
+
+    return render(request, 'class_detail.html', {
+        'form': form,
+        'class_instance': class_instance
+    })
+
+
+def class_exercise(request, class_id):
+    class_instance = get_object_or_404(CLASS, pk=class_id)
+
+    # Lấy danh sách tất cả các bài nộp của học viên trong lớp này
+    submissions = SUBMISSION.objects.filter(
+        userclass__classes=class_instance
+    ).select_related(
+        'userclass__user', 'exercise__lessondetail__lesson'
+    )
+
+    # Kiểm tra nếu không có bài nộp nào
+    if not submissions:
+        submissions = None  # Hoặc bạn có thể hiển thị một thông báo nào đó
+
+    return render(request, 'class_exercise.html', {
+        'class_instance': class_instance,
+        'class_id': class_id,
+        'submissions': submissions
+    })
+
+from django.shortcuts import render, get_object_or_404
+from english.models import LESSON_DETAIL, ROLLCALL_USER, ROLLCALL
+from django.db.models import Count
 
 def class_rollcall(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
 
-    # Lấy tất cả buổi học (LessonDetail) của lớp này
-    lessons = class_instance.lessondetail_set.all().prefetch_related('rollcall')
+    # Truy xuất tất cả các buổi học của lớp
+    lesson_details = LESSON_DETAIL.objects.filter(classes=class_instance).select_related('lesson')
 
     rollcall_data = []
-    for lesson in lessons:
+    for lesson_detail in lesson_details:
+        rollcall_users = []
         try:
-            rollcall = lesson.rollcall  # one-to-one, có thể gây lỗi nếu chưa tồn tại
-            rollcall_users = ROLLCALL_USER.objects.filter(rollcall=rollcall).select_related('userclass__user')
-            rollcall_data.append({
-                'lesson': lesson,
-                'rollcall_users': rollcall_users
-            })
+            # Lấy đối tượng rollcall của lesson_detail
+            rollcall = lesson_detail.rollcall  # Lấy ROLLCALL liên kết với LESSON_DETAIL
+            if rollcall:
+                # Lấy danh sách học viên tham gia điểm danh trong buổi học này
+                rollcall_users = ROLLCALL_USER.objects.filter(rollcall=rollcall).select_related('userclass__user')
         except ROLLCALL.DoesNotExist:
-            continue
+            rollcall = None  # Không có điểm danh cho buổi học này
+
+        # Lưu dữ liệu điểm danh vào list để render trong template
+        rollcall_data.append({
+            'lesson_detail': lesson_detail,
+            'rollcall_users': rollcall_users,
+            'has_rollcall': rollcall is not None,  # Kiểm tra có điểm danh hay không
+        })
 
     return render(request, 'class_rollcall.html', {
         'class_instance': class_instance,
-        'rollcall_data': rollcall_data
+        'rollcall_data': rollcall_data,
     })
 
 
+# Thêm học viên vào lớp học
 def add_student_to_class(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         user = get_object_or_404(User, pk=user_id)
-
         USER_CLASS.objects.get_or_create(user=user, classes=class_instance)
         return redirect('class_detail', class_id=class_id)
 
@@ -59,7 +108,7 @@ def add_student_to_class(request, class_id):
         'users': users_not_in_class
     })
 
-
+# Thêm lớp học mới
 def add_class(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)
@@ -69,12 +118,3 @@ def add_class(request):
     else:
         form = ClassForm()
     return render(request, 'add_class.html', {'form': form})
-from django.utils.timezone import now  # dùng timezone-aware datetime
-
-def class_list(request):
-    query = request.GET.get("q", "")
-    classes = CLASS.objects.all()
-    if query:
-        classes = classes.filter(class_name__icontains=query)
-    return render(request, "class_list.html", {"classes": classes})
-

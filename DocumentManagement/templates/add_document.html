@@ -1,13 +1,24 @@
-
 {% extends 'base-admin.html' %}
 
 {% block content %}
+<style>
+    .custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
+</style>
 <div class="container-fluid">
-    <div class="d-flex align-items-center mb-4">
-        <a href="{% url 'document_list' %}" class="btn btn-outline-secondary btn-sm me-3">
-            <i class="fas fa-arrow-left me-1"></i> Quay lại
-        </a>
-        <h1 class="mb-0">Thêm tài liệu</h1>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'document_list' %}" class="btn btn-outline-secondary btn-sm me-3">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại
+            </a>
+            <h2 class="custom-title mb-0">Thêm tài liệu</h2>
+        </div>
     </div>
 
     <div class="card">
@@ -15,105 +26,55 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
+                <!-- Mã khóa học -->
                 <div class="mb-3">
-                    <label for="{{ form.doc_name.id_for_label }}" class="form-label">Tên tài liệu:</label>
-                    {{ form.doc_name }}
-                    {% if form.doc_name.errors %}
-                    <div class="text-danger mt-1">{{ form.doc_name.errors }}</div>
+                    <label for="{{ form.course.id_for_label }}" class="form-label">Mã Khóa_Buổi học</label>
+                    {{ form.course }}
+                    {% if form.course.errors %}
+                        <div class="text-danger">{{ form.course.errors }}</div>
                     {% endif %}
                 </div>
 
+                <!-- Tiêu đề -->
                 <div class="mb-3">
-                    <label for="{{ form.description.id_for_label }}" class="form-label">Mô tả:</label>
-                    {{ form.description }}
-                    {% if form.description.errors %}
-                    <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                    <label for="lesson_title" class="form-label">Tiêu đề</label>
+                    <input type="text" name="lesson_title" class="form-control" placeholder="VD: English Level 1_Buổi 1" required>
+                </div>
+
+                <!-- Nội dung -->
+                <div class="mb-3">
+                    <label for="{{ form.lesson_description.id_for_label }}" class="form-label">Nội dung</label>
+                    <textarea name="{{ form.lesson_description.name }}" class="form-control" rows="4" placeholder="Mô tả nội dung của tài liệu" required></textarea>
+                    {% if form.lesson_description.errors %}
+                        <div class="text-danger">{{ form.lesson_description.errors }}</div>
                     {% endif %}
                 </div>
 
-                <div class="mb-4">
-                    <label class="form-label">File đính kèm:</label>
-                    <div class="border border-2 border-dashed rounded p-4 text-center" id="dropArea">
-                        <div class="py-3">
-                            <i class="fas fa-upload fa-2x text-muted mb-2"></i>
-                            <p class="mb-1">Kéo và thả file hoặc</p>
-                            <label class="btn btn-outline-secondary btn-sm position-relative">
-                                Chọn file
-                                {{ form.doc_file }}
-                            </label>
-                        </div>
-                        <div id="fileInfo" class="mt-2" style="display: none;">
-                            <span id="fileName" class="text-primary"></span>
-                        </div>
-                    </div>
-                    {% if form.doc_file.errors %}
-                    <div class="text-danger mt-1">{{ form.doc_file.errors }}</div>
+                <!-- File bài học -->
+                <div class="mb-3">
+                    <label for="{{ form.lesson_file.id_for_label }}" class="form-label">File bài học</label>
+                    {{ form.lesson_file }}
+                    {% if form.lesson_file.errors %}
+                        <div class="text-danger">{{ form.lesson_file.errors }}</div>
                     {% endif %}
                 </div>
 
-                <div class="d-flex justify-content-end">
-                    <a href="{% url 'document_list' %}" class="btn btn-outline-secondary me-2">Hủy</a>
+                <!-- File bài tập -->
+                <div class="mb-3">
+                    <label for="{{ form.exercise_file.id_for_label }}" class="form-label">File bài tập</label>
+                    {{ form.exercise_file }}
+                    {% if form.exercise_file.errors %}
+                        <div class="text-danger">{{ form.exercise_file.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="text-end">
                     <button type="submit" class="btn btn-danger">Lưu</button>
+                    <a href="{% url 'document_list' %}" class="btn btn-secondary me-2">Hủy</a>
+
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const dropArea = document.getElementById('dropArea');
-        const fileInput = document.getElementById('{{ form.doc_file.id_for_label }}');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-
-        // Handle drag and drop events
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight() {
-            dropArea.classList.add('border-primary');
-            dropArea.classList.add('bg-light');
-        }
-
-        function unhighlight() {
-            dropArea.classList.remove('border-primary');
-            dropArea.classList.remove('bg-light');
-        }
-
-        dropArea.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            fileInput.files = files;
-            updateFileInfo();
-        }
-
-        fileInput.addEventListener('change', updateFileInfo);
-
-        function updateFileInfo() {
-            if (fileInput.files.length > 0) {
-                fileName.textContent = fileInput.files[0].name;
-                fileInfo.style.display = 'block';
-            } else {
-                fileInfo.style.display = 'none';
-            }
-        }
-    });
-</script>
 {% endblock %}
