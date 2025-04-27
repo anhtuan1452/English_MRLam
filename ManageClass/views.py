@@ -1,3 +1,6 @@
+import json
+
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from english.models import CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL, ROLLCALL_USER, SUBMISSION, EXERCISE,LESSON_DETAIL
 from .forms import ClassForm
@@ -122,3 +125,40 @@ def add_class(request):
     else:
         form = ClassForm()
     return render(request, 'add_class.html', {'form': form})
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
+from english.models import ROLLCALL, USER_CLASS
+
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from english.models import ROLLCALL, ROLLCALL_USER, LESSON_DETAIL
+
+
+def update_rollcall(request):
+    if request.method == 'POST':
+        rollcall_data = request.POST.get('rollcall_data')
+
+        if rollcall_data:
+            try:
+                # Chuyển chuỗi JSON thành từ điển Python
+                rollcall_data = json.loads(rollcall_data)
+
+                # Cập nhật trạng thái điểm danh cho từng user
+                for user_id, data in rollcall_data.items():
+                    # Thay đổi query để lấy RollCallUser đúng
+                    user = ROLLCALL_USER.objects.get(
+                        userclass__user__id=user_id,
+                        lesson_detail__id=data['lesson_detail_id']
+                    )
+                    user.status = data['status']
+                    user.save()
+
+                return JsonResponse({'message': 'Cập nhật trạng thái thành công!'})
+
+            except Exception as e:
+                return JsonResponse({'message': f'Error: {str(e)}'}, status=400)
+
+        return JsonResponse({'message': 'Dữ liệu không hợp lệ'}, status=400)

@@ -46,18 +46,6 @@ def add_document(request):
         'title': 'Thêm tài liệu',
     })
 
-
-
-# Tải xuống file bài học (file lesson_file của LESSON)
-def download_document(request, lesson_id):
-    lesson = get_object_or_404(LESSON, pk=lesson_id)
-    if lesson.lesson_file and hasattr(lesson.lesson_file, 'url'):
-        return redirect(lesson.lesson_file.url)
-
-    messages.error(request, 'File không tồn tại hoặc đã bị xóa.')
-    return redirect('document_list')
-
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from english.models import LESSON, COURSE, LESSON_DETAIL
@@ -73,14 +61,17 @@ def document_detail_edit(request, lesson_id):
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Tài liệu đã được cập nhật thành công!')
-                return redirect('document_detail_edit', lesson_id=lesson_id)
+                return redirect('/document_management/')
             else:
                 messages.error(request, 'Vui lòng kiểm tra lại thông tin.')
         elif 'delete' in request.POST:
             lesson_name = lesson.lesson_name
             lesson.delete()
             messages.success(request, f'Tài liệu "{lesson_name}" đã được xóa thành công!')
-            return redirect('document_list')
+            return redirect('/document_management/')
+        else:
+
+            form = CombinedLessonForm(lesson_instance=lesson)
     else:
         form = CombinedLessonForm(lesson_instance=lesson)
 
@@ -91,4 +82,3 @@ def document_detail_edit(request, lesson_id):
         'active_menu': 'documents',
         'title': f'Tài liệu - {lesson.course.course_name} - {lesson.lesson_name}',
     })
-
