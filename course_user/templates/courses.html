@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Mr Lam English - Khóa học{% endblock %}
 
 {% block content %}
@@ -82,39 +82,38 @@
         width: 100%;
         font-size: 26px;
         font-weight: bold;
-        text-decoration: underline;
-        color: black;
+        text-decoration: none;
+        color: #5c6bc0;
         margin-left: 40px;
-        text-decoration-color: red;
+        border-bottom: 2px solid #5c6bc0; /* Thêm đường kẻ dưới tiêu đề */
+        padding-bottom: 10px; /* Khoảng cách giữa chữ và đường kẻ */
     }
 </style>
 
 <div class="courses-container">
-    <h2 class="section-title">My Class</h2>
-    {% for class in classes %}
-    <div class="course-card">
-        <h3 class="course-title">{{ class.class_name }}</h3>
-        <p class="course-teacher">Ms. {{ course.teacher_name }}</p>
-        <p class="course-teacher">Thời gian: {{ class.begin_time }}</p>
-        <p class="course-teacher">Thời lượng: ⏰ 30 giờ </p>
-        <div class="course-info">
-            <span>📄 25 buổi học</span>
-            <span>⏰ 30 giờ</span>
-        </div>
-        <a href="#" class="register-btn">Tiếp tục học</a>
-    </div>
-    {% endfor %}
+    <h2 class="section-title" style="color: #5c6bc0">MY CLASS</h2>
 
-    <h2 class="section-title">English Course</h2>
+    {% if user.is_authenticated %}
+        {% for class in classes %}
+        <div class="course-card">
+            <h3 class="course-title">{{ class.class_name }}</h3>
+            <p class="course-teacher">Ms. {{ class.teacher_name }}</p>
+            <p class="course-teacher">Thời gian: {{ class.begin_time }}</p>
+            <p class="course-teacher">Thời lượng: ⏰ 30 giờ </p>
+            <a href="#" class="register-btn">Tiếp tục học</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <a href="{% url 'SignIn' %}">Để xem lớp học, bạn cần đăng nhập.</a>
+    {% endif %}
+
+    <h2 class="section-title">ENGLISH COURSE</h2>
     {% for course in courses %}
     <div class="course-card">
+        <img src="{% static 'images/course.png' %}" alt="English Course" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
         <h3 class="course-title">{{ course.course_name }}</h3>
-        <p class="course-teacher">Ms. {{ course.teacher_name }}</p>
-        <div class="course-info">
-            <span>📄 25 buổi học</span>
-            <span>⏰ 30 giờ</span>
-        </div>
-        <p class="course-price">{{ course.price }} VNĐ</p>
+        <p class="course-teacher">{{ course.teacher_name }}</p>
+        <p class="course-price">{{ course.price }}</p>
         <a href="{% url 'course_detail' course_id=course.course_id %}" class="register-btn">Đăng ký ngay</a>
     </div>
     {% endfor %}

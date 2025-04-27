@@ -7,4 +7,5 @@ urlpatterns = [
     path('ql_baitap/xembt/<int:lesson_id>/', views.xem_baitap, name='xem_baitap'),
     path('ql_baitap/xembt/<int:lesson_id>/edit/', views.sua_baitap, name='sua_baitap'),
     path('ql_baitap/<int:lesson_id>/delete/', views.xoa_baitap, name='xoa_baitap'),
+    path('ql_baitap/xembt/<int:lesson_id>/sua/', views.sua_baitap_xem, name='sua_baitap_xem'),
 ]

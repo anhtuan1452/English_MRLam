@@ -35,12 +35,21 @@ def them_baitap(request):
 
 # Xem chi tiết bài tập
 def xem_baitap(request, lesson_id):
-    # Lấy bài học và khóa học tương ứng với lesson_id
-    lesson = get_object_or_404(LESSON, lesson_id=lesson_id)  # Tìm bài học theo ID
-    course = lesson.course  # Truyền khóa học đã được liên kết với bài học
+    lesson = get_object_or_404(LESSON, lesson_id=lesson_id)
+    course = lesson.course
+
+    if request.method == 'POST':
+        form = BuoiHocForm(request.POST, instance=lesson)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_ql_baitap')
+    else:
+        form = BuoiHocForm(instance=lesson)
+
     context = {
         'lesson': lesson,
         'course': course,
+        'form': form,
     }
     return render(request, 'xembt.html', context)
 # Sửa bài tập
@@ -62,3 +71,16 @@ def xoa_baitap(request, lesson_id):
     if request.method == 'POST':
         lesson.delete()
         return render(request, 'ql_baitap.html', {'deleted': True})
+
+#sửa bt ở trang xem bài tập
+def sua_baitap_xem(request, lesson_id):
+    lesson = get_object_or_404(LESSON, lesson_id=lesson_id)
+    course = lesson.course
+    if request.method == 'POST':
+        form = BuoiHocForm(request.POST, instance=lesson)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_ql_baitap')
+    else:
+        form = BuoiHocForm(instance=lesson)
+    return render(request, 'xembt.html', {'form': form, 'lesson': lesson , 'course': course})
