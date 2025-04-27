@@ -279,7 +279,7 @@ body {
                 
                 <div class="info-item">
                     <div class="info-label">Tên tài khoản</div>
-                    <div class="info-value">{{ user.username }}</div>
+                    <div class="info-value">{{ user.account.username }}</div>
                 </div>
                 
                 <div class="info-item">
@@ -290,9 +290,9 @@ body {
                 <div class="info-item">
                     <div class="info-label">Vai trò</div>
                     <div class="info-value text-green">
-                        {% if user.is_superuser %}
-                            Admin
-                        {% elif user.is_staff %}
+                        {% if user.account.role == 'student' %}
+                            Học viên
+                        {% elif user.account.role == 'teacher' %}
                             Giáo viên
                         {% else %}
                             Admin

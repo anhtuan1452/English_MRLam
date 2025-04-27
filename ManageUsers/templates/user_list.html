@@ -139,7 +139,7 @@
     /* Nút hành động */
     .actions {
       display: flex;
-      margin-right: -12vh;
+      margin-right:-12vh;
     }
 
     .action-button {
@@ -181,45 +181,6 @@
       background-color: #ffcdd2;
     }
 
-    /* Phần không có người dùng */
-    .empty-state {
-      text-align: center;
-      padding: 40px;
-      color: #666;
-    }
-
-    .empty-state-icon {
-      width: 60px;
-      height: 60px;
-      margin-bottom: 16px;
-    }
-
-    .empty-state-title {
-      font-size: 18px;
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-
-    .empty-state-message {
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    .empty-state-action {
-      background-color: #e53935;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: background-color 0.2s;
-    }
-
-    .empty-state-action:hover {
-      background-color: #c62828;
-    }
-
     /* Responsive */
     @media (max-width: 768px) {
       .search-add-container {
@@ -238,15 +199,6 @@
       .actions {
         flex-direction: column;
         gap: 5px;
-      }
-
-      .empty-state {
-        padding: 20px;
-      }
-
-      .empty-state-icon {
-        width: 50px;
-        height: 50px;
       }
     }
 </style>
@@ -267,11 +219,11 @@
                 </svg>
             </form>
         </div>
-        <a href="{% url 'user_create' %}" class="add-button">Thêm</a>
+        <a href="{% url 'user_create' %}" class="btn btn-primary">Thêm</a>
     </div>
 
     <div class="table-container">
-        <table class="user-table">
+        <table class="table table-hover">
             <thead>
                 <tr>
                     <th>STT</th>
@@ -286,33 +238,23 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ user.first_name }} {{ user.last_name }}</td>
                     <td>
-                        {% if user.is_superuser %}
-                            <span class="role role-student">Admin</span>
-                        {% elif user.is_staff %}
+                        {% if user.account.role == 'student' %}
+                            <span class="role role-student">Học viên</span>
+                        {% elif user.account.role == 'teacher' %}
                             <span class="role role-teacher">Giáo viên</span>
                         {% else %}
-                            <span class="role role-user">Học viên</span>
+                            <span class="role role-user">Admin</span>
                         {% endif %}
                     </td>
                     <td class="actions">
-                        <a href="{% url 'user_detail' user.id %}" class="action-button view-button">Xem</a>
-                        <a href="{% url 'user_edit' user.id %}" class="action-button edit-button">Sửa</a>
+                        <a href="{% url 'user_detail' user.user_id %}" class="action-button view-button">Xem</a>
+                        <a href="{% url 'user_edit' user.user_id %}" class="action-button edit-button">Sửa</a>
                         <a href="#" class="action-button delete-button delete-action" data-user-id="{{ user.user_id }}">Xóa</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4">
-                        <div class="empty-state">
-                            <svg class="empty-state-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                            <h3 class="empty-state-title">Không có người dùng nào</h3>
-                            <p class="empty-state-message">Hiện tại chưa có người dùng nào trong hệ thống. Hãy thêm người dùng mới để bắt đầu!</p>
-                            <a href="{% url 'user_create' %}" class="empty-state-action">Thêm người dùng</a>
-                        </div>
-                    </td>
+                    <td colspan="4" class="text-center">Không có người dùng nào</td>
                 </tr>
                 {% endfor %}
             </tbody>
