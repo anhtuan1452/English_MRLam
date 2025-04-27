@@ -57,7 +57,7 @@
             {% for submission in submissions %}
             <tr>
                 <td>{{ submission.userclass.user.id }}</td>
-                <td>{{ submission.userclass.user.username }}</td>
+                <td>{{ submission.userclass.user.first_name }} {{ submission.userclass.user.last_name }}</td>
                 <td>{{ submission.exercise.lessondetail.lesson.lesson_name }}</td>
                 <td>
                     {% if submission.status == 'done' %}

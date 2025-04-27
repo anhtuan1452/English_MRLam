@@ -12,7 +12,30 @@
         margin: 1.5rem 0 1rem;
         padding: 8px 0;
     }
+
+    .status {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+
+    .status-not-started {
+        background-color: #e3f2fd;
+        color: #2196f3;
+    }
+
+    .status-completed {
+        background-color: #ffebee;
+        color: #f44336;
+    }
+
+    .status-ongoing {
+        background-color: #fff8e1;
+        color: #ffc107;
+    }
 </style>
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="custom-title">Danh sách lớp học</h2>
@@ -56,7 +79,7 @@
                 {% for cls in classes %}
                 <tr onclick="window.location.href='{% url 'class_detail' cls.pk %}'" style="cursor:pointer;">
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ cls.class_name }}</td>
+                    <td class="text-start">{{ cls.class_name }}</td>
                     <td>{{ cls.student_count }}</td>
                     <td>{{ cls.course.course_name }}</td>
                     <td>
@@ -73,7 +96,17 @@
                             <span class="text-muted">Chưa có</span>
                         {% endif %}
                     </td>
-                    <td>{{ cls.status }}</td>
+                    <td>
+                        {% with current_date=now %}
+                            {% if cls.begin_time and cls.begin_time > current_date %}
+                                <span class="status status-not-started">Chưa bắt đầu</span>
+                            {% elif cls.end_time and cls.end_time < current_date %}
+                                <span class="status status-completed">Kết thúc</span>
+                            {% else %}
+                                <span class="status status-ongoing">Đang học</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>

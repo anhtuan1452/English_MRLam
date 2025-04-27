@@ -22,6 +22,10 @@ def class_list(request):
 # Chi tiết lớp học - Tab "Mô tả lớp học"
 def class_detail(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
+
+    # Tính sĩ số (số học viên trong lớp)
+    class_size = USER_CLASS.objects.filter(classes=class_instance).count()
+
     if request.method == 'POST':
         form = ClassForm(request.POST, instance=class_instance)
         if form.is_valid():
@@ -32,9 +36,9 @@ def class_detail(request, class_id):
 
     return render(request, 'class_detail.html', {
         'form': form,
-        'class_instance': class_instance
+        'class_instance': class_instance,
+        'class_size': class_size  # Truyền sĩ số vào context
     })
-
 
 def class_exercise(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)

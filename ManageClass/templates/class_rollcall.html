@@ -51,7 +51,7 @@
                             {% for user in data.rollcall_users %}
                             <tr>
                                 <td>{{ user.userclass.user.id }}</td>
-                                <td>{{ user.userclass.user.username }}</td>
+                                <td>{{ user.userclass.user.first_name }} {{ user.userclass.user.last_name }}</td>
                                 <td>{{ user.userclass.classes.class_name }}</td>
                                 <td>{{ user.status }}</td>
                             </tr>

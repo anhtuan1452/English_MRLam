@@ -1,20 +1,30 @@
-
 {% extends 'base-admin.html' %}
 
 {% block content %}
-<div class="container-fluid">
-    <h1 class="mb-4">Danh sách tài liệu</h1>
+<style>
+    .custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
+</style>
 
-    <div class="d-flex justify-content-between mb-4">
+<div class="container-fluid">
+    <h2 class="custom-title mb-0">Danh sách tài liệu</h2>
+
+    <div class="d-flex justify-content-between mb-4" style="margin-top: 10px;">
         <div class="position-relative" style="width: 300px;">
             <i class="fas fa-search position-absolute" style="left: 10px; top: 10px;"></i>
             <input type="text" id="searchInput" class="form-control ps-4" placeholder="Tìm kiếm tài liệu">
         </div>
-
-        <a href="{% url 'add_document' %}" class="btn btn-danger">
+        <a href="{% url 'add_document' %}" class="btn btn-danger ms-2">
             <i class="fas fa-plus me-1"></i> Thêm tài liệu
         </a>
     </div>
+
 
     <div class="card">
         <div class="card-body p-0">
@@ -23,27 +33,32 @@
                     <thead>
                         <tr>
                             <th class="ps-3">STT</th>
-                            <th>Tên tài liệu</th>
-                            <th>Mô tả tài liệu</th>
+                            <th>Khóa học</th>
+                            <th>Nội dung tài liệu</th>
                             <th>Định dạng</th>
-                            <th>Ngày cập nhật</th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for document in documents %}
-                        <tr onclick="window.location='{% url 'document_detail' document.doc_id %}';" style="cursor: pointer;">
+                        <tr>
                             <td class="ps-3">{{ forloop.counter }}</td>
                             <td>
-                                <span class="text-primary">Eng - L{{ document.doc_id }}</span>
-                                {{ document.doc_name }}
+                                <span class="text-primary">
+                                    {{ document.course.course_name|default:"-" }}
+                                </span>
                             </td>
-                            <td>{{ document.description|default:"-"|truncatechars:50 }}</td>
-                            <td>{{ document.file_type|default:"PDF" }}</td>
-                            <td>{{ document.upload_date|date:"d/m/Y" }}</td>
+                            <td>
+                                {{ document.lesson_name|default:"(Không có nội dung)" }}
+                            </td>
+                            <td>PDF</td>
+                            <td>
+                                 <a href="{% url 'document_detail_edit' document.lesson_id %}" class="btn btn-sm btn-primary">Sửa / Xóa</a>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center py-4">Không có tài liệu nào.</td>
+                            <td colspan="6" class="text-center py-4">Không có tài liệu nào.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -54,19 +69,15 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('keyup', function() {
+        searchInput.addEventListener('keyup', function () {
             const searchValue = this.value.toLowerCase();
             const tableRows = document.querySelectorAll('tbody tr');
 
             tableRows.forEach(row => {
                 const text = row.textContent.toLowerCase();
-                if (text.includes(searchValue)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                row.style.display = text.includes(searchValue) ? '' : 'none';
             });
         });
     });

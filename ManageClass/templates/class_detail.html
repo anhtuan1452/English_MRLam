@@ -83,7 +83,8 @@
             </div>
 
             <div class="form-group">
-                <label for="{{ form.class_size.id_for_label }}" class="form-label">Sĩ số</label>
+                <label for="class_size" class="form-label">Sĩ số</label>
+                <input type="text" class="readonly-field" value="{{ class_size }}" readonly />
                 {{ form.class_size }}
             </div>
 
