@@ -72,7 +72,7 @@ class DOCUMENT(models.Model):
     doc_id = models.AutoField(primary_key=True)
     doc_name = models.CharField(max_length=100)
     doc_file = models.FileField(upload_to='documents/', null=True, blank=True)
-
+    auth_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     class Meta:
         db_table = 'DOCUMENT'
 
