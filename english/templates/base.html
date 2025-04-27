@@ -30,66 +30,65 @@
         </div>
 
         <div class="header-right">
-            <div class="search-container">
-                {% block serch %}
-                    {% include 'search_dropdown.html' %}
-                {% endblock %}
-            </div>
+    <div class="search-container">
+        {% block serch %}
+            {% include 'search_dropdown.html' %}
+        {% endblock %}
+    </div>
 
-
-            {% if True %}
-      <!-- Đã đăng nhập -->
-            <div class="profile-dropdown-container" style="position: relative; margin-right: 16px;">
-              <!-- Trigger button -->
-              <a href="javascript:void(0)" class="profile-link" id="profileToggle" style="display: flex; align-items: center;">
+    {% if user.is_authenticated %}
+        <!-- Đã đăng nhập -->
+        <div class="profile-dropdown-container" style="position: relative; margin-right: 16px;">
+            <!-- Trigger button -->
+            <a href="javascript:void(0)" class="profile-link" id="profileToggle" style="display: flex; align-items: center;">
                 <img class="user-avatar" src="{% static 'images/facebook-icon.png' %}" alt="User Avatar"
                      style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
-                <p class="user-name" style="margin-right: 8px;">Vũ</p>
+                <p class="user-name" style="margin-right: 8px;">{{ user.username }}</p>
                 <i class="fas fa-chevron-down"></i>
-              </a>
-
-              <!-- Dropdown menu -->
-              <div class="profile-dropdown-menu" id="profileMenu" style="
-                    position: absolute;
-                    top: 120%;
-                    right: 0;
-                    background: white;
-                    border: 1px solid #ddd;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                    display: none;
-                    min-width: 180px;
-                    z-index: 1000;
-                    padding: 10px 0;
-                  ">
-                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
-                  <i class="fas fa-id-card" style="color: #26a69a; margin-right: 10px;"></i> Edit profile
-                </a>
-                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
-                  <i class="fas fa-key" style="color: #26a69a; margin-right: 10px;"></i> Password
-                </a>
-                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
-                  <i class="fas fa-envelope" style="color: #26a69a; margin-right: 10px;"></i> Email
-                </a>
-                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
-                  <i class="fas fa-users" style="color: #26a69a; margin-right: 10px;"></i> My class
-                </a>
-              </div>
-            </div>
-            <a href="#" class="login-btn">
-                    Log out <i class="fas fa-sign-in-alt"></i>
             </a>
-            {% else %}
-            <div class="auth-buttons">
-                <a href="{% url 'SignIn' %}" class="login-btn">
-                    Log in <i class="fas fa-sign-in-alt"></i>
+
+            <!-- Dropdown menu -->
+            <div class="profile-dropdown-menu" id="profileMenu" style="
+                  position: absolute;
+                  top: 120%;
+                  right: 0;
+                  background: white;
+                  border: 1px solid #ddd;
+                  border-radius: 8px;
+                  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                  display: none;
+                  min-width: 180px;
+                  z-index: 1000;
+                  padding: 10px 0;
+                ">
+                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                    <i class="fas fa-id-card" style="color: #26a69a; margin-right: 10px;"></i> Edit profile
                 </a>
-                <a href="{% url 'SignUp' %}" class="signup-btn">
-                    Sign up
+                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                    <i class="fas fa-key" style="color: #26a69a; margin-right: 10px;"></i> Password
+                </a>
+                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                    <i class="fas fa-envelope" style="color: #26a69a; margin-right: 10px;"></i> Email
+                </a>
+                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                    <i class="fas fa-users" style="color: #26a69a; margin-right: 10px;"></i> My class
                 </a>
             </div>
-            {% endif %}
         </div>
+        <a href="{% url 'logout' %}" class="login-btn">
+            Log out <i class="fas fa-sign-out-alt"></i>
+        </a>
+    {% else %}
+        <div class="auth-buttons">
+            <a href="{% url 'login' %}" class="login-btn">
+                Log in <i class="fas fa-sign-in-alt"></i>
+            </a>
+            <a href="{% url 'register' %}" class="signup-btn">
+                Sign up
+            </a>
+        </div>
+    {% endif %}
+</div>
     </header>
 
     <!-- Main Content -->
