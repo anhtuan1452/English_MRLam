@@ -102,7 +102,7 @@
 </style>
 
 <div class="main-content-container">
-    <h2>Danh sách bài tập</h2>
+    <h2 style="color: #5c6bc0">Danh sách bài tập</h2>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <div style="position: relative; max-width: 500px; width: 100%;">
@@ -136,11 +136,13 @@
                     <td style="padding: 0.75rem 1rem;">{{ lesson.lesson_name }}</td>
                     <td style="padding: 0.75rem 1rem;">{{ lesson.description }}</td>
                     <td style="padding: 0.75rem 1rem;">
-                        <a href="{% url 'xem_baitap' lesson_id=lesson.lesson_id %}" class="btn-view">Xem</a>
-                        <a href="{% url 'sua_baitap' lesson_id=lesson.lesson_id %}" class="btn-edit">Sửa</a>
-                        <button type="button" class="btn-delete open-delete-modal" data-lesson-id="{{ lesson.lesson_id }}" data-lesson-name="{{ lesson.lesson_name }}">
-                            Xóa
-                        </button>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="{% url 'xem_baitap' lesson_id=lesson.lesson_id %}" class="btn-view">Xem</a>
+                            <a href="{% url 'sua_baitap' lesson_id=lesson.lesson_id %}" class="btn-edit">Sửa</a>
+                            <button type="button" class="btn-delete open-delete-modal" data-lesson-id="{{ lesson.lesson_id }}" data-lesson-name="{{ lesson.lesson_name }}">
+                                Xóa
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}
