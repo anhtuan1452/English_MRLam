@@ -132,13 +132,18 @@
         </a>
         <h2 style="color:#5c6bc0" class="lesson-title">Chi tiết bài tập {{ lesson.lesson_name }}</h2>
     </div>
+    {% if success_message %}
+    <div style="color: green; font-weight: bold; margin-bottom: 10px;">
+        {{ success_message }}
+    </div>
+{% endif %}
 
     <form id="lessonForm" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="info-container">
             <div class="button-container">
                 <button type="button" id="editBtn" class="action-button edit-button">Sửa</button>
-                <button type="submit" id="saveBtn" class="action-button save-button" style="display:none;">Lưu</button>
+                <button type="submit" id="saveBtn" class="action-button save-button" style="display:none;" action="{% url 'xem_baitap' lesson.lesson_id %}">Lưu</button>
                 <button type="button" id="cancelBtn" class="action-button cancel-button" style="display:none;">Hủy</button>
             </div>
 
