@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Quản Lý Thông Tin Cá Nhân{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles.css' %}">
+{% endblock %}
+{% block content %}
+<main class="main-content">
+    <div class="container">
+        <div class="profile-layout">
+            {% block scripts %}
+            <script src="{% static 'script.js' %}"></script>
+            {% endblock %}
+            <!-- Mobile menu toggle -->
+            <div class="mobile-menu-toggle">
+                <button id="menuToggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                    <span>Menu</span>
+                </button>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar" id="sidebar">
+                <div class="profile-info">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/96" alt="Đỗ Văn Vũ">
+                    </div>
+                    <h2 class="profile-name">Đỗ Văn Vũ</h2>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <button class="nav-item active" data-tab="personal-info">Chỉnh sửa thông tin cá nhân</button>
+                    <button class="nav-item" data-tab="password">Mật khẩu</button>
+                    <button class="nav-item" data-tab="email">Email</button>
+                    <button class="nav-item" data-tab="classes">Lớp học của tôi</button>
+                </nav>
+            </div>
+
+            <!-- Main content -->
+            <div class="main-content">
+                <!-- Personal Info Tab -->
+                <div class="tab-content active" id="personal-info">
+                    <h1 class="page-title">Thông tin cá nhân</h1>
+
+                    <ul class="info-list">
+                        <li>Không được để trống trường này.</li>
+                        <li>Ảnh phải là định dạng PNG, JPG.</li>
+                    </ul>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label>{{ form.first_name.label }}</label>
+                            {{ form.first_name }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ form.last_name.label }}</label>
+                            {{ form.last_name }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ form.dob.label }}</label>
+                            {{ form.dob }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ form.sex.label }}</label>
+                            {{ form.sex }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ form.description.label }}</label>
+                            {{ form.description }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ form.image.label }}</label>
+                            {{ form.image }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </form>
+
+                        <div class="avatar-section">
+                            <h2 class="section-title">Ảnh đại diện</h2>
+                            <div class="avatar-container">
+                                <div class="avatar-preview">
+                                    <img src="https://via.placeholder.com/300x200" alt="Ảnh đại diện">
+                                </div>
+                                <div class="avatar-actions">
+                                    <button type="button" class="btn btn-outline">Tải ảnh lên</button>
+                                    <button type="button" class="btn btn-red">Lưu Ảnh</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-red">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Password Tab -->
+                <div class="tab-content" id="password">
+                    <h1 class="page-title">Đổi mật khẩu</h1>
+
+                    <ul class="info-list">
+                        <li>Mật khẩu ít nhất 8 ký tự bao gồm chữ, số, ký tự đặc biệt.</li>
+                        <li>Không được để trống trường nào.</li>
+                    </ul>
+
+                    <form class="form">
+                        <div class="form-group">
+                            <label for="currentPassword">Mật khẩu hiện tại</label>
+                            <input type="password" id="currentPassword">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newPassword">Mật khẩu mới</label>
+                            <input type="password" id="newPassword">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Xác nhận mật khẩu</label>
+                            <input type="password" id="confirmPassword">
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-red">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Email Tab -->
+                <div class="tab-content" id="email">
+                    <h1 class="page-title">Chỉnh sửa Email</h1>
+
+                    <ul class="info-list">
+                        <li>Tên đăng nhập không được thay đổi.</li>
+                        <li>Thiết lập đăng ký lần hệ thống.</li>
+                        <li>Email phải có dạng @gmail.com.</li>
+                    </ul>
+
+                    <form class="form">
+                        <div class="form-group">
+                            <label for="username">Tên đăng nhập</label>
+                            <input type="text" id="username" value="Dvv179" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <div class="input-group">
+                                <input type="email" id="emailL" value="Dvv177@gmail.com">
+                                <button type="button" class="btn btn-outline">Lấy mã</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="verificationCode">Mã xác nhận</label>
+                            <div class="input-group">
+                                <input type="text" id="verificationCode" placeholder="Nhập mã xác nhận">
+                                <button type="submit" class="btn btn-red">Xác nhận</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Classes Tab -->
+                <div class="tab-content" id="classes">
+                    <h1 class="page-title">Danh sách lớp học đã đăng ký</h1>
+
+                    <ul class="info-list">
+                        <li>Danh sách lớp học và bài tập sẽ được hiển thị ở đây.</li>
+                    </ul>
+
+                    <div class="class-grid">
+                        <div class="class-card">
+                            <div class="class-header">
+                                KN241 - T5 - CN
+                            </div>
+                            <div class="class-sessions">
+                                <div class="session-item">
+                                    <span>Buổi 1 - Đã học</span>
+                                    <span class="badge badge-green">Đã học</span>
+                                </div>
+                                <div class="session-item">
+                                    <span>Buổi 2 - Đã học</span>
+                                    <span class="badge badge-green">Đã học</span>
+                                </div>
+                                <div class="session-item">
+                                    <span>Buổi 3 - Đang chờ</span>
+                                    <span class="badge badge-yellow">Chưa học</span>
+                                </div>
+                                <div class="session-item">
+                                    <span>Buổi 4 - Chưa mở</span>
+                                    <span class="badge badge-red">Chưa mở</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="class-card">
+                            <div class="class-header">
+                                KN252 - T3 - T7
+                            </div>
+                            <div class="class-sessions">
+                                <div class="session-item">
+                                    <span>Buổi 1 - Đã học</span>
+                                    <span class="badge badge-green">Đã học</span>
+                                </div>
+                                <div class="session-item">
+                                    <span>Buổi 2 - Đã học</span>
+                                    <span class="badge badge-green">Đã học</span>
+                                </div>
+                                <div class="session-item">
+                                    <span>Buổi 3 - Đang chờ</span>
+                                    <span class="badge badge-yellow">Chưa học</span>
+                                </div>
+                                <div class="session-item">
+                                    <span>Buổi 4 - Chưa mở</span>
+                                    <span class="badge badge-red">Chưa mở</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+

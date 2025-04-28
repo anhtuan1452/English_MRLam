@@ -238,18 +238,18 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ user.first_name }} {{ user.last_name }}</td>
                     <td>
-                        {% if user.account.role == 'student' %}
-                            <span class="role role-student">Học viên</span>
-                        {% elif user.account.role == 'teacher' %}
+                        {% if user.is_superuser %}
+                            <span class="role role-student">Admin</span>
+                        {% elif user.is_staff %}
                             <span class="role role-teacher">Giáo viên</span>
                         {% else %}
-                            <span class="role role-user">Admin</span>
+                            <span class="role role-user">Học viên</span>
                         {% endif %}
                     </td>
                     <td class="actions">
-                        <a href="{% url 'user_detail' user.user_id %}" class="action-button view-button">Xem</a>
-                        <a href="{% url 'user_edit' user.user_id %}" class="action-button edit-button">Sửa</a>
-                        <a href="#" class="action-button delete-button delete-action" data-user-id="{{ user.user_id }}">Xóa</a>
+                        <a href="{% url 'user_detail' user.id %}" class="action-button view-button">Xem</a>
+                        <a href="{% url 'user_edit' user.id %}" class="action-button edit-button">Sửa</a>
+                        <a href="{% url 'user_delete' user.id %}" class="action-button delete-button delete-action" data-user-id="{{ user.id }}">Xóa</a>
                     </td>
                 </tr>
                 {% empty %}
@@ -272,10 +272,10 @@
     document.querySelectorAll('.delete-action').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
-            const userId = this.getAttribute('data-user-id');
+            const id = this.getAttribute('data-user-id');
             if (confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
                 const form = document.getElementById('delete-form');
-                form.action = `/users/${userId}/delete/`;
+                form.action = `/listuser_admin/user_delete/${id}/`;
                 form.submit();
             }
         });

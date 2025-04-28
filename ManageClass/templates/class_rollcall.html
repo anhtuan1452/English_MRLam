@@ -1,0 +1,127 @@
+{% extends "base-admin.html" %}
+
+{% block title %}Điểm danh{% endblock %}
+
+{% block content %}
+<style>
+    .custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
+</style>
+
+<div class="container-fluid tab-section">
+    <h2 class="custom-title">Danh sách lớp học > Lớp {{ class_instance.class_name }}</h2>
+
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link active" href="{% url 'class_detail' class_id=class_instance.pk %}">Mô tả lớp học</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'class_exercise' class_id=class_instance.pk %}">Bài tập</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'class_rollcall' class_id=class_instance.pk %}">Điểm danh</a>
+        </li>
+    </ul>
+
+    <div class="accordion" id="rollcallAccordion">
+        {% for data in rollcall_data %}
+        <div class="accordion-item mb-2">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ data.lesson_detail.id }}">
+                    {{ data.lesson_detail.session_number }} - {{ data.lesson_detail.lesson.lesson_name }}
+                </button>
+            </h2>
+            <div id="collapse{{ data.lesson_detail.id }}" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    {% if data.has_rollcall %}
+                    <form id="rollcall-form-{{ data.lesson_detail.id }}" class="rollcall-form">
+                        {% csrf_token %}
+                        <table class="table table-bordered text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Họ và tên</th>
+                                    <th>Lớp</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in data.rollcall_users %}
+                                <tr>
+                                    <td>{{ user.userclass.user.id }}</td>
+                                    <td>{{ user.userclass.user.first_name }} {{ user.userclass.user.last_name }}</td>
+                                    <td>{{ user.userclass.classes.class_name }}</td>
+                                    <td>
+                                        <select name="status_{{ user.pk }}" class="form-select status-dropdown" data-user-id="{{ user.userclass.user.id }}" data-lesson-detail-id="{{ data.lesson_detail.id }}">
+                                            <option value="present" {% if user.status == "present" %}selected{% endif %}>Present</option>
+                                            <option value="absent" {% if user.status == "absent" %}selected{% endif %}>Absent</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4">Không có học viên tham gia điểm danh.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-dark">Lưu</button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <p class="text-muted">Chưa có điểm danh cho buổi học này.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>Không có buổi học nào trong lớp này.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // Lắng nghe sự kiện thay đổi trạng thái của dropdown
+    document.querySelectorAll('.status-dropdown').forEach(function(select) {
+        select.addEventListener('change', function() {
+            const userId = this.getAttribute('data-user-id');
+            const lessonDetailId = this.getAttribute('data-lesson-detail-id');
+            const status = this.value;
+
+            const rollcallData = {
+                [userId]: {
+                    status: status,
+                    lesson_detail_id: lessonDetailId
+                }
+            };
+
+            // Gửi yêu cầu AJAX để cập nhật trạng thái điểm danh
+            fetch("{% url 'update_rollcall' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: `rollcall_data=${JSON.stringify(rollcallData)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);  // Hiển thị thông báo thành công
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,166 +1,192 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Đăng Ký{% endblock %}
+{% block title %}Đăng nhập{% endblock %}
 
 {% block content %}
-
 <div class="main-content">
-        <div class="form-section">
-            <h1 class="form-title">Đăng nhập</h1>
+    <div class="form-section">
+        <h1 class="form-title">Đăng nhập</h1>
 
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{% if message.tags == 'success' %}success{% else %}error{% endif %}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
             <div class="form-group">
                 <label class="form-label">Tên đăng nhập hoặc email</label>
-                <input type="text" class="form-input" placeholder="Tên đăng nhập hoặc email">
+                <input type="text" class="form-input" name="username" placeholder="Tên đăng nhập hoặc email" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Mật Khẩu</label>
-                <input type="password" class="form-input" placeholder="Nhập mật khẩu">
+                <input type="password" class="form-input" name="password" placeholder="Nhập mật khẩu" required>
             </div>
 
             <div class="remember-forgot">
                 <div class="remember-password">
-                    <input type="checkbox" id="remember" class="remember-checkbox">
+                    <input type="checkbox" id="remember" name="remember" class="remember-checkbox">
                     <label for="remember">Nhớ mật khẩu</label>
                 </div>
-                <a href="{% url 'ForgetPassword' %}" class="forgot-password">Quên mật khẩu?</a>
+                <a href="{% url 'forget_password' %}" class="forgot-password">Quên mật khẩu?</a>
             </div>
 
-            <button class="login-btnn">Đăng nhập</button>
-        </div>
-
-        <div class="image-section">
-            <img src="{% static 'img1.png' %}" alt="Học sinh đang đọc sách">
-        </div>
+            <button type="submit" class="login-btnn">Đăng nhập</button>
+        </form>
     </div>
+
+    <div class="image-section">
+        <img src="{% static 'img1.png' %}" alt="Học sinh đang đọc sách">
+    </div>
+</div>
+
 <style>
     * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        body {
-            background-color: #FFFFFF;
-        }
+    body {
+        background-color: #FFFFFF;
+    }
 
-        /* Phần nội dung chính */
+    /* Phần nội dung chính */
+    .main-content {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+        min-height: 600px;
+        align-items: center;
+        background-color: #FFFFFF;
+    }
+
+    /* Phần form bên trái */
+    .form-section {
+        width: 50%;
+        padding: 80px 10%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .form-title {
+        font-size: 24px;
+        margin-bottom: 40px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .remember-password {
+        display: flex;
+        align-items: center;
+    }
+
+    .remember-checkbox {
+        margin-right: 8px;
+    }
+
+    .forgot-password {
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .forgot-password:hover {
+        text-decoration: underline;
+    }
+
+    .login-btnn {
+        width: 100%;
+        padding: 12px;
+        background-color: #dc0000;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    /* Phần hình ảnh bên phải */
+    .image-section {
+        width: 50%;
+        height: 500px;
+        overflow: hidden;
+    }
+
+    .image-section img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Hiển thị thông báo */
+    .messages {
+        margin-bottom: 20px;
+    }
+
+    .messages .success {
+        color: green;
+        font-size: 14px;
+    }
+
+    .messages .error {
+        color: red;
+        font-size: 14px;
+    }
+
+    /* Media queries cho thiết bị di động */
+    @media (max-width: 768px) {
         .main-content {
-            display: flex;
-            width: 100%;
-            height:100vh;
-            min-height: 600px;
-            align-items: center;
-            background-color: #FFFFFF;
+            flex-direction: column-reverse;
         }
 
-        /* Phần form bên trái */
+        .form-section, .image-section {
+            width: 100%;
+        }
+
         .form-section {
-            width: 50%;
-            padding: 80px 10%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            padding: 40px 20px;
         }
 
-        .form-title {
-            font-size: 24px;
-            margin-bottom: 40px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .remember-password {
-            display: flex;
-            align-items: center;
-        }
-
-        .remember-checkbox {
-            margin-right: 8px;
-        }
-
-        .forgot-password {
-            color: #333;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .forgot-password:hover {
-            text-decoration: underline;
-        }
-
-        .login-btnn {
-            width: 100%;
-            padding: 12px;
-            background-color: #dc0000;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        /* Phần hình ảnh bên phải */
         .image-section {
-            width: 50%;
-            height:500px;
-            overflow: hidden;
+            height: 300px;
         }
-
-        .image-section img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center:
-        }
-
-        /* Media queries cho thiết bị di động */
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column-reverse;
-            }
-
-            .form-section, .image-section {
-                width: 100%;
-            }
-
-            .form-section {
-                padding: 40px 20px;
-            }
-
-            .image-section {
-                height: 300px;
-            }
-        }
+    }
 </style>
 {% endblock %}

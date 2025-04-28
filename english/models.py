@@ -103,6 +103,8 @@ class PAYMENT_INFO(models.Model):
     payment_id = models.ForeignKey(PAYMENT, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.CharField(max_length=150)
+    class Meta:
+        db_table = 'PAYMENT_INFO'
 
 class CLASS(models.Model):
     class_id = models.AutoField(primary_key=True)
