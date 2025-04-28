@@ -77,6 +77,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
+
             ],
         },
     },
@@ -147,3 +149,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'nguyenhoangatuan10b72020@gmail.com'  # Thay bằng email của bạn
 EMAIL_HOST_PASSWORD = 'axie ycom jdtb wdid'  # Thay bằng mật khẩu ứng dụng của Gmail
 DEFAULT_FROM_EMAIL = 'nguyenhoangatuan10b72020@gmail.com'  # Thay bằng email của bạn
+
+
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = '/media/'

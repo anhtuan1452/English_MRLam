@@ -127,23 +127,23 @@
 <div class="main-content-container">
     <div class = "icontainer">
         <!-- Thêm phần quay lại ở trên tiêu đề -->
-        <a href="javascript:history.back()" class="back-link">
+        <a href="{% url 'admin_ql_baitap' %}" class="back-link">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
         <h2 style="color:#5c6bc0" class="lesson-title">Chi tiết bài tập {{ lesson.lesson_name }}</h2>
     </div>
-    {% if success_message %}
-    <div style="color: green; font-weight: bold; margin-bottom: 10px;">
-        {{ success_message }}
-    </div>
-{% endif %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
 
     <form id="lessonForm" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="info-container">
             <div class="button-container">
                 <button type="button" id="editBtn" class="action-button edit-button">Sửa</button>
-                <button type="submit" id="saveBtn" class="action-button save-button" style="display:none;" action="{% url 'xem_baitap' lesson.lesson_id %}">Lưu</button>
+                <button type="submit" id="saveBtn" class="action-button save-button" style="display:none;">Lưu</button>
                 <button type="button" id="cancelBtn" class="action-button cancel-button" style="display:none;">Hủy</button>
             </div>
 
@@ -207,27 +207,35 @@
         exerciseFileInput: document.getElementById('exerciseFileInput')?.innerHTML,
     };
 
+    // Khi nhấn vào nút Sửa
     editBtn.addEventListener('click', function() {
         switchToEditMode();
     });
 
+    // Khi nhấn vào nút Hủy
     cancelBtn.addEventListener('click', function() {
         cancelEditMode();
     });
 
+    // Chuyển sang chế độ chỉnh sửa
     function switchToEditMode() {
+        // Chuyển "Tên bài học" thành input
         const lessonNameDiv = document.getElementById('lessonName');
         const lessonNameText = lessonNameDiv.innerText.trim();
         lessonNameDiv.innerHTML = `<input type="text" name="lesson_name" value="${lessonNameText}" class="editable-field">`;
 
+        // Chuyển "Nội dung bài tập" thành textarea
         const descriptionDiv = document.getElementById('description');
         const descriptionText = descriptionDiv.innerText.trim();
         descriptionDiv.innerHTML = `<textarea name="description" rows="5" class="editable-field">${descriptionText}</textarea>`;
 
-        const lessonFileDiv = document.getElementById('lessonFileInput');
+        // Chuyển "Khóa học" thành input
         const courseNameDiv = document.getElementById('courseName');
         const courseNameText = courseNameDiv.innerText.trim();
         courseNameDiv.innerHTML = `<input type="text" name="course_name" value="${courseNameText}" class="editable-field">`;
+
+        // Chuyển các file hiện có thành input[type="file"]
+        const lessonFileDiv = document.getElementById('lessonFileInput');
         if (lessonFileDiv) {
             const lessonFileLink = lessonFileDiv.querySelector('a');
             if (lessonFileLink) {
@@ -247,11 +255,13 @@
             }
         }
 
+        // Ẩn nút "Sửa" và hiển thị nút "Lưu" và "Hủy"
         editBtn.style.display = 'none';
         saveBtn.style.display = 'inline-block';
         cancelBtn.style.display = 'inline-block';
     }
 
+    // Khi nhấn vào nút Hủy, quay lại chế độ ban đầu
     function cancelEditMode() {
         document.getElementById('lessonName').innerHTML = originalData.lessonName;
         document.getElementById('description').innerHTML = originalData.description;
@@ -263,14 +273,13 @@
         if (originalData.exerciseFileInput) {
             document.getElementById('exerciseFileInput').innerHTML = originalData.exerciseFileInput;
         }
-        if (originalData.courseName) {
-            document.getElementById('courseName').innerHTML = originalData.courseName;
-        }
 
+        // Ẩn nút "Lưu" và "Hủy", hiển thị lại nút "Sửa"
         editBtn.style.display = 'inline-block';
         saveBtn.style.display = 'none';
         cancelBtn.style.display = 'none';
     }
 });
+
 </script>
 {% endblock %}
