@@ -66,30 +66,30 @@ def test_add(request):
     return render(request, 'test_add.html')
 
 
-# from django.shortcuts import render
-# from english.models import  RESULT, ACCOUNT
-#
-#
-# def test_results_view(request):
-#     # Get all results with related test and user information
-#     results = RESULT.objects.select_related('test', 'user').all()
-#
-#     # Prepare data for the template
-#     test_results = []
-#     for index, result in enumerate(results, start=1):
-#         test_results.append({
-#             'stt': index,
-#             'full_name': f"{result.user.last_name} {result.user.first_name}",
-#             'test_name': result.test.test_name,
-#             'total_score': f"{result.result}/30",  # Assuming max score is 30
-#             'test_date': result.test.time,  # You might want to add a date field to Test model
-#             'duration': "29 phút",  # You might want to add duration field to Result model
-#         })
-#
-#     context = {
-#         'test_results': test_results,
-#         'page_title': 'Bài kiểm tra',
-#         'section_title': 'Kết quả',
-#     }
-#
-#     return render(request, 'test_results.html', context)
+from django.shortcuts import render
+from english.models import  RESULT
+
+
+def test_results_view(request):
+    # Get all results with related test and user information
+    results = RESULT.objects.select_related('test', 'user').all()
+
+    # Prepare data for the template
+    test_results = []
+    for index, result in enumerate(results, start=1):
+        test_results.append({
+            'stt': index,
+            'full_name': f"{result.user.last_name} {result.user.first_name}",
+            'test_name': result.test.test_name,
+            'total_score': f"{result.result}/30",  # Assuming max score is 30
+            'test_date': result.test.time,  # You might want to add a date field to Test model
+            'duration': "29 phút",  # You might want to add duration field to Result model
+        })
+
+    context = {
+        'test_results': test_results,
+        'page_title': 'Bài kiểm tra',
+        'section_title': 'Kết quả',
+    }
+
+    return render(request, 'test_results.html', context)
