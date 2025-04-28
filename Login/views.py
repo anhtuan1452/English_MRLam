@@ -67,7 +67,7 @@ def login_view(request):
     if request.user.is_authenticated:
         # Nếu đã đăng nhập, chuyển hướng dựa trên vai trò
         if request.user.is_superuser:
-            return redirect('class_list')  # Trang cho admin
+            return redirect('user_list')  # Trang cho admin
         elif request.user.is_staff:
             return redirect('teacher_dashboard')  # Trang cho giáo viên
         else:
@@ -99,7 +99,7 @@ def login_view(request):
             messages.success(request, 'Đăng nhập thành công!')
             # Chuyển hướng dựa trên vai trò
             if user.is_superuser:
-                return redirect('admin_dashboard')  # Trang cho admin
+                return redirect('user_list')  # Trang cho admin
             elif user.is_staff:
                 return redirect('teacher_dashboard')  # Trang cho giáo viên
             else:

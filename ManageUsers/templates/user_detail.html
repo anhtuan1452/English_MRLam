@@ -279,7 +279,7 @@ body {
                 
                 <div class="info-item">
                     <div class="info-label">Tên tài khoản</div>
-                    <div class="info-value">{{ user.account.username }}</div>
+                    <div class="info-value">{{ user.username }}</div>
                 </div>
                 
                 <div class="info-item">
@@ -290,12 +290,12 @@ body {
                 <div class="info-item">
                     <div class="info-label">Vai trò</div>
                     <div class="info-value text-green">
-                        {% if user.account.role == 'student' %}
-                            Học viên
-                        {% elif user.account.role == 'teacher' %}
-                            Giáo viên
+                        {% if user.is_superuser %}
+                            <span class="role role-student">Admin</span>
+                        {% elif user.is_staff %}
+                            <span class="role role-teacher">Giáo viên</span>
                         {% else %}
-                            Admin
+                            <span class="role role-user">Học viên</span>
                         {% endif %}
                     </div>
                 </div>
@@ -343,12 +343,12 @@ body {
     </div>
 
     <div class="action-buttons">
-        <a href="{% url 'user_edit' user.user_id %}" class="btn btn-success">Sửa</a>
+        <a href="{% url 'user_edit' user.id %}" class="btn btn-success">Sửa</a>
         <a href="#" class="btn btn-outline-danger" id="deleteBtn">Xóa</a>
     </div>
 
     <!-- Form ẩn để xóa người dùng -->
-    <form id="delete-form" method="POST" action="{% url 'user_delete' user.user_id %}" style="display: none;">
+    <form id="delete-form" method="POST" action="{% url 'user_delete' user.id %}" style="display: none;">
         {% csrf_token %}
     </form>
 </div>
