@@ -161,7 +161,7 @@ width: 90%; /* Chiếm 90% độ rộng phần tử cha */
       <!-- Dòng nộp bài - chỉ là text -->
       <li class="task-item">
         <a href="{% url 'student_submission' lesson.lesson_id %}" class="material-link"><span class="folder-icon">📁</span>
-          Nộp bài tập buổi {{ lesson.lesson_id }}
+          Nộp bài tập buổi {{ lessondetail.session_number }}
         </a>
       </li>
     </ul>
