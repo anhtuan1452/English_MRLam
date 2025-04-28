@@ -40,7 +40,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 20px;
     position: sticky;
     top: 0;
     background-color: white;
@@ -88,6 +87,14 @@
     text-align: left;
     font-size: 14px;
   }
+  h2{
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #5c6bc0;
+    border-bottom: 2px solid;
+    margin: 1.5rem 0 1rem;
+    padding: 8px 0;
+  }
 </style>
 <div class="course-detail-container">
   <form method="post">
@@ -100,7 +107,7 @@
                 class="btn back-btn" style="font-size:20px; font-weight:600; cursor:pointer;">
           ←
         </button>
-        <h1>{{ course.course_name }}</h1>
+        <h2>{{ course.course_name }}</h2>
         {% if lesson_details %}
           <span class="course-date">{{ lesson_details.0.classes.begin_time|date:"d/m/Y" }}</span>
         {% endif %}
@@ -119,7 +126,7 @@
     <div class="course-overview">
       <!-- Tên khóa học -->
       <div class="form-group" id="courseNameGroup">
-        <label for="course_name">Tên khóa học</label>
+        <label for="course_name" style="margin-top: 10px;">Tên khóa học</label>
         <input type="text" id="course_name" name="course_name"
                value="{{ course.course_name }}">
       </div>
