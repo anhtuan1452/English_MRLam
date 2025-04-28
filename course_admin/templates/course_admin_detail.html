@@ -87,14 +87,6 @@
     text-align: left;
     font-size: 14px;
   }
-  h2{
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #5c6bc0;
-    border-bottom: 2px solid;
-    margin: 1.5rem 0 1rem;
-    padding: 8px 0;
-  }
 </style>
 <div class="course-detail-container">
   <form method="post">
@@ -107,7 +99,12 @@
                 class="btn back-btn" style="font-size:20px; font-weight:600; cursor:pointer;">
           ←
         </button>
-        <h2>{{ course.course_name }}</h2>
+        <h2 style="font-size: 1.8rem;
+            font-weight: 700;
+            color: #5c6bc0;
+            border-bottom: 2px solid;
+            margin: 1.5rem 0 1rem;
+            padding: 8px 0;">{{ course.course_name }}</h2>
         {% if lesson_details %}
           <span class="course-date">{{ lesson_details.0.classes.begin_time|date:"d/m/Y" }}</span>
         {% endif %}
