@@ -65,27 +65,26 @@ def student_submission(request, lesson_id):
 
 def student_homework(request):
     # Lấy khóa học theo course_id
-    # course = get_object_or_404(COURSE, pk=1)
-    #
-    # # Lấy tất cả các bài học thuộc khóa học này
-    # lessons = LESSON.objects.filter(course=course).order_by('lesson_id')
-    #
-    # # Chuẩn bị dữ liệu đơn giản cho template
-    # lesson_data = []
-    # for lesson in lessons:
-    #     lesson_data.append({
-    #         'lesson_id': lesson.lesson_id,
-    #         'material': f"Tài liệu học buổi {lesson.lesson_id}",
-    #         'homework': f"Bài tập buổi {lesson.lesson_id}",
-    #         'submit': f"Nộp bài tập buổi {lesson.lesson_id}",
-    #     })
-    #
-    # return render(request, 'student_homework.html', {
-    #     'course': course,
-    #     'lessons': lesson_data,
-    #     'page_title': f'Bài tập - {course.course_name}'
-    # })
-    return render(request, 'student_homework.html')
+    course = get_object_or_404(COURSE, pk=1)
+
+    # Lấy tất cả các bài học thuộc khóa học này
+    lessons = LESSON.objects.filter(course=course).order_by('lesson_id')
+
+    # Chuẩn bị dữ liệu đơn giản cho template
+    lesson_data = []
+    for lesson in lessons:
+        lesson_data.append({
+            'lesson_id': lesson.lesson_id,
+            'material': f"Tài liệu học buổi {lesson.lesson_id}",
+            'homework': f"Bài tập buổi {lesson.lesson_id}",
+            'submit': f"Nộp bài tập buổi {lesson.lesson_id}",
+        })
+
+    return render(request, 'student_homework.html', {
+        'course': course,
+        'lessons': lesson_data,
+        'page_title': f'Bài tập - {course.course_name}'
+    })
 # # views.py
 # from django.shortcuts import render
 # from english.models import Lesson, Course

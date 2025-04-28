@@ -1,5 +1,7 @@
 from django.shortcuts import render
 
+
+
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
@@ -33,5 +35,4 @@ def admin_ql_thanhtoan(request):
 
 def admin_ql_khoahoc(request):
     return render(request, 'ql_khoahoc.html')
-
 

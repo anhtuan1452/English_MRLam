@@ -2,6 +2,7 @@
 {% extends 'base.html' %}
 
 {% block title %}Tài liệu - HL Lam{% endblock %}
+
 {% block styles %}
 <style>
     /* Thiết lập chung */
@@ -10,15 +11,14 @@ body {
   line-height: 1.6;
   color: #333;
   background-color: #f5f5f5;
-
-  width:100%;
+  width: 100%;
   padding: 0;
 }
 
 .container {
-  width:100%;
-   margin:20vh;
-   margin-top: 9vh;
+  width: 100%;
+  margin: 20vh;
+  margin-top: 9vh;
   padding: 20px;
 }
 
@@ -41,37 +41,33 @@ h1 {
   border-bottom: 2px solid;
 }
 
-/* English Grammar */
+/* Các màu sắc cho các danh mục */
 .category-title:nth-of-type(1) {
   color: #5c6bc0;
   border-color: #5c6bc0;
 }
 
-/* English Vocabulary */
 .category-title:nth-of-type(2) {
   color: #ff9800;
   border-color: #ff9800;
 }
 
-/* Speaking Skills */
 .category-title:nth-of-type(3) {
   color: #4caf50;
   border-color: #4caf50;
 }
 
-/* Listening Skills */
 .category-title:nth-of-type(4) {
   color: #f44336;
   border-color: #f44336;
 }
 
-/* Other Materials */
 .category-title:nth-of-type(5) {
   color: #9c27b0;
   border-color: #9c27b0;
 }
 
-/* Thẻ tài liệu */
+/* Các thẻ tài liệu */
 .material-card {
   transition: all 0.3s ease;
   height: 100%;
@@ -79,7 +75,7 @@ h1 {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width:350px;
+  max-width: 350px;
 }
 
 .material-card:hover {
@@ -95,7 +91,7 @@ h1 {
 .card-body {
   padding: 1.25rem;
   background-color: white;
-  max-width:200px;
+  max-width: 200px;
 }
 
 .card-title {
@@ -164,7 +160,6 @@ h1 {
   }
 }
 
-/* Link styles */
 a.stretched-link {
   position: absolute;
   top: 0;
@@ -175,7 +170,6 @@ a.stretched-link {
   content: "";
 }
 
-/* Empty state */
 .col-12 p {
   padding: 20px;
   background-color: #f8f9fa;
@@ -206,9 +200,10 @@ a.stretched-link {
 }
 </style>
 {% endblock %}
+
 {% block content %}
 <div class="container">
-    <h1 class="mb-4">Tài liệu</h1>
+    <h2 class="category-title">Tài liệu FREE</h2>
 
     <!-- Grammar Materials -->
     <div class="mb-5">

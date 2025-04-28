@@ -2,24 +2,24 @@ from django import forms
 from english.models import LESSON, LESSON_DETAIL, COURSE
 
 class CombinedLessonForm(forms.Form):
-    # Fields từ LESSON
+    # Field từ LESSON
     lesson_file = forms.FileField(
         label="Tài liệu bài học (PDF)",
-        widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'application/pdf'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'application/pdf'}),
         required=False
     )
     exercise_file = forms.FileField(
         label="Tài liệu bài tập (PDF)",
-        widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'application/pdf'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'application/pdf'}),
         required=False
     )
     course = forms.ModelChoiceField(
         label="Khóa học",
-        queryset=COURSE.objects.none(),  # tạm thời None
+        queryset=COURSE.objects.none(),  # sẽ cập nhật trong __init__
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
-    # Fields từ LESSON_DETAIL
+    # Các trường từ LESSON
     lesson_name = forms.CharField(
         label="Tên tài liệu",
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nhập tên tài liệu'})
@@ -32,32 +32,34 @@ class CombinedLessonForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.lesson_instance = kwargs.pop('lesson_instance', None)
-        self.detail_instance = kwargs.pop('detail_instance', None)
         super().__init__(*args, **kwargs)
 
-        # Sửa lỗi course queryset
+        # Cập nhật danh sách khóa học
         self.fields['course'].queryset = COURSE.objects.all()
 
-        # Gán dữ liệu ban đầu nếu có
+        # Set dữ liệu ban đầu nếu đang chỉnh sửa
         if self.lesson_instance:
             self.fields['course'].initial = self.lesson_instance.course
-            # Không cần set initial cho file vì form không hỗ trợ preview file
-        if self.detail_instance:
-            self.fields['lesson_name'].initial = self.detail_instance.lesson_name
-            self.fields['description'].initial = self.detail_instance.description
+            self.fields['lesson_name'].initial = self.lesson_instance.lesson_name
+            self.fields['description'].initial = self.lesson_instance.description
 
     def save(self):
+        # Lưu dữ liệu vào LESSON
         lesson = self.lesson_instance or LESSON()
         lesson.course = self.cleaned_data['course']
+
+        # Cập nhật tài liệu bài học nếu có
         if self.cleaned_data.get('lesson_file'):
             lesson.lesson_file = self.cleaned_data['lesson_file']
+
+        # Cập nhật tài liệu bài tập nếu có
         if self.cleaned_data.get('exercise_file'):
             lesson.exercise_file = self.cleaned_data['exercise_file']
-        lesson.save()
 
-        detail = self.detail_instance or LESSON_DETAIL(lesson=lesson)
-        detail.lesson_name = self.cleaned_data['lesson_name']
-        detail.description = self.cleaned_data['description']
-        detail.save()
+        # Cập nhật tên tài liệu và mô tả
+        lesson.lesson_name = self.cleaned_data['lesson_name']
+        lesson.description = self.cleaned_data['description']
+
+        lesson.save()
 
         return lesson
