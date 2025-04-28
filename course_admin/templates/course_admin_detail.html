@@ -3,210 +3,160 @@
 
 {% block content %}
 <style>
-/* -- CSS giữ nguyên như bạn đã viết ở trên -- */
-.course-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 20px;
+  /* --- CSS Grid 3 cột cho phần tổng quan --- */
+  .course-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 20px;
+    row-gap: 16px;
+    margin-bottom: 30px;
+  }
 
-  position: sticky;
-  top: 0;
-  background-color: white;
-  z-index: 999;
-  border-bottom: 1px solid #ddd;
-}
-.course-info h1 {
-  font-size: 22px;
-  font-weight: 600;
-  margin-right: 10px;
-}
-.course-date {
-  margin-left: 10px;
-  font-size: 14px;
-  color: #777;
-}
-.action-buttons .btn {
-  margin-left: 10px;
-}
-.btn {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-.delete-btn {
-  background-color: #dc3545;
-  color: #fff;
-}
-.delete-btn:hover {
-  background-color: #c82333;
-}
-.save-btn {
-  background-color: #28a745;
-  color: #fff;
-}
-.save-btn:hover {
-  background-color: #218838;
-}
-.tab-nav {
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 20px;
-}
-.tab {
-  background: none;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #555;
-  outline: none;
-}
-.tab.active {
-  border-bottom: 2px solid #007bff;
-  color: #007bff;
-}
-.course-overview {
-  display: grid;
-  column-gap: 20px;
-  row-gap: 16px;
-  margin-bottom: 30px;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-.form-group label {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 5px;
-}
-.form-group input,
-.form-group textarea {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-#courseDescription {
-  grid-column: 1 / 3;
-}
-.sessions-section h2 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  font-weight: 600;
-}
-.sessions-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-.wrapper_table {
-  max-height: 210px;
-  overflow-y: auto;
-  margin-bottom: 20px;
-}
-.sessions-table thead {
-  background: #f1f1f1;
-}
-.sessions-table thead th {
-  position: sticky;
-  top: 0;
-  background-color: #f1f1f1;
-  z-index: 2;
-}
-.sessions-table th,
-.sessions-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: left;
-  font-size: 14px;
-}
-.status {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-.status.done {
-  background-color: #d4edda;
-  color: #155724;
-}
-.status.pending {
-  background-color: #fff3cd;
-  color: #856404;
-}
-.add-session-btn {
-  background-color: #007bff;
-  color: #fff;
-}
-.add-session-btn:hover {
-  background-color: #0056b3;
-}
+  /* Nhóm Tên khóa học và Mô tả chiếm cả 3 cột */
+  #courseNameGroup,
+  #courseDescriptionGroup {
+    grid-column: 1 / 4;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  .form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  /* CSS khác giữ nguyên */
+  .course-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 999;
+    border-bottom: 1px solid #ddd;
+  }
+  .course-info h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-right: 10px;
+  }
+  .course-date {
+    margin-left: 10px;
+    font-size: 14px;
+    color: #777;
+  }
+  .action-buttons .btn {
+    margin-left: 10px;
+  }
+  .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .delete-btn { background-color: #dc3545; color: #fff; }
+  .delete-btn:hover { background-color: #c82333; }
+  .save-btn { background-color: #28a745; color: #fff; }
+  .save-btn:hover { background-color: #218838; }
+  .add-session-btn{ background-color: blue; color: #fff; }
+  .add-session-btn:hover { background-color: #0d6efd; color: #fff; }
+  .tab-nav { border-bottom: 1px solid #ddd; margin-bottom: 20px; }
+  .tab { background: none; border: none; padding: 10px 20px; cursor: pointer; font-size: 14px; color: #555; outline: none; }
+  .tab.active { border-bottom: 2px solid #007bff; color: #007bff; }
+  .sessions-section h2 { margin-bottom: 10px; font-size: 18px; font-weight: 600; }
+  .sessions-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  .wrapper_table { max-height: 210px; overflow-y: auto; margin-bottom: 20px; }
+  .sessions-table thead { background: #f1f1f1; }
+  .sessions-table thead th { position: sticky; top: 0; background-color: #f1f1f1; z-index: 2; }
+  .sessions-table th,
+  .sessions-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 14px;
+  }
 </style>
-
 <div class="course-detail-container">
-  <!-- Header -->
-  <div class="course-header">
-    <div class="course-info" style="display: flex; align-items: center; gap: 12px; ">
-      <button onclick="history.back()" class="btn back-btn" style="
-          font-size: 20px;
-          font-weight: 600;
-          cursor: pointer;
-          margin-bottom: 10px;
-        ">
-        ←
-      </button>
-      <h1>{{ course.course_name }}</h1>
-      <span class="course-date">{{ course.begin_date|default:"" }}</span>
-    </div>
-    <div class="action-buttons">
-      <button class="btn delete-btn">Xóa</button>
-      <button class="btn save-btn">Lưu</button>
-    </div>
-  </div>
+  <form method="post">
+    {% csrf_token %}
 
-  <!-- Tab -->
-  <div class="tab-nav">
-    <button class="tab active">Tổng quan</button>
-  </div>
+    <!-- Header với nút Lưu là submit -->
+    <div class="course-header">
+      <div class="course-info" style="display:flex; align-items:center; gap:12px;">
+        <button type="button" onclick="window.location.href='{% url 'admin_ql_khoahoc' %}'"
+                class="btn back-btn" style="font-size:20px; font-weight:600; cursor:pointer;">
+          ←
+        </button>
+        <h1>{{ course.course_name }}</h1>
+        {% if lesson_details %}
+          <span class="course-date">{{ lesson_details.0.classes.begin_time|date:"d/m/Y" }}</span>
+        {% endif %}
+      </div>
+      <div class="action-buttons">
+        <!-- Nút Lưu -->
+        <button type="submit" name="action" value="save" class="btn save-btn">Lưu</button>
 
-  <!-- Thông tin tổng quan -->
-  <div class="course-overview">
-    <div class="form-group">
-      <label for="courseName">Tên khóa học</label>
-      <input type="text" id="courseName" value="{{ course.course_name }}">
-    </div>
-
-    <div class="form-group">
-      <label for="courseDescription">Mô tả</label>
-      <textarea id="courseDescription" rows="4">{{ course.description }}</textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="instructor">Giáo viên</label>
-      <select id="instructor" name="instructor">
-        {% for teacher in teachers %}
-          <option value="{{ teacher.username }}"
-            {% if teacher.username == course.teacher_name %}selected{% endif %}>
-            {{ teacher.username }}
-          </option>
-        {% endfor %}
-      </select>
+        <!-- Nút Xóa -->
+        <button type="button" class="btn delete-btn" onclick="confirmDelete()">Xóa</button>
+      </div>
     </div>
 
 
-    <div class="form-group">
-      <label for="duration">Thời gian</label>
-      <input type="text" id="duration" value="3 tháng">
-    </div>
+    <!-- Thông tin tổng quan -->
+    <div class="course-overview">
+      <!-- Tên khóa học -->
+      <div class="form-group" id="courseNameGroup">
+        <label for="course_name">Tên khóa học</label>
+        <input type="text" id="course_name" name="course_name"
+               value="{{ course.course_name }}">
+      </div>
 
-    <div class="form-group">
-      <label for="price">Giá</label>
-      <input type="text" id="price" value="{{ course.price }} VND">
+      <!-- Mô tả -->
+      <div class="form-group" id="courseDescriptionGroup">
+        <label for="course_description">Mô tả</label>
+        <textarea id="course_description" name="course_description" rows="4">{{ course.description }}</textarea>
+      </div>
+
+      <!-- Giáo viên -->
+      <div class="form-group">
+        <label for="instructor">Giáo viên</label>
+        <select id="instructor" name="instructor">
+          {% for user in teachers %}
+            <option value="{{ user.id }}"
+              {% if user.get_full_name == course.teacher_name %}selected{% endif %}>
+              {{ user.get_full_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Thời gian -->
+      <div class="form-group">
+        <label for="duration">Thời gian</label>
+        <input type="text" id="duration" name="duration"
+               value="{{ course.duration|default:'3 tháng' }}">
+      </div>
+
+      <!-- Giá -->
+      <div class="form-group">
+        <label for="price">Giá (VND)</label>
+        <input type="number" id="price" name="price" min="0"
+               value="{{ course.price }}">
+      </div>
     </div>
-  </div>
 
   <!-- Danh sách buổi học -->
   <div class="sessions-section">
@@ -216,40 +166,61 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Tuần</th>
+            <th>Buổi</th>
             <th>Chủ đề</th>
             <th>Mô tả</th>
-            <th>Ngày học</th>
-            <th>Trạng thái</th>
           </tr>
         </thead>
         <tbody>
           {% for ld in lesson_details %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>Tuần {{ forloop.counter }}</td>
-            <td>{{ ld.lesson.lesson_name }}</td>
-            <td>{{ ld.lesson.description|default:"Không có" }}</td>
-            <td>{{ ld.class_instance.begin_time|date:"d/m/Y" }}</td>
-            <td>
-              <span class="status {% if forloop.counter0 < 2 %}done{% else %}pending{% endif %}">
-                {% if forloop.counter0 < 2 %}Xong{% else %}Chưa học{% endif %}
-              </span>
-            </td>
-          </tr>
+            <tr
+              onclick="window.location.href='{% url 'view_lesson_detail' course.course_id ld.lessondetail_id %}'"
+              style="cursor:pointer;"
+            >
+              <td>{{ forloop.counter }}</td>
+              <td>{{ ld.session_number }}</td>
+              <td>{{ ld.lesson.lesson_name }}</td>
+              <td>{{ ld.lesson.description|default:"Không có" }}</td>
+            </tr>
           {% empty %}
-          <tr>
-            <td colspan="6">Chưa có buổi học nào.</td>
-          </tr>
+            <tr><td colspan="4">Chưa có buổi học nào.</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
 
     <!-- Nút thêm -->
-    <a href="{% url 'add_lesson_detail' course.course_id %}">
-      <button class="btn add-session-btn">Thêm buổi học</button>
+    <a href="{% url 'add_lesson_detail' course.course_id %}"
+       class="btn add-session-btn"
+       style="display:inline-block; text-align:center;">
+      Thêm buổi học
     </a>
   </div>
 </div>
+<script>
+  function confirmDelete() {
+    var confirmation = confirm("Bạn có chắc chắn muốn xóa khóa học này?");
+    if (confirmation) {
+      // Nếu người dùng nhấn OK, form sẽ được gửi để xóa khóa học
+      var form = document.createElement('form');
+      form.method = 'post';
+      form.action = window.location.href;
+      var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      var csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrfmiddlewaretoken';
+      csrfInput.value = csrfToken;
+      form.appendChild(csrfInput);
+
+      var actionInput = document.createElement('input');
+      actionInput.type = 'hidden';
+      actionInput.name = 'action';
+      actionInput.value = 'delete';  // Gửi yêu cầu xóa
+      form.appendChild(actionInput);
+
+      document.body.appendChild(form);
+      form.submit();
+    }
+  }
+</script>
 {% endblock %}

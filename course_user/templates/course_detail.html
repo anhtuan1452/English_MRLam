@@ -6,7 +6,7 @@
     body {
         background-color: #f9fafb;
         font-family: 'Arial', sans-serif;
-        overflow-x: hidden; /* ✅ Ngăn tràn ngang toàn trang */
+        overflow-x: hidden;
     }
 
     .course-container {
@@ -37,7 +37,7 @@
         flex-direction: row;
         gap: 30px;
         align-items: flex-start;
-        min-width: 0; /* ✅ Ngăn tràn flex */
+        min-width: 0;
         flex-wrap: wrap;
     }
 
@@ -146,7 +146,7 @@
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
-        max-width: 100%; /* ✅ Ngăn ảnh tràn */
+        max-width: 100%;
     }
 
     .instructor-details {
@@ -250,7 +250,8 @@
                 <h3 style="font-weight: bold;">Nội dung các buổi học</h3> <br>
                 <ul class="lesson-list">
                     {% for lesson in lessons %}
-                        <li><strong>Bài {{ forloop.counter }}:</strong> {{ lesson.lesson_name }} - {{ lesson.description }}</li>
+                        <li><strong>Bài {{ forloop.counter }}:</strong> {{ lesson.lesson_name }}</li>
+                        <li>- {{ lesson.description }}</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -276,8 +277,9 @@
         <!-- Right column -->
         <div class="right-column">
             <div class="price-box">
+                <img src="{% static 'images/course.png' %}" alt="Course">
                 <h2>Học phí</h2>
-                <span class="price-main">{{ course.price|floatformat:0 }} VNĐ</span>
+                <span class="price-main">{{ course.price|floatformat:0 }}</span>
                 <a href="{% url 'payment' %}" class="btn-register">ĐĂNG KÝ</a>
             </div>
 

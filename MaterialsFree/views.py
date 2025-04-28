@@ -17,12 +17,11 @@ def materials_list(request):
 
     context = {
         'search_form': search_form,  # Gửi form tìm kiếm vào context
-        'documents': documents,  # Gửi danh sách tài liệu vào context
+        'documents': documents,  # Gửi danh sách tất cả tài liệu vào context
         'active_menu': 'materials',  # Menu đang hoạt động
         'title': 'Tài liệu miễn phí'  # Tiêu đề trang
     }
     return render(request, 'materials_list.html', context)  # Render template materials_list.html
-
 
 def materials_detail(request, doc_id):
     """Chi tiết tài liệu"""
