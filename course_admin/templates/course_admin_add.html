@@ -1,0 +1,60 @@
+{% extends 'base-admin.html' %}
+{% block title %}Thêm khóa học{% endblock %}
+
+{% block content %}
+<style>
+  /* Giữ style giống detail, chỉ grid cho form */
+  .course-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  #courseNameGroup, #courseDescriptionGroup {
+    grid-column: 1 / 4;
+  }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group label { font-weight:500; margin-bottom:5px; }
+  .form-group input, .form-group textarea, .form-group select {
+    padding:10px; border:1px solid #ccc; border-radius:4px;
+  }
+  .btn { padding:8px 14px; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
+  .save-btn { background:#28a745; color:#fff; }
+  .save-btn:hover { background:#218838; }
+  .delete-btn { background:#dc3545; color:#fff; }
+  .delete-btn:hover { background:#c82333; }
+</style>
+
+<div class="container">
+  <h1>Thêm khóa học mới</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="course-overview">
+      <div class="form-group" id="courseNameGroup">
+        {{ form.course_name.label_tag }}
+        {{ form.course_name }}
+      </div>
+      <div class="form-group" id="courseDescriptionGroup">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+      </div>
+      <div class="form-group">
+        {{ form.teacher_name.label_tag }}
+        {{ form.teacher_name }}
+      </div>
+      <div class="form-group">
+        {{ form.price.label_tag }}
+        {{ form.price }}
+      </div>
+      <div class="form-group">
+        {{ form.des_teacher.label_tag }}
+        {{ form.des_teacher }}
+      </div>
+
+    </div>
+    <button type="submit" class="btn save-btn">Lưu</button>
+    <a href="{% url 'admin_ql_khoahoc' %}" class="btn delete-btn">Hủy</a>
+  </form>
+</div>
+{% endblock %}

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-et0%_zmlu_nse(*glqollpai%zvczz=)=c-l1zxe62$r!@fp(n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
