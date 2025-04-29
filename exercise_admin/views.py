@@ -35,12 +35,29 @@ def them_baitap(request):
 
 # Xem chi tiết bài tập
 def xem_baitap(request, lesson_id):
-    # Lấy bài học và khóa học tương ứng với lesson_id
-    lesson = get_object_or_404(LESSON, lesson_id=lesson_id)  # Tìm bài học theo ID
-    course = lesson.course  # Truyền khóa học đã được liên kết với bài học
+    lesson = get_object_or_404(LESSON, lesson_id=lesson_id)
+    course = lesson.course
+
+    if request.method == 'POST':
+        form = BuoiHocForm(request.POST, instance=lesson)
+        if form.is_valid():
+            form.save()
+            # Sau khi save xong, lấy lại dữ liệu mới nhất từ DB
+            lesson.refresh_from_db()
+            form = BuoiHocForm(instance=lesson)  # load lại form từ lesson mới
+            return render(request, 'xembt.html', {
+                'lesson': lesson,
+                'course': course,
+                'form': form,
+                'success_message': 'Lưu thành công!',
+            })
+    else:
+        form = BuoiHocForm(instance=lesson)
+
     context = {
         'lesson': lesson,
         'course': course,
+        'form': form,
     }
     return render(request, 'xembt.html', context)
 # Sửa bài tập

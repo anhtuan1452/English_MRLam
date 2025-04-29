@@ -1,0 +1,211 @@
+{% extends 'base-admin.html' %}
+
+{% block title %}Chỉnh sửa thanh toán{% endblock %}
+
+{% block content %}
+<style>
+  /* Giữ style giống detail, chỉ grid cho form */
+  .container {
+    display: flex;
+    justify-content: space-between;  /* Chia không gian giữa form và thông tin thanh toán */
+    gap: 30px;  /* Khoảng cách giữa hai phần */
+    margin-top: 20px;
+    padding: 0px;
+  }
+
+  /* Phần chứa form chỉnh sửa */
+  .form-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1 / 3;
+    margin-bottom:20px;
+  }
+
+  .form-group label {
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+
+  .form-group input, .form-group textarea, .form-group select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .save-btn {
+    background: #28a745;
+    color: #fff;
+  }
+
+  .save-btn:hover {
+    background: #218838;
+  }
+
+  .delete-btn {
+    background: #dc3545;
+    color: #fff;
+  }
+
+  .delete-btn:hover {
+    background: #c82333;
+  }
+
+  /* Phần chứa thông tin thanh toán */
+  .payment-info {
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+
+  .payment-info h3 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .payment-info p {
+    font-size: 1rem;
+    margin: 8px 0;
+  }
+  h2{
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #5c6bc0;
+    border-bottom: 2px solid;
+    margin: 1.5rem 0 1rem;
+    padding: 8px 0;
+    width:290px;
+  }
+      /* Container cho bảng */
+  .table-container {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  /* Style cho bảng */
+  table {
+    width: 100%;
+    border-collapse: collapse;  /* Kết hợp các viền giữa các ô */
+    --bs-table-striped-bg: none;
+  }
+
+  /* Style cho header của bảng */
+  th {
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+  }
+
+  /* Style cho các ô trong bảng */
+  td {
+    text-align: center;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    color: #333;
+  }
+
+  /* Style cho nút "Đang học" */
+  .status-btn {
+    background-color: #fbbd08;  /* Màu vàng */
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .status-btn:hover {
+    background-color: #d99c08;  /* Màu vàng đậm khi hover */
+  }
+
+  /* Style cho header */
+  .table-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
+    padding: 8px 0;
+  }
+</style>
+<h2>Tài khoản thanh toán</h2>
+<div class="container">
+  <!-- Phần form chỉnh sửa thanh toán -->
+    <div class="form-container">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group" id="accountOwnerGroup">
+        {{ form.account_owner.label_tag }}
+        {{ form.account_owner }}
+      </div>
+      <div class="form-group" id="accountNumberGroup">
+        {{ form.account_number.label_tag }}
+        {{ form.account_number }}
+      </div>
+      <div class="form-group" id="bankNameGroup">
+        {{ form.bank_name.label_tag }}
+        {{ form.bank_name }}
+      </div>
+      <div class="form-group" id="courseIdGroup">
+        {{ form.course_id.label_tag }}
+        {{ form.course_id }}
+      </div>
+      <div class="form-group" id="qrImageGroup">
+        {{ form.qr.label_tag }}
+        {{ form.qr }}  <!-- Trường tải lên hình ảnh QR -->
+      </div>
+      <button type="submit" class="btn save-btn">Lưu</button>
+      <a href="{% url 'payment_list' %}" class="btn delete-btn">Hủy</a>
+        <button type="submit" name="delete" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa thanh toán này?');">Xóa</button>
+    </form>
+    </div>
+
+<!-- Phần hiển thị thông tin thanh toán -->
+<div class="payment-info">
+  <h3>Thông tin thanh toán ({{ payment_infos.count }}) </h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Học viên</th>
+        <th>Message</th>
+        <th>Thời gian</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for payment_info in payment_infos %}
+      <tr>
+        <td>{{ payment_info.user.get_full_name }}</td>
+        <td>{{ payment_info.message }}</td>
+        <td>{{ payment_info.time_at }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="text-center">Không có thông tin thanh toán nào.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+
+{% endblock %}

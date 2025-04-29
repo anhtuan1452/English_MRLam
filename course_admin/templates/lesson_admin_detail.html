@@ -25,10 +25,19 @@
   .save-btn:hover { background:#218838; }
   .delete-btn { background:#dc3545; color:#fff; }
   .delete-btn:hover { background:#c82333; }
+  h2{
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #5c6bc0;
+    border-bottom: 2px solid;
+    margin: 1.5rem 0 1rem;
+    padding: 8px 0;
+    width:570px;
+  }
 </style>
 
 <div class="container" style=" margin:20px auto;">
-  <h1>Buổi học: {{ course.course_name }}</h1>
+  <h2>Buổi học: {{ course.course_name }}</h2>
   <form method="post">
     {% csrf_token %}
     {% if form.non_field_errors %}
@@ -55,6 +64,9 @@
 
     <button type="submit" class="btn save-btn">{% if lesson_detail %} Cập nhật {% else %} Thêm mới {% endif %}</button>
     <a href="{% url 'admin_xemkhoahoc' course.course_id %}" class="btn delete-btn">Hủy</a>
+    {% if lesson_detail %}
+        <button type="submit" name="delete" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa bài học này?');">Xóa</button>
+    {% endif %}
   </form>
 </div>
 
