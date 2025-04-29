@@ -97,11 +97,9 @@ def admin_themkhoahoc(request):
         'form': form,
     })
 def add_lesson_detail(request, course_id=None):
-    # Nếu course_id không có (khi tạo khóa học mới), thì không tìm thấy khóa học
     if course_id:
         course = get_object_or_404(COURSE, pk=course_id)
     else:
-        # Nếu course_id không có, phải tạo khóa học mới trước
         if request.method == 'POST':
             form = CourseForm(request.POST)
             if form.is_valid():
@@ -110,12 +108,14 @@ def add_lesson_detail(request, course_id=None):
                 default_class = CLASS.objects.create(course=course, class_name="Lớp mặc định")
                 messages.success(request, 'Khóa học và lớp mới đã được tạo!')
                 return redirect('admin_xemkhoahoc', course_id=course.pk)
+            else:
+                print(form.errors)
         else:
             form = CourseForm()
 
         return render(request, 'course_admin_add.html', {'form': form})
 
-    # Nếu đã có khóa học, lấy lớp mặc định
+    # Nếu khóa học đã có, lấy lớp mặc định
     default_class = CLASS.objects.filter(course=course).first()
     if not default_class:
         messages.error(request, 'Chưa có lớp nào cho khóa học này.')
@@ -138,6 +138,9 @@ def add_lesson_detail(request, course_id=None):
             )
             messages.success(request, "Thêm buổi học thành công!")
             return redirect('admin_xemkhoahoc', course_id=course.pk)
+        else:
+            # Nếu form không hợp lệ, in ra lỗi
+            print(form.errors)
     else:
         form = LessonDetailForm()
 
@@ -147,20 +150,61 @@ def add_lesson_detail(request, course_id=None):
     })
 
 
+
 def view_lesson_detail(request, course_id=None, lesson_detail_id=None):
     course = get_object_or_404(COURSE, pk=course_id)
 
     # Lấy bài học nếu có lesson_detail_id
     if lesson_detail_id:
         lesson_detail = get_object_or_404(LESSON_DETAIL, pk=lesson_detail_id)
+        lesson = lesson_detail.lesson
     else:
         lesson_detail = None  # Nếu không có lesson_detail_id, tạo mới bài học
+        lesson = None
 
     if request.method == 'POST':
+        if 'delete' in request.POST:  # Kiểm tra xem có yêu cầu xóa hay không
+            lesson_detail.delete()
+            return redirect('admin_xemkhoahoc', course_id=course.pk)  # Chuyển hướng sau khi xóa
+
         form = LessonDetailForm(request.POST, instance=lesson_detail)  # Truyền dữ liệu vào form
         if form.is_valid():
-            form.save()
-            return redirect('admin_xemkhoahoc', course_id=course.pk)
+            # Cập nhật hoặc tạo mới bài học
+            if lesson:
+                # Cập nhật bài học hiện tại
+                lesson.lesson_name = form.cleaned_data['lesson_name']
+                lesson.description = form.cleaned_data['description']
+                lesson.save()
+            else:
+                # Tạo mới bài học nếu chưa có
+                lesson = LESSON.objects.create(
+                    lesson_name=form.cleaned_data['lesson_name'],
+                    description=form.cleaned_data['description'],
+                    course=course
+                )
+
+            # Cập nhật hoặc tạo mới LESSON_DETAIL
+            if lesson_detail:
+                lesson_detail.lesson = lesson  # Cập nhật lesson
+                lesson_detail.session_number = form.cleaned_data['session_number']
+                lesson_detail.save()  # Lưu cập nhật
+            else:
+                # Tạo mới LESSON_DETAIL nếu chưa có
+                default_class = CLASS.objects.filter(course=course).first()
+                if not default_class:
+                    messages.error(request, "Không có lớp mặc định cho khóa học này!")
+                    return redirect('admin_xemkhoahoc', course_id=course.pk)
+                LESSON_DETAIL.objects.create(
+                    lesson=lesson,
+                    classes=default_class,
+                    session_number=form.cleaned_data['session_number']
+                )
+
+            messages.success(request, "Cập nhật buổi học thành công!")
+            return redirect('admin_xemkhoahoc', course_id=course.pk)  # Chuyển hướng sau khi cập nhật
+        else:
+            messages.error(request, "Có lỗi xảy ra khi cập nhật buổi học.")
+            print(form.errors)  # In ra lỗi form nếu có
     else:
         form = LessonDetailForm(instance=lesson_detail)
 

@@ -87,3 +87,30 @@ class LessonDetailForm(forms.ModelForm):
         label='Buổi',
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:  # Kiểm tra nếu object LESSON_DETAIL đã được tạo
+            self.fields['lesson_name'] = forms.CharField(
+                initial=self.instance.lesson.lesson_name if self.instance.lesson else '',
+                label='Chủ đề',
+                widget=forms.TextInput(attrs={'class': 'form-control'}),
+                required=False
+            )
+            self.fields['description'] = forms.CharField(
+                initial=self.instance.lesson.description if self.instance.lesson else '',
+                required=False,
+                label='Mô tả',
+                widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+            )
+        else:
+            # Nếu chưa lưu, bạn có thể để các giá trị mặc định
+            self.fields['lesson_name'] = forms.CharField(
+                required=False,
+                label='Chủ đề',
+                widget=forms.TextInput(attrs={'class': 'form-control'})
+            )
+            self.fields['description'] = forms.CharField(
+                required=False,
+                label='Mô tả',
+                widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
+            )

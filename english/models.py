@@ -89,7 +89,7 @@ class COURSE(models.Model):
 
 class PAYMENT(models.Model):
     payment_id = models.AutoField(primary_key=True)
-    qr = models.CharField(max_length=100,null=True, blank=True)
+    qr = models.CharField(max_length=500,null=True, blank=True)
     course_id = models.ForeignKey(COURSE, on_delete=models.CASCADE)
     account_owner = models.CharField(max_length=100,null = True)
     account_number = models.CharField(max_length=100,null = True)
