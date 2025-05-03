@@ -83,14 +83,14 @@
                     <td class="text-start">{{ cls.course.course_name }}</td>  <!-- Nội dung căn trái -->
                     <td>
                         {% if cls.begin_time %}
-                            {{ cls.begin_time|date:'m/d/Y' }}
+                            {{ cls.begin_time|date:'d/m/Y' }}
                         {% else %}
                             <span class="text-muted">Chưa có</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if cls.end_time %}
-                            {{ cls.end_time|date:'m/d/Y' }}
+                            {{ cls.end_time|date:'d/m/Y' }}
                         {% else %}
                             <span class="text-muted">Chưa có</span>
                         {% endif %}
@@ -100,7 +100,7 @@
                             {% if cls.begin_time and cls.begin_time > current_date %}
                                 <span class="status status-not-started">Chưa bắt đầu</span>
                             {% elif cls.end_time and cls.end_time < current_date %}
-                                <span class="status status-completed">Kết thúc</span>
+                                <span class="status status-completed">Đã kết thúc</span>
                             {% else %}
                                 <span class="status status-ongoing">Đang học</span>
                             {% endif %}

@@ -19,14 +19,16 @@ def class_list(request):
     classes = classes.annotate(student_count=Count('user_class'))
 
     return render(request, 'class_list.html', {
-        'classes': classes
+        'classes': classes,
+        'now': now().date(),
     })
 
 # Chi tiết lớp học - Tab "Mô tả lớp học"
 def class_detail(request, class_id):
+    # Lấy đối tượng lớp học
     class_instance = get_object_or_404(CLASS, pk=class_id)
 
-    # Tính sĩ số (số học viên trong lớp)
+    # Tính sĩ số: Đếm số lượng học viên trong lớp qua quan hệ USER_CLASS
     class_size = USER_CLASS.objects.filter(classes=class_instance).count()
 
     if request.method == 'POST':
@@ -42,6 +44,7 @@ def class_detail(request, class_id):
         'class_instance': class_instance,
         'class_size': class_size  # Truyền sĩ số vào context
     })
+
 
 def class_exercise(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)

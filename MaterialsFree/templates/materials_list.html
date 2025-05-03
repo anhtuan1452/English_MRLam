@@ -1,228 +1,116 @@
-<!-- templates/MaterialsFree/materials_list.html -->
 {% extends 'base.html' %}
 
 {% block title %}Tài liệu - HL Lam{% endblock %}
 
 {% block styles %}
 <style>
-    /* Thiết lập chung */
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        background-color: #f5f5f5;
-        width: 100%;
-        padding: 0;
-        margin: 0;
-    }
-
     .container {
-        width: 90%;
-        margin: 0 auto;
-        padding: 20px;
-        margin-top: 9vh;
+        width: 100%;
+        padding: 40px 30px;
+        margin-top: 10vh;
     }
 
-    h1 {
-        font-size: 2.5rem;
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-        border-bottom: 2px solid #eaeaea;
-        padding-bottom: 10px;
-        text-align: center;
-    }
-
-        .custom-title {
+    .custom-title {
         font-size: 1.8rem;
         font-weight: 700;
         color: #5c6bc0;
-        border-bottom: 2px solid;
         margin: 1.5rem 0 1rem;
-        padding: 8px 0;
+    }
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: flex-start;
     }
 
-    /* Các thẻ tài liệu */
-    .material-card {
-        transition: all 0.3s ease;
-        height: 100%;
-        border: none;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        max-width: 350px;
+    .card {
         position: relative;
-        background-color: white;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        flex: 0 0 23%;
+        max-width: 23%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
     }
 
-    .material-card:hover {
+    .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     }
 
-    .card-img-top {
-        height: 160px;
+    .card img {
         width: 100%;
+        height: 180px;
         object-fit: cover;
     }
 
     .card-body {
-        padding: 1.25rem;
-        background-color: white;
+        padding: 15px 20px;
     }
 
     .card-title {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         font-weight: 600;
-        margin-bottom: 0.75rem;
-        color: #2c3e50;
+        color: #333;
+        margin-bottom: 10px;
     }
 
     .card-text {
-        color: #7f8c8d;
-        margin-bottom: 1rem;
+        font-size: 0.95rem;
+        color: #777;
     }
 
-    /* Speech bubble overlay */
     .speech-bubble {
         position: absolute;
-        top: 10px;
-        left: 10px;
-        background-color: #ff4081;
-        color: white;
-        padding: 10px;
+        top: 15px;
+        left: 15px;
+        width: 90px;
+        height: 90px;
+        background-color: #f44336;
+        color: #fff;
         border-radius: 50%;
-        font-size: 1rem;
-        font-weight: bold;
-        text-align: center;
-        width: 100px;
-        height: 100px;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-align: center;
         z-index: 2;
-    }
-
-    /* Responsive */
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        margin: 0 -15px;
-        justify-content: center;
-    }
-
-    .col-md-4, .col-sm-6 {
-        padding: 0 15px;
-        margin-bottom: 30px;
-    }
-
-    .col-md-4 {
-        flex: 0 0 33.333%; /* Đảm bảo 3 tài liệu mỗi hàng */
-        max-width: 33.333%;
-    }
-
-    .col-sm-6 {
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
-
-    .col-12 {
-        width: 100%;
-        padding: 0 15px;
-    }
-
-    /* Responsive cho màn hình nhỏ */
-    @media (max-width: 992px) {
-        .col-md-4 {
-            flex: 0 0 33.333%;
-            max-width: 33.333%;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .col-md-4, .col-sm-6 {
-            flex: 0 0 50%;
-            max-width: 50%;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .col-md-4, .col-sm-6 {
-            flex: 0 0 100%;
-            max-width: 100%;
-        }
-
-        .container {
-            padding: 10px;
-        }
-
-        h1 {
-            font-size: 2rem;
-        }
-
-        .category-title {
-            font-size: 1.5rem;
-        }
+        padding: 10px;
+        line-height: 1.2;
     }
 
     a.stretched-link {
         position: absolute;
         top: 0;
+        left: 0;
         right: 0;
         bottom: 0;
-        left: 0;
         z-index: 1;
-        content: "";
-    }
-
-    .col-12 p {
-        padding: 20px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        text-align: center;
-        color: #6c757d;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <h2 class="custom-title mb-0">Tài liệu FREE</h2>
-
-    <!-- Hiển thị tất cả tài liệu trong một danh sách duy nhất -->
-    <div class="mb-5">
-        <div class="row">
-            {% for doc in documents %}
-            <div class="col-md-4 col-sm-6">
-                <div class="card material-card">
-                    {% if doc.doc_name == "Bí kíp Câu hỏi đuôi" %}
-                    <div class="speech-bubble">QUESTION TAGS</div>
-                    {% elif doc.doc_name == "Giao tiếp bằng câu hỏi" %}
-                    <div class="speech-bubble">Part Simple vs. Present Perfect</div>
-                    {% endif %}
-                    <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" class="card-img-top" alt="{{ doc.doc_name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ doc.doc_name }}</h5>
-                        <p class="card-text">
-                            {% if "Thì" in doc.doc_name %}
-                            Nghĩa, cách sử dụng và bài tập liên quan.
-                            {% elif "Câu bị động" in doc.doc_name %}
-                            Nghĩa, cách sử dụng và các khái niệm đi kèm.
-                            {% elif "Câu hỏi đuôi" in doc.doc_name %}
-                            Các bước viết câu hỏi đuôi.
-                            {% else %}
-                            Cách giao tiếp và ứng dụng trong giao tiếp.
-                            {% endif %}
-                        </p>
-                        <a href="{% url 'materials_detail' doc.doc_id %}" class="stretched-link"></a>
-                    </div>
-                </div>
+    <h2 class="custom-title">Tài liệu FREE</h2>
+    <div class="row">
+        {% for doc in documents %}
+        <div class="card">
+            {% if doc.doc_name == "Bí kíp Câu hỏi đuôi" %}
+            <div class="speech-bubble">QUESTION TAGS</div>
+            {% elif doc.doc_name == "So sánh quá khứ đơn và hiện tại hoàn thành" %}
+            <div class="speech-bubble">Past Simple vs.<br>Present Perfect</div>
+            {% endif %}
+            <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" alt="{{ doc.doc_name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ doc.doc_name }}</h5>
+                <a href="{% url 'materials_detail' doc.doc_id %}" class="stretched-link"></a>
             </div>
-            {% empty %}
-            <div class="col-12">
-                <p>Không có tài liệu nào.</p>
-            </div>
-            {% endfor %}
         </div>
+        {% empty %}
+        <p>Không có tài liệu nào.</p>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
