@@ -1,0 +1,92 @@
+{% extends 'base-admin.html' %}
+
+{% block title %}Thêm thanh toán{% endblock %}
+
+{% block content %}
+<style>
+  /* Giữ style giống detail, chỉ grid cho form */
+  .course-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1 / 4;
+  }
+  .form-group label {
+    font-weight:500;
+    margin-bottom:5px;
+  }
+  .form-group input, .form-group textarea, .form-group select {
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:4px;
+  }
+  .btn {
+    padding:8px 14px;
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
+    font-size:14px;
+  }
+  .save-btn {
+    background:#28a745;
+    color:#fff;
+  }
+  .save-btn:hover {
+    background:#218838;
+  }
+  .delete-btn {
+    background:#dc3545;
+    color:#fff;
+  }
+  .delete-btn:hover {
+    background:#c82333;
+  }
+  h2{
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #5c6bc0;
+    border-bottom: 2px solid;
+    margin: 1.5rem 0 1rem;
+    padding: 8px 0;
+    width:370px;
+  }
+</style>
+
+<div class="container">
+  <h2>Thêm tài khoản thanh toán</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="course-overview">
+      <div class="form-group" id="accountOwnerGroup">
+        {{ form.account_owner.label_tag }}
+        {{ form.account_owner }}
+      </div>
+      <div class="form-group" id="accountNumberGroup">
+        {{ form.account_number.label_tag }}
+        {{ form.account_number }}
+      </div>
+      <div class="form-group" id="bankNameGroup">
+        {{ form.bank_name.label_tag }}
+        {{ form.bank_name }}
+      </div>
+      <div class="form-group" id="courseIdGroup">
+        {{ form.course_id.label_tag }}
+        {{ form.course_id }}
+      </div>
+      <div class="form-group" id="qrImageGroup">
+        {{ form.qr.label_tag }}
+        {{ form.qr }}  <!-- Trường tải lên hình ảnh QR -->
+      </div>
+    </div>
+    <button type="submit" class="btn save-btn">Lưu</button>
+    <a href="{% url 'payment_list' %}" class="btn delete-btn">Hủy</a>
+  </form>
+</div>
+
+{% endblock %}
