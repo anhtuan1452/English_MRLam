@@ -81,11 +81,17 @@
                 <label for="status" class="form-label">Trạng thái lớp học</label>
                 <input type="text" name="status" class="form-control" value="{{ class_instance.status }}" />
             </div>
+            <div class="form-group">
+                <label for="{{ form.timetable.id_for_label }}" class="form-label">Thời khóa biểu</label>
+                {{ form.timetable }}
+            </div>
+
 
             <div class="text-end mt-4">
                 <button type="submit" class="btn btn-danger me-2">Lưu</button>
                 <a href="{% url 'class_list' %}" class="btn btn-dark">Hủy</a>
             </div>
+
         </form>
     </div>
 </div>
