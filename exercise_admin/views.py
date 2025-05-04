@@ -1,6 +1,8 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from pyexpat.errors import messages
+import os
 
+from django.conf import settings
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from english.models import COURSE, LESSON
 from exercise_admin.forms import KhoaHocForm, BuoiHocForm
 
@@ -19,14 +21,21 @@ def admin_ql_baitap(request):
 def them_baitap(request):
     if request.method == 'POST':
         form1 = KhoaHocForm(request.POST)
-        form2 = BuoiHocForm(request.POST)
+        form2 = BuoiHocForm(request.POST, request.FILES)
 
         if form1.is_valid() and form2.is_valid():
+            # Lưu file upload từ form2
+            if "file_upload" in request.FILES:
+                save_path = os.path.join(settings.MEDIA_ROOT, request.FILES["file_upload"].name)
+                with open(save_path, "wb") as output_file:
+                    for chunk in request.FILES["file_upload"].chunks():
+                        output_file.write(chunk)
+
             # Lưu thông tin khóa học và buổi học
             course = form1.save()
             lesson = form2.save(commit=False)
             lesson.course = course  # Gán khóa học cho buổi học
-            lesson.save()
+            lesson.save() # Thêm thông báo thành công
             return redirect('admin_ql_baitap')
     else:
         form1 = KhoaHocForm()
@@ -39,21 +48,19 @@ def xem_baitap(request, lesson_id):
     course = lesson.course
 
     if request.method == 'POST':
-        form = BuoiHocForm(request.POST, instance=lesson)
+        form = BuoiHocForm(request.POST, request.FILES, instance=lesson)
         if form.is_valid():
             form.save()
-            # Sau khi save xong, lấy lại dữ liệu mới nhất từ DB
-            lesson.refresh_from_db()
-            form = BuoiHocForm(instance=lesson)  # load lại form từ lesson mới
-            return render(request, 'xembt.html', {
-                'lesson': lesson,
-                'course': course,
-                'form': form,
-                'success_message': 'Lưu thành công!',
-            })
+
+            # Cập nhật tên khóa học nếu có trường course_name trong form
+            course_name = request.POST.get('course_name')
+            if course_name and course_name != course.course_name:
+                course.course_name = course_name
+                course.save()
+            messages.success(request, 'Lưu thành công!')
+            return redirect('xem_baitap', lesson_id=lesson.lesson_id)
     else:
         form = BuoiHocForm(instance=lesson)
-
     context = {
         'lesson': lesson,
         'course': course,
@@ -66,7 +73,7 @@ def sua_baitap(request, lesson_id):
     # Lấy thông tin khóa học tương ứng với bài học
     course = lesson.course
     if request.method == 'POST':
-        form = BuoiHocForm(request.POST, instance=lesson)
+        form = BuoiHocForm(request.POST, request.FILES, instance=lesson)
         if form.is_valid():
             form.save()
             return redirect('admin_ql_baitap')
@@ -76,9 +83,11 @@ def sua_baitap(request, lesson_id):
 # Xóa bài tập
 def xoa_baitap(request, lesson_id):
     lesson = get_object_or_404(LESSON, lesson_id=lesson_id)
+
     if request.method == 'POST':
         lesson.delete()
-        return render(request, 'ql_baitap.html', {'deleted': True})
+        messages.success(request, 'Đã xoá bài học thành công.')
+        return redirect('admin_ql_baitap')
 
 #sửa bt ở trang xem bài tập
 def sua_baitap_xem(request, lesson_id):
