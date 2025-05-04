@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% load static %}
 {% block title %}Mr Lam English - Khóa học{% endblock %}
 
@@ -94,15 +95,19 @@
     <h2 class="section-title" style="color: #5c6bc0">MY CLASS</h2>
 
     {% if user.is_authenticated %}
-        {% for class in classes %}
-        <div class="course-card">
-            <h3 class="course-title">{{ class.class_name }}</h3>
-            <p class="course-teacher">Ms. {{ class.teacher_name }}</p>
-            <p class="course-teacher">Thời gian: {{ class.begin_time }}</p>
-            <p class="course-teacher">Thời lượng: ⏰ 30 giờ </p>
-            <a href="#" class="register-btn">Tiếp tục học</a>
-        </div>
-        {% endfor %}
+        {% if classes %}
+            {% for class in classes %}
+            <div class="course-card">
+                <h3 class="course-title">{{ class.class_name }}</h3>
+                <p class="course-teacher">Ms. {{ class.teacher_name }}</p>
+                <p class="course-teacher">Thời gian: {{ class.begin_time }} - {{ class.end_time }}</p>
+                <p class="course-teacher">Trạng thái: {{ class.status }}</p>
+                <a href="#" class="register-btn">Tiếp tục học</a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>Bạn chưa đăng ký lớp học nào.</p>
+        {% endif %}
     {% else %}
         <a href="">Để xem lớp học, bạn cần đăng nhập.</a>
     {% endif %}

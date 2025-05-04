@@ -22,7 +22,7 @@
             <nav class="main-nav">
                 <a href="{% url 'course' %}">Khóa học</a>
                 <a href="{% url 'materials_list' %}">Tài liệu</a>
-                <a href="{% url 'home_test' %}">Bài test</a>
+                <a href="{% url 'home_test' test_id=1%}">Bài test</a>
                 {% if True %}
                     <a href="{% url 'student_homework' %}">Lớp học</a>
                 {% endif %}
