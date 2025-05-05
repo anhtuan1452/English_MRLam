@@ -34,6 +34,13 @@ class QUESTION_MEDIA(models.Model):
     questionmedia_id = models.AutoField(primary_key=True)
     audio_file = models.CharField(max_length=100)
     paragraph = models.TextField()
+    def __str__(self):
+        parts = []
+        if self.audio_file:
+            parts.append("🎧 Audio")
+        if self.paragraph:
+            parts.append("📖 Paragraph")
+        return " + ".join(parts) or "❓ Chưa có nội dung"
     class Meta:
         db_table = 'QUESTION_MEDIA'
 

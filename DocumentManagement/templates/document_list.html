@@ -1,5 +1,6 @@
 {% extends 'base-admin.html' %}
 
+{% block title %}Danh sách tài liệu{% endblock %}
 {% block content %}
 <style>
     .custom-title {
@@ -9,6 +10,28 @@
         border-bottom: 2px solid;
         margin: 1.5rem 0 1rem;
         padding: 8px 0;
+    }
+
+    /* Nút chung cho Sửa và Xóa */
+    .btn-common {
+        background-color: #fef9c3; /* vàng nhạt */
+        border: none;
+        color: #d97706; /* chữ vàng đậm */
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        border-radius: 3px;
+        margin-right: 5px;
+    }
+    .btn-delete {
+        background-color: #fee2e2; /* đỏ nhạt */
+        border: none;
+        color: #b91c1c; /* chữ đỏ đậm */
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        border-radius: 3px;
+        margin-right: 5px;
     }
 </style>
 
@@ -25,7 +48,6 @@
         </a>
     </div>
 
-
     <div class="card">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -36,7 +58,7 @@
                             <th>Khóa học</th>
                             <th>Nội dung tài liệu</th>
                             <th>Định dạng</th>
-                            <th>Hành động</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,7 +75,8 @@
                             </td>
                             <td>PDF</td>
                             <td>
-                                 <a href="{% url 'document_detail_edit' document.lesson_id %}" class="btn btn-sm btn-primary">Sửa / Xóa</a>
+                                <a href="{% url 'document_detail_edit' document.lesson_id %}" class="btn btn-sm btn-common">Sửa</a>
+                                <a href="#" class="btn btn-sm btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa tài liệu này?');">Xóa</a>
                             </td>
                         </tr>
                         {% empty %}
@@ -83,3 +106,4 @@
     });
 </script>
 {% endblock %}
+

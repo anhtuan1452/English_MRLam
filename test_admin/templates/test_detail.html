@@ -25,7 +25,14 @@ h2 {
   font-weight: 600;
   margin-bottom: 1rem;
 }
-
+.custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
 /* Tab styling */
 .nav-tabs {
   border-bottom: 2px solid #e9ecef;
@@ -147,7 +154,7 @@ input[type="radio"] {
 </style>
 
 <div class="container">
-    <h2>Bài kiểm tra</h2>
+    <h2 class="custom-title">Bài kiểm tra</h2>
 
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
@@ -160,8 +167,11 @@ input[type="radio"] {
 
     <!-- Nút sửa và xóa bài kiểm tra, di chuyển vào góc phải -->
     <div class="button-group">
-        <a href="" class="btn btn-warning">Sửa</a>
-        <a href="" class="btn btn-danger">Xóa</a>
+        <a href="{% url 'test_edit' test_id=test.test_id %}" class="btn btn-warning">Sửa</a>
+        <form method="post" action="{% url 'test_delete' test.test_id %}" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài kiểm tra này?');" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Xóa</button>
+        </form>
     </div>
 
     <form method="POST">
@@ -174,38 +184,45 @@ input[type="radio"] {
             </div>
 
             <div class="question-container">
-                {% for form in question_forms %}
+                {% for item in question_forms %}
+                    {% with form=item.form media=item.media %}
                     <div class="question">
                         <!-- Hiển thị số câu hỏi và in đậm -->
                         <p><strong>Câu {{ forloop.counter }}:</strong> {{ form.instance.question_text }}</p>
 
+                        <!-- Hiển thị MEDIA nếu có -->
+                        {% if media %}
+                            {% if media.audio_file and media.audio_file != 'none' %}
+                                <p><strong>Audio:</strong></p>
+                                <audio controls style="margin-bottom: 10px;">
+                                    <source src="{{ MEDIA_URL }}{{ media.audio_file }}" type="audio/mpeg">
+                                    Trình duyệt không hỗ trợ phát âm thanh.
+                                </audio>
+                            {% endif %}
+                            {% if media.paragraph and media.paragraph != 'none' %}
+                                <div class="question-paragraph" style="background-color: #eef5ff; padding: 10px; border-left: 4px solid #0d6efd; margin-bottom: 10px;">
+                                    <strong>Đoạn văn:</strong>
+                                    <p style="margin: 0;">{{ media.paragraph }}</p>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
                         <!-- Hiển thị đáp án đúng -->
                         <p><strong>Đáp án đúng: </strong>{{ form.instance.correct_answer }}</p>
 
+                        <!-- Hiển thị danh sách các đáp án -->
                         <div class="choices">
-                            <!-- Lựa chọn A -->
+                            {% for choice in form.choices %}
                             <label>
-                                <input type="radio" name="question_{{ form.instance.question_id }}" value="A">
-                                {{ form.instance.answer }}
+                                <input type="radio" name="question_{{ form.instance.question_id }}" value="{{ 'ABCD'|slice:forloop.counter0 }}">
+                                {{ choice }}
                             </label>
-                            <!-- Lựa chọn B -->
-                            <label>
-                                <input type="radio" name="question_{{ form.instance.question_id }}" value="B">
-                                {{ form.instance.answer }}
-                            </label>
-                            <!-- Lựa chọn C -->
-                            <label>
-                                <input type="radio" name="question_{{ form.instance.question_id }}" value="C">
-                                {{ form.instance.answer }}
-                            </label>
-                            <!-- Lựa chọn D -->
-                            <label>
-                                <input type="radio" name="question_{{ form.instance.question_id }}" value="D">
-                                {{ form.instance.answer }}
-                            </label>
+                            {% endfor %}
                         </div>
                     </div>
+                    {% endwith %}
                 {% endfor %}
+
             </div>
 
             <div class="test-footer">

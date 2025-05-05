@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Quản Lý Thông Tin Cá Nhân{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'style1.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <div class="container">
+        <div class="profile-layout">
+            <!-- Mobile menu toggle -->
+          {% block scripts %}
+            <script src="{% static 'script.js' %}"></script>
+            {% endblock %}
+
+            <!-- Sidebar -->
+            <div class="sidebar" id="sidebar">
+                <div class="profile-info">
+                    <div class="avatar">
+                        {% if user.userprofile.image %}
+                            <img src="{{ user.userprofile.image.url }}" alt="{{ user.get_full_name }}">
+                        {% else %}
+                            <img src="{% static 'images/default-avatar.png' %}" alt="{{ user.get_full_name }}">
+                        {% endif %}
+                    </div>
+                    <h2 class="profile-name">{{ user.get_full_name }}</h2>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <button class="nav-item {% if active_tab == 'personal-info' %}active{% endif %}" data-tab="personal-info">Chỉnh sửa thông tin cá nhân</button>
+                    <button class="nav-item {% if active_tab == 'password' %}active{% endif %}" data-tab="password">Mật khẩu</button>
+                    <button class="nav-item {% if active_tab == 'email' %}active{% endif %}" data-tab="email">Email</button>
+                    <button class="nav-item {% if active_tab == 'classes' %}active{% endif %}" data-tab="classes">Lớp học của tôi</button>
+                </nav>
+            </div>
+
+            <!-- Main content -->
+            <div class="main-content">
+                <!-- Personal Info Tab -->
+                <div class="tab-content {% if active_tab == 'personal-info' %}active{% endif %}" id="personal-info">
+                    <h1 class="page-title">Thông tin cá nhân</h1>
+
+                    {% if messages %}
+                    <div class="alert-messages">
+                        {% for message in messages %}
+                        <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <ul class="info-list">
+                        <li>Không được để trống trường này.</li>
+                        <li>Ảnh phải là định dạng PNG, JPG.</li>
+                    </ul>
+
+                    <form method="POST" enctype="multipart/form-data" class="form">
+                        {% csrf_token %}
+                        <input type="hidden" name="personal-info-submit" value="1">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="lastName">Họ và tên đệm</label>
+                                <input type="text" id="lastName" name="last_name"
+                                       value="{{ user.last_name }}" class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="firstName">Tên</label>
+                                <input type="text" id="firstName" name="first_name"
+                                       value="{{ user.first_name }}" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="birthDate">Ngày sinh</label>
+                                {{ profile_form.dob }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gender">Giới tính</label>
+                                {{ profile_form.sex }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Mô tả</label>
+                            {{ profile_form.description }}
+                        </div>
+
+                        <div class="avatar-section">
+                            <h2 class="section-title">Ảnh đại diện</h2>
+                            <div class="avatar-container">
+                                <div class="avatar-preview">
+                                    {% if user.userprofile.image %}
+                                        <img src="{{ user.userprofile.image.url }}" alt="Ảnh đại diện">
+                                    {% else %}
+                                        <img src="{% static 'images/default-avatar.png' %}" alt="Ảnh đại diện">
+                                    {% endif %}
+                                </div>
+                                <div class="avatar-actions">
+                                    {{ profile_form.image }}
+                                    <button type="submit" class="btn btn-red">Lưu Ảnh</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-red">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Password Tab -->
+                <div class="tab-content {% if active_tab == 'password' %}active{% endif %}" id="password">
+                    <h1 class="page-title">Đổi mật khẩu</h1>
+
+                    <ul class="info-list">
+                        <li>Mật khẩu ít nhất 8 ký tự bao gồm chữ, số, ký tự đặc biệt.</li>
+                        <li>Không được để trống trường nào.</li>
+                    </ul>
+
+                    <form method="POST" class="form">
+                        {% csrf_token %}
+                        <input type="hidden" name="password-submit" value="1">
+
+                        <div class="form-group">
+                            <label for="currentPassword">Mật khẩu hiện tại</label>
+                            {{ password_form.old_password }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newPassword">Mật khẩu mới</label>
+                            {{ password_form.new_password1 }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Xác nhận mật khẩu</label>
+                            {{ password_form.new_password2 }}
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-red">Đổi mật khẩu</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Email Tab -->
+                <div class="tab-content {% if active_tab == 'email' %}active{% endif %}" id="email">
+                    <h1 class="page-title">Chỉnh sửa Email</h1>
+
+                    <ul class="info-list">
+                        <li>Tên đăng nhập không được thay đổi.</li>
+                        <li>Thiết lập đăng ký lại hệ thống.</li>
+                        <li>Email phải có định dạng hợp lệ.</li>
+                    </ul>
+
+                    <form method="POST" class="form">
+                        {% csrf_token %}
+                        <input type="hidden" name="email-submit" value="1">
+
+                        <div class="form-group">
+                            <label for="username">Tên đăng nhập</label>
+                            <input type="text" id="username" value="{{ user.username }}" disabled class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <div class="input-group">
+                                {{ email_form.email }}
+                                <button type="button" class="btn btn-outline">Lấy mã</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="verificationCode">Mã xác nhận</label>
+                            <div class="input-group">
+                                {{ email_form.verification_code }}
+                                <button type="submit" class="btn btn-red">Xác nhận</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Classes Tab -->
+                <div class="tab-content {% if active_tab == 'classes' %}active{% endif %}" id="classes">
+                    <h1 class="page-title">Danh sách lớp học đã đăng ký</h1>
+
+                    <ul class="info-list">
+                        <li>Danh sách lớp học và bài tập sẽ được hiển thị ở đây.</li>
+                    </ul>
+
+                    <div class="class-grid">
+                        {% for class in enrolled_classes %}
+                        <div class="class-card">
+                            <div class="class-header">
+                                {{ class.class_name }}
+                            </div>
+                            <div class="class-sessions">
+                                {% for session in class.sessions.all %}
+                                <div class="session-item">
+                                    <span>{{ session.name }} - {{ session.get_status_display }}</span>
+                                    <span class="badge badge-{{ session.status_color }}">{{ session.get_status_display }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p>Bạn chưa đăng ký lớp học nào.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+
+
+{% block footer %}
+{% endblock %}

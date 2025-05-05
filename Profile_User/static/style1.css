@@ -1,0 +1,174 @@
+/* Profile Layout - Improved Version */
+.profile-layout {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    width: 100%;
+}
+
+/* Sidebar cố định với thiết kế đẹp hơn */
+.sidebar {
+    width: 280px;
+    background: #2c3e50;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+/* Phần nội dung chính - Đã điều chỉnh */
+.main-content {
+    flex: 1;
+    padding: 30px;
+    margin-left: 280px;
+    background: #f5f7fa;
+    min-height: 100vh;
+    width: calc(100% - 280px);
+}
+
+/* Profile Info trong sidebar */
+.profile-info {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-top: 20px;
+    color: white;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 15px;
+    border: 3px solid rgba(255,255,255,0.2);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-size: 1.2rem;
+    margin: 10px 0 0;
+    color: white;
+    font-weight: 500;
+}
+
+/* Navigation - Đã tối ưu */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.nav-item {
+    padding: 12px 20px;
+    text-align: left;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.nav-item:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.nav-item.active {
+    background-color: #3498db;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Tab Content - Quan trọng: Đảm bảo hiển thị đúng */
+.tab-content {
+    display: none;
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Form Styles */
+.form {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+/* Các phần còn lại giữ nguyên... */
+
+/* Responsive adjustments - Quan trọng */
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    /* Thêm để đảm bảo tab không bị ẩn */
+    .tab-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 15px;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    /* Đảm bảo tab content hiển thị đúng trên mobile */
+    .tab-content.active {
+        display: block;
+        width: 100%;
+    }
+}

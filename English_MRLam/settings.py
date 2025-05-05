@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'qrPayment',
     'registerCourse',
     'ManageClass',
-    'MaterialsFree'
+    'MaterialsFree',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -140,6 +141,13 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
+import os
+import os
+
+# settings.py
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'MaterialsFree', 'media')  # Đường dẫn tuyệt đối
 
 # Cấu hình email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -151,5 +159,5 @@ EMAIL_HOST_PASSWORD = 'axie ycom jdtb wdid'  # Thay bằng mật khẩu ứng d�
 DEFAULT_FROM_EMAIL = 'nguyenhoangatuan10b72020@gmail.com'  # Thay bằng email của bạn
 
 
-MEDIA_ROOT = BASE_DIR / "media"
-MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = '/media/'

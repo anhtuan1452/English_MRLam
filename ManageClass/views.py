@@ -2,6 +2,8 @@ import json
 
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_http_methods
+
 from english.models import CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL, ROLLCALL_USER, SUBMISSION, EXERCISE,LESSON_DETAIL
 from .forms import ClassForm
 from django.contrib.auth.models import User
@@ -19,14 +21,16 @@ def class_list(request):
     classes = classes.annotate(student_count=Count('user_class'))
 
     return render(request, 'class_list.html', {
-        'classes': classes
+        'classes': classes,
+        'now': now().date(),
     })
 
 # Chi tiết lớp học - Tab "Mô tả lớp học"
 def class_detail(request, class_id):
+    # Lấy đối tượng lớp học
     class_instance = get_object_or_404(CLASS, pk=class_id)
 
-    # Tính sĩ số (số học viên trong lớp)
+    # Tính sĩ số: Đếm số lượng học viên trong lớp qua quan hệ USER_CLASS
     class_size = USER_CLASS.objects.filter(classes=class_instance).count()
 
     if request.method == 'POST':
@@ -42,6 +46,7 @@ def class_detail(request, class_id):
         'class_instance': class_instance,
         'class_size': class_size  # Truyền sĩ số vào context
     })
+
 
 def class_exercise(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
@@ -162,3 +167,18 @@ def update_rollcall(request):
                 return JsonResponse({'message': f'Error: {str(e)}'}, status=400)
 
         return JsonResponse({'message': 'Dữ liệu không hợp lệ'}, status=400)
+def exercise_detail_view(request, class_id, exercise_id):
+    class_instance = get_object_or_404(CLASS, pk=class_id)
+    exercise = get_object_or_404(EXERCISE, pk=exercise_id)
+
+    # Lấy tất cả các bài nộp của học viên trong lớp cho bài tập này
+    submissions = SUBMISSION.objects.filter(
+        exercise=exercise,
+        userclass__classes=class_instance
+    ).select_related('userclass__user')
+
+    return render(request, 'exercise_detail.html', {
+        'class_instance': class_instance,
+        'exercise': exercise,
+        'submissions': submissions,
+    })

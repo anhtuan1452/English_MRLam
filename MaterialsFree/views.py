@@ -1,37 +1,63 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
-from english.models import DOCUMENT  # Đảm bảo bạn import đúng từ models
-from .forms import DocumentSearchForm  # Form tìm kiếm tài liệu
+from english.models import DOCUMENT
+from .forms import DocumentSearchForm
+from django.conf import settings
+import os
+
 
 def materials_list(request):
     """Hiển thị danh sách tài liệu miễn phí (documents)"""
+    documents = DOCUMENT.objects.all()
+    search_form = DocumentSearchForm(request.GET)
 
-    documents = DOCUMENT.objects.all()  # Lấy tất cả tài liệu
-    search_form = DocumentSearchForm(request.GET)  # Form tìm kiếm từ GET
-
-    # Kiểm tra nếu form tìm kiếm hợp lệ và có giá trị tìm kiếm
     if search_form.is_valid() and search_form.cleaned_data['search']:
-        query = search_form.cleaned_data['search']  # Lấy giá trị tìm kiếm
-        # Lọc tài liệu theo tên tài liệu
+        query = search_form.cleaned_data['search']
         documents = documents.filter(doc_name__icontains=query)
 
+    # Add document URLs to each document
+    for doc in documents:
+        if doc.doc_file:
+            doc.file_url = os.path.join(settings.MEDIA_URL, str(doc.doc_file))
+        else:
+            doc.file_url = None
+
     context = {
-        'search_form': search_form,  # Gửi form tìm kiếm vào context
-        'documents': documents,  # Gửi danh sách tài liệu vào context
-        'active_menu': 'materials',  # Menu đang hoạt động
-        'title': 'Tài liệu miễn phí'  # Tiêu đề trang
+        'search_form': search_form,
+        'documents': documents,
+        'active_menu': 'materials',
+        'title': 'Tài liệu miễn phí'
     }
-    return render(request, 'materials_list.html', context)  # Render template materials_list.html
+    return render(request, 'materials_list.html', context)
+
+
+# views.py
+
+from django.shortcuts import render, get_object_or_404
+from django.conf import settings
+from english.models import DOCUMENT
+
+from django.shortcuts import render, get_object_or_404
+from django.http import FileResponse, Http404
+import os
 
 
 def materials_detail(request, doc_id):
-    """Chi tiết tài liệu"""
+    document = get_object_or_404(DOCUMENT, pk=doc_id)
 
-    document = get_object_or_404(DOCUMENT, doc_id=doc_id)  # Lấy tài liệu theo doc_id hoặc trả về lỗi 404 nếu không tìm thấy
+    # Debug thông tin
+    print(f"File name in DB: {document.doc_file.name}")
+    print(f"Full path: {document.doc_file.path}")
+    print(f"File exists: {os.path.exists(document.doc_file.path)}")
+    print(f"File URL: {document.doc_file.url}")
 
-    context = {
-        'document': document,  # Gửi tài liệu vào context
-        'active_menu': 'materials',  # Menu đang hoạt động
-        'title': document.doc_name  # Tiêu đề trang là tên tài liệu
-    }
-    return render(request, 'materials_detail.html', context)  # Render template materials_detail.html
+    if not document.doc_file:
+        raise Http404("Document không có file đính kèm")
+
+    if not os.path.exists(document.doc_file.path):
+        raise Http404(f"File không tồn tại tại: {document.doc_file.path}")
+
+    return render(request, 'materials_detail.html', {
+        'document': document,
+        'file_url': document.doc_file.url
+    })

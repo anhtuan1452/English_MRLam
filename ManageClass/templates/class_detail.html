@@ -19,7 +19,7 @@
     .form-group {
         margin-bottom: 1.5rem;
     }
-    .form-control, .form-select {
+    .form-control {
         height: 50px;
         border-radius: 8px;
     }
@@ -30,16 +30,6 @@
     .btn-dark {
         background-color: #000;
         border: none;
-    }
-    .readonly-field {
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 10px 14px;
-        font-size: 1rem;
-        color: #333;
-        width: 100%;
-        box-sizing: border-box;
     }
 </style>
 
@@ -84,24 +74,24 @@
 
             <div class="form-group">
                 <label for="class_size" class="form-label">Sĩ số</label>
-                <input type="text" class="readonly-field" value="{{ class_size }}" readonly />
-                {{ form.class_size }}
+                <input type="text" class="form-control" value="{{ class_size }}" readonly />
             </div>
 
             <div class="form-group">
-                <label for="{{ form.timetable.id_for_label }}" class="form-label">Lịch học</label>
+                <label for="status" class="form-label">Trạng thái lớp học</label>
+                <input type="text" name="status" class="form-control" value="{{ class_instance.status }}" />
+            </div>
+            <div class="form-group">
+                <label for="{{ form.timetable.id_for_label }}" class="form-label">Thời khóa biểu</label>
                 {{ form.timetable }}
             </div>
 
-            <div class="form-group">
-                <label for="{{ form.status.id_for_label }}" class="form-label">Trạng thái</label>
-                {{ form.status }}
-            </div>
 
             <div class="text-end mt-4">
                 <button type="submit" class="btn btn-danger me-2">Lưu</button>
                 <a href="{% url 'class_list' %}" class="btn btn-dark">Hủy</a>
             </div>
+
         </form>
     </div>
 </div>

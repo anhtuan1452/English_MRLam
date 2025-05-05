@@ -25,7 +25,14 @@
       font-weight: 600;
       margin-bottom: 1rem;
     }
-
+.custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
 /* Tab styling */
 .nav-tabs {
   border-bottom: 2px solid #e9ecef;
@@ -158,7 +165,7 @@ td .btn-danger:last-child {
 </style>
 
   <div class="container">
-    <h2>Bài kiểm tra</h2>
+    <h2 class="custom-title">Bài kiểm tra</h2>
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a href="{% url 'admin_test_list' %}" class="nav-link active" role="tab">Bài kiểm tra</a>
@@ -171,10 +178,12 @@ td .btn-danger:last-child {
     <div class="d-flex justify-content-between align-items-center mb-3">
       <!-- Search Bar -->
       <div class="input-group" style="max-width: 400px;">
-        <input type="text" class="form-control" placeholder="Nhập tên bài kiểm tra" aria-label="Nhập tên bài kiểm tra">
-        <button class="btn btn-outline-secondary" type="button">
-          <i data-lucide="search"></i> <!-- Thêm biểu tượng tìm kiếm -->
-        </button>
+        <form method="GET" class="input-group" style="max-width: 400px;">
+          <input type="text" name="q" class="form-control" placeholder="Nhập tên bài kiểm tra" value="{{ query }}">
+          <button class="btn btn-outline-secondary" type="submit">
+            <i data-lucide="search"></i>
+          </button>
+        </form>
       </div>
       <!-- Add New Button -->
       <a href="{% url 'admin_test_add' %}" class="btn btn-danger">
@@ -198,11 +207,14 @@ td .btn-danger:last-child {
             <td>{{ test.test_id }}</td>
             <td>{{ test.test_name }}</td>
             <td>{{ test.question_set.count }}</td>
-            <td>{{ test.time }}</td>
+            <td>{{ test.duration }}</td>
             <td>
               <a href="{% url 'admin_test_details' test_id=test.test_id %}" class="btn btn-primary">Xem</a>
-              <a href="{% url 'admin_test_details' test_id=test.test_id %}" class="btn btn-warning">Sửa</a>
-              <a href="" class="btn btn-danger">Xóa</a>
+              <a href="{% url 'test_edit' test_id=test.test_id %}" class="btn btn-warning">Sửa</a>
+              <form method="post" action="{% url 'test_delete' test_id=test.test_id %}" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài kiểm tra này?');" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger">Xóa</button>
+              </form>
             </td>
           </tr>
         {% empty %}
