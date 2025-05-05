@@ -20,7 +20,14 @@
       font-weight: 600;
       margin-bottom: 1rem;
     }
-
+.custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
 /* Tab styling */
 .nav-tabs {
   border-bottom: 2px solid #e9ecef;
@@ -95,7 +102,7 @@
 /* Column widths - điều chỉnh theo hình mẫu */
 .table th:nth-child(1),
 .table td:nth-child(1) {
-  width: 5%;  /* STT */
+  width: 4%;  /* STT */
 }
 
 .table th:nth-child(2),
@@ -107,7 +114,7 @@
 
 .table th:nth-child(3),
 .table td:nth-child(3) {
-  width: 20%;  /* Bài kiểm tra */
+  width: 30%;  /* Bài kiểm tra */
 }
 
 .table th:nth-child(4),
@@ -122,13 +129,9 @@
 
 .table th:nth-child(6),
 .table td:nth-child(6) {
-  width: 15%;  /* Thời gian làm bài */
+  width: 5%;  /* Thời gian làm bài */
 }
 
-.table th:nth-child(7),
-.table td:nth-child(7) {
-  width: 5%;  /* View */
-}
 
 /* Action button */
 .view-btn {
@@ -177,15 +180,21 @@
       font-weight: 500;
     }
 
+<!--    td .btn-danger {-->
+<!--      background-color: #dc3545;-->
+<!--      border: none;-->
+<!--      color: white;-->
+<!--      font-weight: 500;-->
+<!--    }-->
     td .btn-danger {
-      background-color: #dc3545;
+      background-color: #fee2e2;
       border: none;
-      color: white;
+      color: #b91c1c;
       font-weight: 500;
     }
 </style>
 <div class="container">
-    <h2>{{ page_title }}</h2>
+    <h2 class="custom-title">{{ page_title }}</h2>
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a href="{% url 'admin_test_list' %}" class="nav-link" role="tab">Bài kiểm tra</a>
@@ -212,7 +221,7 @@
                     <th>Bài kiểm tra</th>
                     <th>Tổng điểm</th>
                     <th>Ngày làm</th>
-                    <th>Thời gian làm bài</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -221,9 +230,17 @@
                     <td>{{ result.stt }}</td>
                     <td>{{ result.full_name }}</td>
                     <td>{{ result.test_name }}</td>
-                    <td>{{ result.total_score }}</td>
-                    <td>{{ result.test_date|date:"Y-m-d" }}</td>
-                    <td>{{ result.duration }}</td>
+                    <td>{{ result.score }}</td>
+                    <td>{{ result.create_at|date:"d-m-Y H:i:s" }}</td>
+                    <td class="actions">
+                      <form method="post"
+                          action="{% url 'result_delete' result.id %}"
+                          style="display:inline;"
+                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa kết quả của {{ result.full_name }}?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

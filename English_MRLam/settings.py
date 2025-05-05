@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'qrPayment',
     'registerCourse',
     'ManageClass',
-    'MaterialsFree'
+    'MaterialsFree',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

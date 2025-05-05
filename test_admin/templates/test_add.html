@@ -229,7 +229,15 @@ td .btn-danger:last-child {
             <!-- Các radio buttons cho đáp án đúng sẽ hiển thị ở đây -->
           </div>
         </div>
+        <div class="form-group mt-3">
+          <label for="media_audio_url_${questionCount}">Link audio (nếu có):</label>
+          <input type="text" class="form-control" name="media_audio_url_${questionCount}" placeholder="Dán link audio">
+        </div>
 
+        <div class="form-group mt-2">
+          <label for="media_paragraph_${questionCount}">Đoạn văn (nếu có):</label>
+          <textarea class="form-control" name="media_paragraph_${questionCount}" rows="2" placeholder="Nhập đoạn văn"></textarea>
+        </div>
         <button type="button" class="btn btn-danger mt-2" onclick="removeQuestion(${questionCount})">Remove question</button>
       `;
 

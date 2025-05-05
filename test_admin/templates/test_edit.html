@@ -1,0 +1,115 @@
+{% extends 'base-admin.html' %}
+{% load static %}
+
+{% block title %}
+  Chỉnh sửa Bài Kiểm Tra {{ test.test_id }}
+{% endblock %}
+
+{% block content %}
+<style>
+.question {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.question h5 {
+  margin-bottom: 15px;
+}
+    .custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="custom-title">Chỉnh sửa bài kiểm tra</h2>
+
+    <!-- Tabs điều hướng -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a href="{% url 'admin_test_list' %}" class="nav-link active">Bài kiểm tra</a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'results' %}" class="nav-link">Kết quả</a>
+        </li>
+    </ul>
+
+    <!-- Form bắt đầu -->
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        <!-- Thông tin bài kiểm tra -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                Thông tin bài kiểm tra
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    {{ test_form.test_name.label_tag }}
+                    {{ test_form.test_name }}
+                </div>
+                <div class="mb-3">
+                    {{ test_form.test_description.label_tag }}
+                    {{ test_form.test_description }}
+                </div>
+                <div class="mb-3">
+                    {{ test_form.duration.label_tag }}
+                    {{ test_form.duration }}
+                </div>
+            </div>
+        </div>
+        <!-- Danh sách câu hỏi -->
+        {% for form in question_forms %}
+        <div class="question">
+            <h5>Câu {{ forloop.counter }}</h5>
+            <div class="mb-3">
+                {{ form.question_text.label_tag }}
+                {{ form.question_text }}
+            </div>
+            <div class="mb-3">
+                {{ form.question_media.label_tag }}
+                {{ form.question_media }}
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.answer_a.label_tag }}
+                    {{ form.answer_a }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.answer_b.label_tag }}
+                    {{ form.answer_b }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.answer_c.label_tag }}
+                    {{ form.answer_c }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form.answer_d.label_tag }}
+                    {{ form.answer_d }}
+                </div>
+            </div>
+            <div class="mb-3">
+                {{ form.correct_answer.label_tag }}
+                {{ form.correct_answer }}
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Nút điều khiển -->
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'admin_test_details' test.test_id %}" class="btn btn-secondary">Quay lại</a>
+            <div>
+                <a href="{% url 'admin_test_list' %}" class="btn btn-warning me-2">Hủy</a>
+                <button type="submit" class="btn btn-success">Lưu</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
