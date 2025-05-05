@@ -34,6 +34,13 @@ class QUESTION_MEDIA(models.Model):
     questionmedia_id = models.AutoField(primary_key=True)
     audio_file = models.CharField(max_length=100)
     paragraph = models.TextField()
+    def __str__(self):
+        parts = []
+        if self.audio_file:
+            parts.append("🎧 Audio")
+        if self.paragraph:
+            parts.append("📖 Paragraph")
+        return " + ".join(parts) or "❓ Chưa có nội dung"
     class Meta:
         db_table = 'QUESTION_MEDIA'
 
@@ -67,7 +74,7 @@ class RESULT(models.Model):
 class DOCUMENT(models.Model):
     doc_id = models.AutoField(primary_key=True)
     doc_name = models.CharField(max_length=100)
-    doc_file = models.FileField(upload_to='documents/', null=True, blank=True)
+    doc_file = models.URLField(max_length=500, null=True, blank=True)
     auth_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     class Meta:
         db_table = 'DOCUMENT'
@@ -107,12 +114,17 @@ class PAYMENT_INFO(models.Model):
         db_table = 'PAYMENT_INFO'
 
 class CLASS(models.Model):
+    STATUS_CHOICES = [
+        ('ongoing', 'Đang học'),
+        ('starting', 'Đang bắt đầu'),
+        ('finished', 'Đã kết thúc'),
+    ]
     class_id = models.AutoField(primary_key=True)
     class_name = models.CharField(max_length=50)
     course = models.ForeignKey(COURSE, on_delete=models.CASCADE)
     begin_time = models.DateField()
     end_time = models.DateField()
-    status = models.CharField(max_length=100)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     timetable = models.CharField(max_length=1000)
     class Meta:
         db_table = 'CLASS'
@@ -129,8 +141,11 @@ class USER_CLASS(models.Model):
 
 class LESSON(models.Model):
     lesson_id = models.AutoField(primary_key=True)
-    lesson_file = models.FileField()
-    exercise_file = models.FileField()
+    #lesson_file = models.FileField()
+    #exercise_file = models.FileField()
+    lesson_file = models.URLField(max_length=500, null=True, blank=True)
+    exercise_file = models.URLField(max_length=500, null=True, blank=True)
+
     lesson_name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     course = models.ForeignKey(COURSE, on_delete=models.CASCADE)

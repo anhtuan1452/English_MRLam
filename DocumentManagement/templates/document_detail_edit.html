@@ -59,7 +59,10 @@
                     {% if document.lesson_file %}
                         <div class="mb-2">
                             <i class="fas fa-file-pdf text-danger"></i>
-                            <a href="{{ document.lesson_file.url }}" target="_blank">{{ document.lesson_file.name|default:"Tài liệu không có tên" }}</a>
+                            <!-- Đảm bảo rằng lesson_file chứa URL từ Google Drive -->
+                            <a href="{{ document.lesson_file }}" target="_blank">
+                                {{ document.lesson_file|default:"Tài liệu không có tên" }}
+                            </a>
                         </div>
                     {% else %}
                         <p class="text-muted">Chưa có file tài liệu.</p>

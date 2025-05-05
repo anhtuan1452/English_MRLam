@@ -53,32 +53,28 @@ from .forms import CombinedLessonForm
 import os
 
 def document_detail_edit(request, lesson_id):
-    lesson = get_object_or_404(LESSON, pk=lesson_id)
+    document = get_object_or_404(LESSON, pk=lesson_id)
 
     if request.method == 'POST':
         if 'save' in request.POST:
-            form = CombinedLessonForm(request.POST, request.FILES, lesson_instance=lesson)
+            form = CombinedLessonForm(request.POST, request.FILES, lesson_instance=document)
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Tài liệu đã được cập nhật thành công!')
-                return redirect('/document_management/')
+                return redirect('document_list')
             else:
                 messages.error(request, 'Vui lòng kiểm tra lại thông tin.')
         elif 'delete' in request.POST:
-            lesson_name = lesson.lesson_name
-            lesson.delete()
-            messages.success(request, f'Tài liệu "{lesson_name}" đã được xóa thành công!')
-            return redirect('/document_management/')
-        else:
-
-            form = CombinedLessonForm(lesson_instance=lesson)
+            document_name = document.lesson_name
+            document.delete()
+            messages.success(request, f'Tài liệu "{document_name}" đã được xóa thành công!')
+            return redirect('document_list')
     else:
-        form = CombinedLessonForm(lesson_instance=lesson)
+        form = CombinedLessonForm(lesson_instance=document)
 
     return render(request, 'document_detail_edit.html', {
         'form': form,
-        'document': lesson,
-        'lesson_name': lesson.lesson_name,
+        'document': document,
         'active_menu': 'documents',
-        'title': f'Tài liệu - {lesson.course.course_name} - {lesson.lesson_name}',
+        'title': f'Tài liệu - {document.course.course_name} - {document.lesson_name}',
     })
