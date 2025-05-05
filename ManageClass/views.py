@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 
 from english.models import CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL, ROLLCALL_USER, SUBMISSION, EXERCISE,LESSON_DETAIL
-from .forms import ClassForm
+
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.db.models import Count
@@ -26,25 +26,68 @@ def class_list(request):
     })
 
 # Chi tiết lớp học - Tab "Mô tả lớp học"
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.db import transaction
+from django.forms import modelformset_factory
+
+from english.models import CLASS, LESSON_DETAIL, LESSON
+from course_admin.forms import LessonDetailFormSet
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from english.models import CLASS, LESSON_DETAIL, COURSE
+from .forms import LessonDetailForm, ClassForm
+
+
 def class_detail(request, class_id):
-    # Lấy đối tượng lớp học
+    # Lấy thông tin lớp học từ class_id
     class_instance = get_object_or_404(CLASS, pk=class_id)
 
-    # Tính sĩ số: Đếm số lượng học viên trong lớp qua quan hệ USER_CLASS
-    class_size = USER_CLASS.objects.filter(classes=class_instance).count()
+    # Lấy danh sách các buổi học của lớp
+    lesson_details = LESSON_DETAIL.objects.filter(classes=class_instance)
 
     if request.method == 'POST':
-        form = ClassForm(request.POST, instance=class_instance)
-        if form.is_valid():
-            form.save()
-            return redirect('class_detail', class_id=class_instance.pk)
+        action = request.POST.get('action')
+
+        if action == 'add_lesson':  # Khi nhấn nút thêm buổi học
+            form = LessonDetailForm(request.POST)
+            if form.is_valid():
+                # Lấy thông tin từ form
+                lesson_name = form.cleaned_data['lesson_name']
+                description = form.cleaned_data['description']
+                session_number = form.cleaned_data['session_number']
+
+                # Tạo mới Lesson và LessonDetail
+                lesson = LESSON.objects.create(
+                    lesson_name=lesson_name,
+                    description=description,
+                    course=class_instance.course
+                )
+
+                LESSON_DETAIL.objects.create(
+                    lesson=lesson,
+                    classes=class_instance,
+                    session_number=session_number
+                )
+
+                messages.success(request, "Thêm buổi học thành công!")
+                return redirect('class_detail', class_id=class_instance.pk)
+
+            else:
+                messages.error(request, "Có lỗi khi thêm buổi học.")
+        else:
+            # Xử lý các form khác nếu cần
+            pass
+
     else:
-        form = ClassForm(instance=class_instance)
+        # Form thêm buổi học
+        form = LessonDetailForm()
 
     return render(request, 'class_detail.html', {
-        'form': form,
         'class_instance': class_instance,
-        'class_size': class_size  # Truyền sĩ số vào context
+        'lesson_details': lesson_details,
+        'form': form
     })
 
 
@@ -132,8 +175,6 @@ def add_class(request):
     return render(request, 'add_class.html', {'form': form})
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
 from english.models import ROLLCALL, USER_CLASS
 
 
@@ -142,31 +183,53 @@ from django.shortcuts import get_object_or_404
 from english.models import ROLLCALL, ROLLCALL_USER, LESSON_DETAIL
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from english.models import ROLLCALL_USER, LESSON_DETAIL
+
+@csrf_exempt  # (nếu dùng POST từ JS mà không có CSRF token)
 def update_rollcall(request):
     if request.method == 'POST':
         rollcall_data = request.POST.get('rollcall_data')
 
         if rollcall_data:
             try:
-                # Chuyển chuỗi JSON thành từ điển Python
                 rollcall_data = json.loads(rollcall_data)
 
-                # Cập nhật trạng thái điểm danh cho từng user
                 for user_id, data in rollcall_data.items():
-                    # Thay đổi query để lấy RollCallUser đúng
-                    user = ROLLCALL_USER.objects.get(
-                        userclass__user__id=user_id,
-                        lesson_detail__id=data['lesson_detail_id']
-                    )
-                    user.status = data['status']
-                    user.save()
+                    lesson_detail_id = data.get('lesson_detail_id')
+                    status = data.get('status')
+
+                    # Kiểm tra lesson_detail_id hợp lệ
+                    if not lesson_detail_id or not str(lesson_detail_id).isdigit():
+                        continue  # Bỏ qua nếu thiếu hoặc sai kiểu
+
+                    try:
+                        lesson_detail = LESSON_DETAIL.objects.get(pk=lesson_detail_id)
+                    except LESSON_DETAIL.DoesNotExist:
+                        continue  # Bỏ qua nếu không tồn tại
+
+                    try:
+                        user = ROLLCALL_USER.objects.get(
+                            userclass__user__id=user_id,
+                            rollcall__lessondetail=lesson_detail
+                        )
+                        user.status = status
+                        user.save()
+                    except ROLLCALL_USER.DoesNotExist:
+                        continue  # Không có bản ghi, có thể log nếu cần
 
                 return JsonResponse({'message': 'Cập nhật trạng thái thành công!'})
 
             except Exception as e:
-                return JsonResponse({'message': f'Error: {str(e)}'}, status=400)
+                return JsonResponse({'message': f'Lỗi xử lý dữ liệu: {str(e)}'}, status=400)
 
-        return JsonResponse({'message': 'Dữ liệu không hợp lệ'}, status=400)
+        return JsonResponse({'message': 'Dữ liệu gửi lên không hợp lệ'}, status=400)
+
+    return JsonResponse({'message': 'Chỉ chấp nhận phương thức POST'}, status=405)
+
+
 def exercise_detail_view(request, class_id, exercise_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
     exercise = get_object_or_404(EXERCISE, pk=exercise_id)
@@ -181,4 +244,55 @@ def exercise_detail_view(request, class_id, exercise_id):
         'class_instance': class_instance,
         'exercise': exercise,
         'submissions': submissions,
+    })
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.db import transaction
+from django.forms import modelformset_factory
+
+from english.models import COURSE, CLASS, LESSON, LESSON_DETAIL
+from course_admin.forms import LessonDetailFormSet
+from django.contrib.auth.models import User
+
+def add_lesson_details(request, course_id):
+    course = get_object_or_404(COURSE, pk=course_id)
+
+    # Kiểm tra xem khóa học có lớp học mặc định hay không
+    default_class = CLASS.objects.filter(course=course).first()
+    if not default_class:
+        messages.error(request, "Chưa có lớp học cho khóa học này.")
+        return redirect('admin_xemkhoahoc', course_id=course.pk)
+
+    if request.method == 'POST':
+        formset = LessonDetailFormSet(request.POST)
+
+        if formset.is_valid():
+            with transaction.atomic():
+                # Lưu tất cả các buổi học vào cơ sở dữ liệu
+                for form in formset:
+                    lesson = form.cleaned_data.get('lesson')
+                    session_number = form.cleaned_data.get('session_number')
+                    date = form.cleaned_data.get('date')
+
+                    if lesson:
+                        # Tạo LESSON_DETAIL cho mỗi buổi học
+                        LESSON_DETAIL.objects.create(
+                            lesson=lesson,
+                            classes=default_class,
+                            session_number=session_number,
+                            date=date
+                        )
+
+                messages.success(request, "Thêm buổi học thành công!")
+                return redirect('admin_xemkhoahoc', course_id=course.pk)
+        else:
+            messages.error(request, "Có lỗi xảy ra khi thêm buổi học.")
+
+    else:
+        # Khởi tạo formset trống để người dùng nhập các buổi học mới
+        formset = LessonDetailFormSet(queryset=LESSON_DETAIL.objects.none())
+
+    return render(request, 'lesson_details.html', {
+        'formset': formset,
+        'course': course,
     })

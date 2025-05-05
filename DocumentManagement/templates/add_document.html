@@ -37,16 +37,19 @@
 
                 <!-- Tiêu đề -->
                 <div class="mb-3">
-                    <label for="lesson_title" class="form-label">Tiêu đề</label>
-                    <input type="text" name="lesson_title" class="form-control" placeholder="VD: English Level 1_Buổi 1" required>
+                    <label for="{{ form.lesson_name.id_for_label }}" class="form-label">Tiêu đề</label>
+                    {{ form.lesson_name }}
+                    {% if form.lesson_name.errors %}
+                        <div class="text-danger">{{ form.lesson_name.errors }}</div>
+                    {% endif %}
                 </div>
 
                 <!-- Nội dung -->
                 <div class="mb-3">
-                    <label for="{{ form.lesson_description.id_for_label }}" class="form-label">Nội dung</label>
-                    <textarea name="{{ form.lesson_description.name }}" class="form-control" rows="4" placeholder="Mô tả nội dung của tài liệu" required></textarea>
-                    {% if form.lesson_description.errors %}
-                        <div class="text-danger">{{ form.lesson_description.errors }}</div>
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Nội dung</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger">{{ form.description.errors }}</div>
                     {% endif %}
                 </div>
 
@@ -71,7 +74,6 @@
                 <div class="text-end">
                     <button type="submit" class="btn btn-danger">Lưu</button>
                     <a href="{% url 'document_list' %}" class="btn btn-secondary me-2">Hủy</a>
-
                 </div>
             </form>
         </div>

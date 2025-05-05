@@ -1,6 +1,7 @@
 {% extends 'base-admin.html' %}
 
 {% block title %}Danh sách tài liệu{% endblock %}
+
 {% block content %}
 <style>
     .custom-title {
@@ -76,12 +77,15 @@
                             <td>PDF</td>
                             <td>
                                 <a href="{% url 'document_detail_edit' document.lesson_id %}" class="btn btn-sm btn-common">Sửa</a>
-                                <a href="#" class="btn btn-sm btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa tài liệu này?');">Xóa</a>
+                                <form method="POST" action="{% url 'document_detail_edit' document.lesson_id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" name="delete" class="btn btn-sm btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa tài liệu này?');">Xóa</button>
+                                </form>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-4">Không có tài liệu nào.</td>
+                            <td colspan="5" class="text-center py-4">Không có tài liệu nào.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -105,5 +109,5 @@
         });
     });
 </script>
-{% endblock %}
 
+{% endblock %}

@@ -16,6 +16,7 @@
         color: #5c6bc0;
         margin: 0.5rem 0 1rem;
     }
+
     .row {
         display: flex;
         flex-wrap: wrap;
@@ -88,6 +89,21 @@
         bottom: 0;
         z-index: 1;
     }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .card {
+            flex: 0 0 48%;
+            max-width: 48%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .card {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -105,7 +121,12 @@
             <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" alt="{{ doc.doc_name }}">
             <div class="card-body">
                 <h5 class="card-title">{{ doc.doc_name }}</h5>
+                <p class="card-text">{{ doc.doc_description|truncatewords:20 }}</p>
+                {% if doc.file_url %}
+                <a href="{{ doc.file_url }}" class="stretched-link" target="_blank"></a>
+                {% else %}
                 <a href="{% url 'materials_detail' doc.doc_id %}" class="stretched-link"></a>
+                {% endif %}
             </div>
         </div>
         {% empty %}

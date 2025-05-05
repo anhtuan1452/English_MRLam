@@ -15,24 +15,19 @@ def document_list(request):
     return render(request, 'document_list.html', context)
 
 # Thêm mới tài liệu (LESSON + LESSON_DETAIL)
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import CombinedLessonForm
+from english.models import LESSON
+
 def add_document(request):
     if request.method == 'POST':
         form = CombinedLessonForm(request.POST, request.FILES)
         if form.is_valid():
-            lesson_file = request.FILES.get('lesson_file')
-            exercise_file = request.FILES.get('exercise_file')
-
-            # Kiểm tra định dạng PDF
-            for file in [lesson_file, exercise_file]:
-                if file and not file.name.lower().endswith('.pdf'):
-                    messages.error(request, 'Chỉ được phép tải lên tệp PDF.')
-                    return render(request, 'add_document.html', {
-                        'form': form,
-                        'active_menu': 'documents',
-                        'title': 'Thêm tài liệu',
-                    })
-
+            # Lưu tài liệu
             form.save()
+
+            # Thông báo thành công và chuyển hướng về danh sách tài liệu
             messages.success(request, 'Tài liệu đã được thêm thành công!')
             return redirect('document_list')
         else:

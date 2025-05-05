@@ -1,8 +1,11 @@
 from django import forms
-from english.models import LESSON, LESSON_DETAIL, COURSE
+from english.models import LESSON, COURSE
 
-class CombinedLessonForm(forms.Form):
-    # Field từ LESSON
+class CombinedLessonForm(forms.ModelForm):
+    class Meta:
+        model = LESSON
+        fields = ['lesson_file', 'exercise_file', 'course', 'lesson_name', 'description']
+
     lesson_file = forms.FileField(
         label="Tài liệu bài học (PDF)",
         widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'application/pdf'}),
@@ -15,11 +18,9 @@ class CombinedLessonForm(forms.Form):
     )
     course = forms.ModelChoiceField(
         label="Khóa học",
-        queryset=COURSE.objects.none(),  # sẽ cập nhật trong __init__
+        queryset=COURSE.objects.all(),  # Sử dụng queryset cho các khóa học
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-
-    # Các trường từ LESSON
     lesson_name = forms.CharField(
         label="Tên tài liệu",
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nhập tên tài liệu'})
@@ -34,32 +35,25 @@ class CombinedLessonForm(forms.Form):
         self.lesson_instance = kwargs.pop('lesson_instance', None)
         super().__init__(*args, **kwargs)
 
-        # Cập nhật danh sách khóa học
-        self.fields['course'].queryset = COURSE.objects.all()
-
-        # Set dữ liệu ban đầu nếu đang chỉnh sửa
+        # Nếu đang chỉnh sửa, set dữ liệu ban đầu
         if self.lesson_instance:
             self.fields['course'].initial = self.lesson_instance.course
             self.fields['lesson_name'].initial = self.lesson_instance.lesson_name
             self.fields['description'].initial = self.lesson_instance.description
 
-    def save(self):
-        # Lưu dữ liệu vào LESSON
-        lesson = self.lesson_instance or LESSON()
-        lesson.course = self.cleaned_data['course']
+    def save(self, commit=True):
+        lesson = super().save(commit=False)  # Chưa lưu vào DB
 
-        # Cập nhật tài liệu bài học nếu có
+        # Nếu có file lesson_file, gán vào lesson
         if self.cleaned_data.get('lesson_file'):
             lesson.lesson_file = self.cleaned_data['lesson_file']
 
-        # Cập nhật tài liệu bài tập nếu có
+        # Nếu có file exercise_file, gán vào lesson
         if self.cleaned_data.get('exercise_file'):
             lesson.exercise_file = self.cleaned_data['exercise_file']
 
-        # Cập nhật tên tài liệu và mô tả
-        lesson.lesson_name = self.cleaned_data['lesson_name']
-        lesson.description = self.cleaned_data['description']
-
-        lesson.save()
+        # Lưu tài liệu vào cơ sở dữ liệu
+        if commit:
+            lesson.save()
 
         return lesson

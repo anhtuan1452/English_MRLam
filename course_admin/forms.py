@@ -114,3 +114,7 @@ class LessonDetailForm(forms.ModelForm):
                 label='Mô tả',
                 widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
             )
+
+
+class LessonDetailFormSet:
+    pass
