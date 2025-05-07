@@ -33,7 +33,7 @@
         </a>
         <h2 style="color:#5c6bc0" class="lesson-title">Thêm Bài Tập Mới</h2>
     </div>
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form1.as_p }}
     {{ form2.as_p }}

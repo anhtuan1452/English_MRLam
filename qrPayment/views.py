@@ -1,22 +1,42 @@
 import base64
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 
-from english.models import PAYMENT
+from english.models import PAYMENT, PAYMENT_INFO
+from qrPayment.forms import PaymentForm
 
-
-# Create your views here.
-def qr_payment(request):
-    return render(request, 'qr_payment.html')
 
 def payment_list(request):
-    payments = PAYMENT.objects.select_related('course')
+    # Lấy tất cả các đối tượng PAYMENT từ cơ sở dữ liệu
+    payments = PAYMENT.objects.all()
 
-    # Chuyển QR binary sang base64 để hiển thị ảnh
-    for p in payments:
-        if p.qr:
-            p.qr_base64 = base64.b64encode(p.qr).decode('utf-8')
-        else:
-            p.qr_base64 = None
-
+    # Truyền payments vào context để hiển thị trong template
     return render(request, 'payment_list.html', {'payments': payments})
+
+def payment_detail(request, payment_id):
+    payment = get_object_or_404(PAYMENT, pk=payment_id)  # Lấy thông tin thanh toán theo ID
+    payment_infos = PAYMENT_INFO.objects.filter(payment_id=payment_id).order_by(
+        '-time_at')  # Lấy các thông tin thanh toán liên quan
+    if request.method == 'POST':
+        form = PaymentForm(request.POST, request.FILES, instance=payment)  # Truyền instance để chỉnh sửa
+        if 'delete' in request.POST:  # Kiểm tra xem nút "Xóa" có được nhấn không
+            payment.delete()  # Xóa thanh toán
+            return redirect('payment_list')  # Sau khi xóa, chuyển hướng về danh sách thanh toán
+        elif form.is_valid():
+            form.save()  # Lưu thông tin thanh toán đã chỉnh sửa
+            return redirect('payment_list')  # Sau khi lưu, chuyển hướng về danh sách thanh toán
+    else:
+        form = PaymentForm(instance=payment)  # Nếu là GET, hiển thị form với dữ liệu của thanh toán cần chỉnh sửa
+
+    return render(request, 'payment_detail.html',
+                  {'form': form, 'payment_detail': payment, 'payment_infos': payment_infos})  # Trả về form chỉnh sửa thanh toán
+def add_payment(request):
+    if request.method == 'POST':
+        form = PaymentForm(request.POST, request.FILES)  # Xử lý file upload
+        if form.is_valid():
+            form.save()  # Lưu thông tin thanh toán mới vào cơ sở dữ liệu
+            return redirect('payment_list')  # Sau khi lưu, chuyển hướng về danh sách thanh toán
+    else:
+        form = PaymentForm()  # Nếu là GET, hiển thị form mới
+
+    return render(request, 'add_payment.html', {'form': form})

@@ -22,7 +22,7 @@
             <nav class="main-nav">
                 <a href="{% url 'course' %}">Khóa học</a>
                 <a href="{% url 'materials_list' %}">Tài liệu</a>
-                <a href="{% url 'home_test' %}">Bài test</a>
+                <a href="{% url 'home_test' test_id=1%}">Bài test</a>
                 {% if True %}
                     <a href="{% url 'student_homework' %}">Lớp học</a>
                 {% endif %}
@@ -61,7 +61,7 @@
                   z-index: 1000;
                   padding: 10px 0;
                 ">
-                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                <a href="{%url 'Profile_User' %}" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
                     <i class="fas fa-id-card" style="color: #26a69a; margin-right: 10px;"></i> Edit profile
                 </a>
                 <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
@@ -101,7 +101,7 @@
         lucide.createIcons();
       });
     </script>
-
+    {% block footer %}
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
@@ -137,6 +137,7 @@
             </div>
         </div>
     </footer>
+    {% endblock%}
     <script>
       const toggleBtn = document.getElementById("profileToggle");
       const dropdownMenu = document.getElementById("profileMenu");
