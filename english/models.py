@@ -11,10 +11,12 @@ class USER_PROFILE(models.Model):
         ('F', 'Female'),
         ('O', 'Other'),
     ]
-    dob = models.DateField()  # ngày sinh
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES)  # giới tính (có choices)
+    dob = models.DateField(default="")  # ngày sinh
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES,null=True)  # giới tính (có choices)
     description = models.TextField(blank=True, null=True)
-    image = models.CharField(max_length=100)
+    image = models.CharField(max_length=100,default="")
+    reset_password_token = models.CharField(max_length=100,default="")
+    reset_password_expiry = models.CharField(max_length=100,default="")
     def __str__(self):
         return self.user.username
 
@@ -44,7 +46,7 @@ class QUESTION(models.Model):
     answer = models.TextField(null=True, blank=True)
     correct_answer = models.CharField(max_length=50, null=True, blank=True)
     test = models.ForeignKey(TEST, on_delete=models.CASCADE)
-    question_media = models.ForeignKey(QUESTION_MEDIA, on_delete=models.CASCADE)
+    question_media = models.ForeignKey(QUESTION_MEDIA, on_delete=models.CASCADE, null=True)
     class Meta:
         db_table = 'QUESTION'
 from django.db import models
@@ -68,7 +70,8 @@ class DOCUMENT(models.Model):
     doc_id = models.AutoField(primary_key=True)
     doc_name = models.CharField(max_length=100)
     doc_file = models.FileField(upload_to='documents/', null=True, blank=True)
-    auth_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    auth_user_id = models.ForeignKey(User, on_delete=models.CASCADE,
+        default=1,)
     class Meta:
         db_table = 'DOCUMENT'
 
@@ -113,7 +116,7 @@ class CLASS(models.Model):
     begin_time = models.DateField()
     end_time = models.DateField()
     status = models.CharField(max_length=100)
-    timetable = models.CharField(max_length=1000)
+    timetable = models.CharField(max_length=100,null=True)
     class Meta:
         db_table = 'CLASS'
 
@@ -127,11 +130,12 @@ class USER_CLASS(models.Model):
         db_table = 'USER_CLASS'
 
 
+# Trong models.py
 class LESSON(models.Model):
     lesson_id = models.AutoField(primary_key=True)
-    lesson_file = models.FileField()
-    exercise_file = models.FileField()
-    lesson_name = models.CharField(max_length=100)
+    lesson_file = models.URLField(max_length=200)  # Thay FileField bằng URLField
+    exercise_file = models.URLField(max_length=200)  # Thay FileField bằng URLField
+    lesson_name = models.CharField(max_length=100, default="chua co")
     description = models.TextField(null=True, blank=True)
     course = models.ForeignKey(COURSE, on_delete=models.CASCADE)
 
@@ -151,9 +155,10 @@ class LESSON_DETAIL(models.Model):
 class EXERCISE(models.Model):
     exercise_id = models.AutoField(primary_key=True)
     lessondetail = models.OneToOneField(LESSON_DETAIL, on_delete=models.CASCADE)
-    duedate = models.DateField()
+    duedate = models.DateTimeField()  # Đảm bảo là DateTimeField
     class Meta:
         db_table = 'EXERCISE'
+
 
 class SUBMISSION(models.Model):
     STATUS_CHOICES = (
@@ -164,9 +169,14 @@ class SUBMISSION(models.Model):
     submission_id = models.AutoField(primary_key=True)
     userclass = models.ForeignKey(USER_CLASS, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
-    submit_date = models.DateTimeField(default=datetime.datetime.now())
+    submit_date = models.DateTimeField(default=datetime.datetime.now)
     review = models.TextField(null=True, blank=True)
     exercise = models.ForeignKey(EXERCISE, on_delete=models.CASCADE)
+
+    # Thay submission_file bằng các trường mới
+    submission_file_content = models.BinaryField(null=True, blank=True)  # Lưu nội dung nhị phân của tệp
+    submission_file_name = models.CharField(max_length=255, null=True, blank=True)  # Lưu tên tệp
+    submission_file_type = models.CharField(max_length=50, null=True, blank=True)  # Lưu loại tệp (e.g., .pdf, .docx)
 
     class Meta:
         db_table = 'SUBMISSION'

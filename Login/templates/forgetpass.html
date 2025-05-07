@@ -39,10 +39,14 @@
     body {
         background-color: #FFFFFF;
         min-height: 120vh;
-        width: 100%;
-        margin-top:10vh;
     }
-
+    .main-content{
+        height: 100vh;
+        width: 100%;
+        background-image: url('/static/img.png'); /* Đặt đường dẫn đến hình ảnh */
+        background-size: cover; /* Đảm bảo hình ảnh bao phủ toàn bộ khu vực */
+        background-position: center; /* Căn chỉnh hình ảnh vào giữa */
+    }
     .main-container {
         height: 100vh;
         width: 100%;
@@ -50,6 +54,8 @@
         flex-direction: column;
         background-color: #ffffff;
         min-height: calc(100vh - 150px);
+
+
     }
 
     .content-wrapper {
@@ -66,6 +72,14 @@
         padding: 30px 20px;
         text-align: center;
         background-color: #FFFFFF;
+        width: 50%;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 15px;
+        border: 1px solid #ccc;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin: 50px auto;
     }
 
     .welcome-title {
