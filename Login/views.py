@@ -122,7 +122,7 @@ def forget_password_view(request):
             user.user_profile.reset_password_expiry = timezone.now() + timedelta(hours=1)
             user.user_profile.save()
 
-            reset_link = request.build_absolute_uri(f"/Login/reset-password/?token={token}")
+            reset_link = request.build_absolute_uri(f"/reset-password/?token={token}")
             subject = "Đặt lại mật khẩu - MR. LAM"
             message = f"Chào {user.username},\n\nNhấn vào liên kết sau để đặt lại mật khẩu của bạn:\n{reset_link}\n\nLiên kết này có hiệu lực trong 1 giờ.\n\nTrân trọng,\nMR. LAM"
             send_mail(

@@ -32,9 +32,12 @@ def student_submission(request, lesson_id):
     submission = SUBMISSION.objects.filter(userclass=user_class, exercise=exercise).first()
 
     # Tính toán thời hạn và trạng thái với datetime.datetime
-    due_date = exercise.duedate  # Đã là datetime.datetime từ DateTimeField
-    now = timezone.now()  # Lấy thời gian hiện tại bao gồm ngày và giờ
+    due_date = exercise.duedate
+    now = timezone.now()
 
+    from django.utils.timezone import make_aware, is_naive
+    if due_date and is_naive(due_date):
+        due_date = make_aware(due_date)
     if due_date:
         time_remaining = due_date - now
         time_remaining_days = time_remaining.days
