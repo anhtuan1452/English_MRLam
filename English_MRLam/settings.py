@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,8 +51,7 @@ INSTALLED_APPS = [
     'qrPayment',
     'registerCourse',
     'ManageClass',
-    'MaterialsFree',
-    'rest_framework',
+    'MaterialsFree'
 ]
 
 MIDDLEWARE = [
@@ -78,8 +77,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media',
-
             ],
         },
     },
@@ -141,13 +138,15 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 import os
 import os
 
 # settings.py
-#
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'MaterialsFree', 'media')  # Đường dẫn tuyệt đối
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'MaterialsFree', 'media')  # Đường dẫn tuyệt đối
 
 # Cấu hình email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -157,7 +156,3 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'nguyenhoangatuan10b72020@gmail.com'  # Thay bằng email của bạn
 EMAIL_HOST_PASSWORD = 'axie ycom jdtb wdid'  # Thay bằng mật khẩu ứng dụng của Gmail
 DEFAULT_FROM_EMAIL = 'nguyenhoangatuan10b72020@gmail.com'  # Thay bằng email của bạn
-
-
-MEDIA_ROOT = BASE_DIR / "media"
-MEDIA_URL = '/media/'

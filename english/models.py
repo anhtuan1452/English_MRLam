@@ -11,10 +11,12 @@ class USER_PROFILE(models.Model):
         ('F', 'Female'),
         ('O', 'Other'),
     ]
-    dob = models.DateField()  # ngày sinh
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES)  # giới tính (có choices)
+    dob = models.DateField(default="")  # ngày sinh
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES,null=True)  # giới tính (có choices)
     description = models.TextField(blank=True, null=True)
-    image = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    reset_password_token = models.CharField(max_length=100,default="")
+    reset_password_expiry = models.CharField(max_length=100,default="")
     def __str__(self):
         return self.user.username
 
@@ -23,24 +25,24 @@ class USER_PROFILE(models.Model):
 
 class TEST(models.Model):
     test_id = models.AutoField(primary_key=True)
-    test_name = models.CharField(max_length=100)
-    test_description = models.CharField(max_length=255, null=True, blank=True)  # Adding this field if needed
-    duration = models.TimeField()
+    test_name = models.CharField(max_length=255)
+    test_description = models.TextField(null=True, blank=True)  # Adding this field if needed
+    duration = models.PositiveIntegerField(default=30)
     class Meta:
         db_table = 'TEST'
 
 
 class QUESTION_MEDIA(models.Model):
     questionmedia_id = models.AutoField(primary_key=True)
-    audio_file = models.CharField(max_length=100)
-    paragraph = models.TextField()
-    def __str__(self):
-        parts = []
-        if self.audio_file:
-            parts.append("🎧 Audio")
-        if self.paragraph:
-            parts.append("📖 Paragraph")
-        return " + ".join(parts) or "❓ Chưa có nội dung"
+    audio_file = models.FileField(upload_to='audio/', null=True, blank=True)
+    paragraph = models.TextField(null=True, blank=True)
+    # def __str__(self):
+    #     parts = []
+    #     if self.audio_file:
+    #         parts.append("🎧 Audio")
+    #     if self.paragraph:
+    #         parts.append("📖 Paragraph")
+    #     return " + ".join(parts) or "❓ Chưa có nội dung"
     class Meta:
         db_table = 'QUESTION_MEDIA'
 
@@ -48,12 +50,14 @@ class QUESTION_MEDIA(models.Model):
 class QUESTION(models.Model):
     question_id = models.AutoField(primary_key=True)
     question_text = models.TextField()
-    answer = models.TextField(null=True, blank=True)
+    answer = models.JSONField(null=True, blank=True)
     correct_answer = models.CharField(max_length=50, null=True, blank=True)
     test = models.ForeignKey(TEST, on_delete=models.CASCADE)
-    question_media = models.ForeignKey(QUESTION_MEDIA, on_delete=models.CASCADE)
+    question_media = models.ForeignKey(QUESTION_MEDIA, on_delete=models.SET_NULL, null=True, blank=True)
     class Meta:
         db_table = 'QUESTION'
+
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
@@ -64,18 +68,18 @@ class RESULT(models.Model):
     result_id = models.AutoField(primary_key=True)
     score = models.IntegerField()
     total_questions = models.IntegerField()
-    test_id = models.ForeignKey(TEST, on_delete=models.CASCADE)
-    acc_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    test = models.ForeignKey(TEST, on_delete=models.CASCADE)
+    acc = models.ForeignKey(User, on_delete=models.CASCADE)
     create_at = models.DateTimeField(default=datetime.datetime.now)
     class Meta:
         db_table = 'RESULT'
 
-
 class DOCUMENT(models.Model):
     doc_id = models.AutoField(primary_key=True)
     doc_name = models.CharField(max_length=100)
-    doc_file = models.URLField(max_length=500, null=True, blank=True)
-    auth_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    doc_file = models.FileField(upload_to='documents/', null=True, blank=True)
+    auth_user_id = models.ForeignKey(User, on_delete=models.CASCADE,
+        default=1,)
     class Meta:
         db_table = 'DOCUMENT'
 
@@ -96,7 +100,7 @@ class COURSE(models.Model):
 
 class PAYMENT(models.Model):
     payment_id = models.AutoField(primary_key=True)
-    qr = models.CharField(max_length=500,null=True, blank=True)
+    qr = models.ImageField(upload_to='media/Qr', null=True, blank=True)
     course_id = models.ForeignKey(COURSE, on_delete=models.CASCADE)
     account_owner = models.CharField(max_length=100,null = True)
     account_number = models.CharField(max_length=100,null = True)
@@ -107,7 +111,7 @@ class PAYMENT(models.Model):
 class PAYMENT_INFO(models.Model):
     paymentinfo_id = models.AutoField(primary_key=True)
     time_at = models.DateTimeField(default=datetime.datetime.now())
-    payment_id = models.ForeignKey(PAYMENT, on_delete=models.CASCADE)
+    payment = models.ForeignKey(PAYMENT, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.CharField(max_length=150)
     class Meta:
@@ -125,7 +129,7 @@ class CLASS(models.Model):
     begin_time = models.DateField()
     end_time = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-    timetable = models.CharField(max_length=1000)
+    timetable = models.CharField(max_length=1000,null=True,blank=True)
     class Meta:
         db_table = 'CLASS'
 
@@ -139,14 +143,12 @@ class USER_CLASS(models.Model):
         db_table = 'USER_CLASS'
 
 
+# Trong models.py
 class LESSON(models.Model):
     lesson_id = models.AutoField(primary_key=True)
-    #lesson_file = models.FileField()
-    #exercise_file = models.FileField()
-    lesson_file = models.URLField(max_length=500, null=True, blank=True)
-    exercise_file = models.URLField(max_length=500, null=True, blank=True)
-
-    lesson_name = models.CharField(max_length=100)
+    lesson_file = models.URLField(max_length=200)  # Thay FileField bằng URLField
+    exercise_file = models.URLField(max_length=200)  # Thay FileField bằng URLField
+    lesson_name = models.CharField(max_length=100, default="chua co")
     description = models.TextField(null=True, blank=True)
     course = models.ForeignKey(COURSE, on_delete=models.CASCADE)
 
@@ -170,6 +172,7 @@ class EXERCISE(models.Model):
     class Meta:
         db_table = 'EXERCISE'
 
+
 class SUBMISSION(models.Model):
     STATUS_CHOICES = (
         ('done', 'Done'),
@@ -179,9 +182,14 @@ class SUBMISSION(models.Model):
     submission_id = models.AutoField(primary_key=True)
     userclass = models.ForeignKey(USER_CLASS, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
-    submit_date = models.DateTimeField(default=datetime.datetime.now())
+    submit_date = models.DateTimeField(default=datetime.datetime.now)
     review = models.TextField(null=True, blank=True)
     exercise = models.ForeignKey(EXERCISE, on_delete=models.CASCADE)
+
+    # Thay submission_file bằng các trường mới
+    submission_file_content = models.BinaryField(null=True, blank=True)  # Lưu nội dung nhị phân của tệp
+    submission_file_name = models.CharField(max_length=255, null=True, blank=True)  # Lưu tên tệp
+    submission_file_type = models.CharField(max_length=50, null=True, blank=True)  # Lưu loại tệp (e.g., .pdf, .docx)
 
     class Meta:
         db_table = 'SUBMISSION'

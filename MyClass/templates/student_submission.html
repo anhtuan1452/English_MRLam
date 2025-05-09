@@ -1,23 +1,53 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load file_filters %}
 {% block content %}
 <style>
   body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
+    margin: 4rem 0 0 0;
     color: #333;
-    background-color: #f5f5f5;
+    height: 120%;
+  }
+
+  .main-content {
+    margin: 4rem 0 4rem 0;
   }
 
   .container {
-    max-width: 800px;
+    max-width: 40rem;
     margin: 0 auto;
     background-color: white;
     padding: 20px;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  /* Dynamic background color based on submission status */
+  .container.late {
+    background-color: #ffe6e6; /* Light red for late submissions */
+  }
+
+  .container.on-time {
+    background-color: white; /* Loại bỏ màu xanh cho container, chỉ áp dụng cho ô thời gian */
+  }
+
+  .error-message {
+    background-color: #ffe6e6;
+    color: #e74c3c;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .success-message {
+    background-color: #e6f4e6;
+    color: #2ecc71;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
   }
 
   .breadcrumb {
@@ -89,11 +119,17 @@
     min-width: 250px;
   }
 
+  /* Thêm style cho ô "Thời gian còn lại" */
+  .status-row.time-remaining {
+    background-color: #e6f4e6; /* Màu xanh cho ô thời gian còn lại */
+  }
+
   .file-upload-container {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+    margin-bottom: 20px;
   }
 
   .file-input {
@@ -135,6 +171,31 @@
     background-color: #1765cc;
   }
 
+  .submitted-file-container {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+  }
+
+  .submitted-file-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 5px;
+  }
+
+  .submitted-file-link {
+    font-size: 14px;
+    color: #1a73e8;
+    text-decoration: none;
+  }
+
+  .submitted-file-link:hover {
+    text-decoration: underline;
+  }
+
   @media (max-width: 600px) {
     .status-label {
       width: 120px;
@@ -152,7 +213,15 @@
   }
 </style>
 
-<div class="container">
+<div class="container {% if time_remaining == 'Đã hết hạn' %}late{% else %}on-time{% endif %}">
+  {% for message in messages %}
+  {% if message.tags == 'error' %}
+    <div class="error-message">{{ message }}</div>
+  {% elif message.tags == 'success' %}
+    <div class="success-message">{{ message }}</div>
+  {% endif %}
+    {% endfor %}
+
   <div class="breadcrumb">
     <span class="breadcrumb-item">Nhà của tôi</span>
     <span class="breadcrumb-separator">/</span>
@@ -163,45 +232,56 @@
 
   <h1 class="course-title">[Lv1.03] {{ course.course_name }}</h1>
 
-  <div class="submission-container">
-    <h2 class="submission-header">Nộp bài tập về nhà Buổi {{ lesson.lesson_id }}</h2>
+  {% if exercise %}
+    <div class="submission-container">
+      <h2 class="submission-header">Nộp bài tập về nhà Buổi {{ lesson.lesson_id }}</h2>
 
-    <div class="instructions">
-      <p>Học viên hoàn thành và nộp bài tập về nhà. Tập tin được đặt theo <strong>&lt;Họ và tên học viên&gt;</strong> - <strong>&lt;Mã lớp&gt;</strong>-<strong>&lt;Buổi&gt;</strong>.</p>
-      <p class="example">Ví dụ: NguyenThiTheoVi-Lv103-Bu{{ lesson.lesson_id|stringformat:"02d" }}.docx</p>
+      <div class="instructions">
+        <p>Học viên hoàn thành và nộp bài tập về nhà. Tập tin được đặt theo <strong>&lt;Họ và tên học viên&gt;</strong> - <strong>&lt;Mã lớp&gt;</strong>-<strong>&lt;Buổi&gt;</strong>.</p>
+        <p class="example">Ví dụ: NguyenThiTheoVi-Lv103-Bu{{ lesson.lesson_id|stringformat:"02d" }}.docx</p>
+      </div>
+
+      <div class="status-container">
+        <div class="status-row">
+          <span class="status-label">Trạng thái nộp bài</span>
+          <span class="status-value">{{ submission_status }}</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Trạng thái chấm điểm</span>
+          <span class="status-value">{{ grading_status }}</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Ngày hết hạn</span>
+          <span class="status-value">{{ due_date }}</span>
+        </div>
+        <div class="status-row time-remaining"> <!-- Thêm class time-remaining -->
+          <span class="status-label">Thời gian còn lại</span>
+          <span class="status-value">{{ time_remaining }}</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Sửa lần cuối</span>
+          <span class="status-value">{{ last_edit }}</span>
+        </div>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" class="file-upload-container">
+        {% csrf_token %}
+        <input type="file" id="file-upload" class="file-input" name="submission_file" accept=".docx,.pdf">
+        <label for="file-upload" class="file-label">Chọn tệp</label>
+        <span class="file-name">Chưa chọn tệp</span>
+        <button type="submit" class="submit-button">Nộp bài</button>
+      </form>
+
+      {% if submission and submission.submission_file_name %}
+        <div class="submitted-file-container">
+          <div class="submitted-file-label">Tệp đã nộp:</div>
+          <a href="{% url 'download_submission' submission.submission_id %}" class="submitted-file-link" download>
+            {{ submission.submission_file_name }}
+          </a>
+        </div>
+      {% endif %}
     </div>
-
-    <div class="status-container">
-      <div class="status-row">
-        <span class="status-label">Trạng thái nộp bài</span>
-        <span class="status-value">{{ submission_status }}</span>
-      </div>
-      <div class="status-row">
-        <span class="status-label">Trạng thái chấm điểm</span>
-        <span class="status-value">{{ grading_status }}</span>
-      </div>
-      <div class="status-row">
-        <span class="status-label">Ngày hết hạn</span>
-        <span class="status-value">{{ due_date }}</span>
-      </div>
-      <div class="status-row">
-        <span class="status-label">Thời gian còn lại</span>
-        <span class="status-value">{{ time_remaining }}</span>
-      </div>
-      <div class="status-row">
-        <span class="status-label">Sửa lần cuối</span>
-        <span class="status-value">{{ last_edit }}</span>
-      </div>
-    </div>
-
-    <form method="post" enctype="multipart/form-data" class="file-upload-container">
-      {% csrf_token %}
-      <input type="file" id="file-upload" class="file-input" name="submission_file" accept=".docx,.pdf">
-      <label for="file-upload" class="file-label">Chọn tệp</label>
-      <span class="file-name">Chưa chọn tệp</span>
-      <button type="submit" class="submit-button">Nộp bài</button>
-    </form>
-  </div>
+  {% endif %}
 </div>
 
 <script>
