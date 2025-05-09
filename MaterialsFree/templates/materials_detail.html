@@ -106,10 +106,10 @@
             {% endif %}
         </div>
 
-        <!-- Hiển thị Google Drive link trong iframe nếu là PDF -->
+        <!-- Hiển thị PDF bằng iframe -->
         <div class="iframe-wrapper">
             {% if file_url %}
-                <iframe src="https://drive.google.com/viewerng/viewer?embedded=true&url={{ file_url }}" frameborder="0"></iframe>
+                <iframe src="{{ file_url }}"></iframe>
             {% else %}
                 <p>Không thể hiển thị tài liệu này.</p>
             {% endif %}

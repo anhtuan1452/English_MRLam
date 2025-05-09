@@ -1,39 +1,45 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from english.models import LESSON, COURSE, LESSON_DETAIL
-from .forms import CombinedLessonForm
+from django.contrib.auth.decorators import login_required
+from english.models import DOCUMENT
+from .forms import DocumentForm
 import os
 
-# Danh sách tài liệu (LESSON)
+# Danh sách tài liệu
+
 def document_list(request):
-    lessons = LESSON.objects.select_related('course').all().order_by('-lesson_id')
+    documents = DOCUMENT.objects.select_related('auth_user_id').all().order_by('-doc_id')
     context = {
-        'documents': lessons,
+        'documents': documents,
         'active_menu': 'documents',
         'title': 'Danh sách tài liệu',
     }
     return render(request, 'document_list.html', context)
 
-# Thêm mới tài liệu (LESSON + LESSON_DETAIL)
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import CombinedLessonForm
-from english.models import LESSON
 
 def add_document(request):
     if request.method == 'POST':
-        form = CombinedLessonForm(request.POST, request.FILES)
+        form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            # Lưu tài liệu
-            form.save()
+            doc_file = request.FILES.get('doc_file')
 
-            # Thông báo thành công và chuyển hướng về danh sách tài liệu
+            # Kiểm tra định dạng PDF
+            if doc_file and not doc_file.name.lower().endswith('.pdf'):
+                messages.error(request, 'Chỉ được phép tải lên tệp PDF.')
+                return render(request, 'add_document.html', {
+                    'form': form,
+                    'active_menu': 'documents',
+                    'title': 'Thêm tài liệu',
+                })
+
+            document = form.save(commit=False)
+            document.save()
             messages.success(request, 'Tài liệu đã được thêm thành công!')
             return redirect('document_list')
         else:
             messages.error(request, 'Vui lòng kiểm tra lại thông tin.')
     else:
-        form = CombinedLessonForm()
+        form = DocumentForm()
 
     return render(request, 'add_document.html', {
         'form': form,
@@ -41,18 +47,14 @@ def add_document(request):
         'title': 'Thêm tài liệu',
     })
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from english.models import LESSON, COURSE, LESSON_DETAIL
-from .forms import CombinedLessonForm
-import os
+# Chi tiết và sửa tài liệu
 
-def document_detail_edit(request, lesson_id):
-    document = get_object_or_404(LESSON, pk=lesson_id)
+def document_detail_edit(request, doc_id):
+    document = get_object_or_404(DOCUMENT, pk=doc_id)
 
     if request.method == 'POST':
         if 'save' in request.POST:
-            form = CombinedLessonForm(request.POST, request.FILES, lesson_instance=document)
+            form = DocumentForm(request.POST, request.FILES, instance=document)
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Tài liệu đã được cập nhật thành công!')
@@ -60,16 +62,17 @@ def document_detail_edit(request, lesson_id):
             else:
                 messages.error(request, 'Vui lòng kiểm tra lại thông tin.')
         elif 'delete' in request.POST:
-            document_name = document.lesson_name
+            doc_name = document.doc_name
             document.delete()
-            messages.success(request, f'Tài liệu "{document_name}" đã được xóa thành công!')
+            messages.success(request, f'Tài liệu "{doc_name}" đã được xóa thành công!')
             return redirect('document_list')
     else:
-        form = CombinedLessonForm(lesson_instance=document)
-
+        form = DocumentForm(instance=document)
+    file_name = os.path.basename(document.doc_file.name) if document.doc_file else None
     return render(request, 'document_detail_edit.html', {
         'form': form,
         'document': document,
+        'doc_name': document.doc_name,
         'active_menu': 'documents',
-        'title': f'Tài liệu - {document.course.course_name} - {document.lesson_name}',
+        'title': f'Tài liệu - {document.doc_name}',
     })

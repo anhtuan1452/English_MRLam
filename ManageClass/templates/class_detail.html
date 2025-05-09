@@ -1,6 +1,6 @@
 {% extends 'base-admin.html' %}
 
-{% block title %}Mô tả lớp học{% endblock %}
+{% block title %}Chỉnh sửa lớp học{% endblock %}
 
 {% block content %}
 <style>
@@ -34,7 +34,9 @@
 </style>
 
 <div class="container-fluid tab-section">
-    <h2 class="custom-title">Danh sách lớp học > Lớp {{ class_instance.class_name }}</h2>
+    <h2 class="custom-title">
+        <a href="{% url 'class_list' %}" class="text-decoration-none text-primary">Danh sách lớp học</a> > Lớp {{ class_instance.class_name }}
+    </h2>
 
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
@@ -48,68 +50,73 @@
         </li>
     </ul>
 
-    <div class="form-wrapper">
-        <form method="post">
-            {% csrf_token %}
+    <!-- Form cập nhật mô tả lớp học -->
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_class">
 
-            <div class="form-group">
-                <label class="form-label">Tên lớp học</label>
-                <input type="text" class="form-control" value="{{ class_instance.class_name }}" readonly>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Tên lớp học</label>
+            {{ class_form.class_name }}
+        </div>
 
-            <div class="form-group">
-                <label class="form-label">Tên khóa học</label>
-                <input type="text" class="form-control" value="{{ class_instance.course.course_name }}" readonly>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Tên khóa học</label>
+            {{ class_form.course }}
+        </div>
 
-            <div class="form-group">
-                <label class="form-label">Ngày bắt đầu</label>
-                <input type="text" class="form-control" value="{{ class_instance.begin_time }}" readonly>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Ngày bắt đầu</label>
+            {{ class_form.begin_time }}
+        </div>
 
-            <div class="form-group">
-                <label class="form-label">Ngày kết thúc</label>
-                <input type="text" class="form-control" value="{{ class_instance.end_time }}" readonly>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Ngày kết thúc</label>
+            {{ class_form.end_time }}
+        </div>
 
-            <div class="form-group">
-                <label class="form-label">Trạng thái lớp học</label>
-                <select name="status" class="form-control">
-                    <option value="ongoing" {% if class_instance.status == 'ongoing' %}selected{% endif %}>Đang học</option>
-                    <option value="starting" {% if class_instance.status == 'starting' %}selected{% endif %}>Đang bắt đầu</option>
-                    <option value="finished" {% if class_instance.status == 'finished' %}selected{% endif %}>Đã kết thúc</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Trạng thái lớp học</label>
+            {{ class_form.status }}
+        </div>
 
-            <div class="form-group">
-                <label class="form-label">Thời khóa biểu</label>
-                <input type="text" class="form-control" value="{{ class_instance.timetable }}" readonly>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Thời khóa biểu</label>
+            {{ class_form.timetable }}
+        </div>
 
-            <div class="form-group">
-                <label class="form-label">Danh sách buổi học</label>
-                <ul>
-                    {% for lesson_detail in lesson_details %}
-                    <li>{{ lesson_detail.lesson.lesson_name }} - Buổi {{ lesson_detail.session_number }}</li>
-                    {% empty %}
-                    <li>Chưa có buổi học nào</li>
-                    {% endfor %}
-                </ul>
-            </div>
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-danger me-2">Lưu thay đổi</button>
+            <a href="{% url 'class_list' %}" class="btn btn-dark">Hủy</a>
+        </div>
+    </form>
 
-            <hr>
+    <hr>
 
-            <h3>Thêm Buổi Học</h3>
-            <div class="form-group">
-                {{ form.as_p }}
-            </div>
+    <h3>Danh sách buổi học</h3>
+    <ul>
+        {% for lesson_detail in lesson_details %}
+        <li>{{ lesson_detail.lesson.lesson_name }} - Buổi {{ lesson_detail.session_number }}</li>
+        {% empty %}
+        <li>Chưa có buổi học nào</li>
+        {% endfor %}
+    </ul>
 
-            <div class="text-end mt-4">
-                <button type="submit" name="action" value="add_lesson" class="btn btn-danger me-2">Thêm Buổi Học</button>
-                <a href="{% url 'class_list' %}" class="btn btn-dark">Hủy</a>
-            </div>
-        </form>
-    </div>
+    <hr>
+
+    <!-- Form thêm buổi học -->
+    <h3>Thêm Buổi Học</h3>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_lesson">
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-danger me-2">Thêm Buổi Học</button>
+        </div>
+    </form>
 </div>
 
 {% endblock %}

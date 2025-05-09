@@ -14,7 +14,7 @@ class USER_PROFILE(models.Model):
     dob = models.DateField(default="")  # ngày sinh
     sex = models.CharField(max_length=1, choices=SEX_CHOICES,null=True)  # giới tính (có choices)
     description = models.TextField(blank=True, null=True)
-    image = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    image = models.ImageField(upload_to='media/avatars', null=True, blank=True)
     reset_password_token = models.CharField(max_length=100,default="")
     reset_password_expiry = models.CharField(max_length=100,default="")
     def __str__(self):
@@ -34,7 +34,7 @@ class TEST(models.Model):
 
 class QUESTION_MEDIA(models.Model):
     questionmedia_id = models.AutoField(primary_key=True)
-    audio_file = models.FileField(upload_to='audio/', null=True, blank=True)
+    audio_file = models.FileField(upload_to='media/audio', null=True, blank=True)
     paragraph = models.TextField(null=True, blank=True)
     # def __str__(self):
     #     parts = []
@@ -77,7 +77,7 @@ class RESULT(models.Model):
 class DOCUMENT(models.Model):
     doc_id = models.AutoField(primary_key=True)
     doc_name = models.CharField(max_length=100)
-    doc_file = models.FileField(upload_to='documents/', null=True, blank=True)
+    doc_file = models.FileField(upload_to='media/documents', null=True, blank=True)
     auth_user_id = models.ForeignKey(User, on_delete=models.CASCADE,
         default=1,)
     class Meta:
@@ -91,7 +91,7 @@ class COURSE(models.Model):
     price = models.IntegerField(null=True, blank=True)
     des_teacher = models.CharField(max_length=100, null=True, blank=True)
     teacher_name = models.CharField(max_length=100, null=True, blank=True)
-    image = models.CharField(max_length=100,null=True, blank=True)
+    image = models.ImageField(upload_to="media/course",null=True, blank=True)
     def __str__(self):
         return self.course_name
     class Meta:
@@ -146,12 +146,12 @@ class USER_CLASS(models.Model):
 # Trong models.py
 class LESSON(models.Model):
     lesson_id = models.AutoField(primary_key=True)
-    lesson_file = models.URLField(max_length=200)  # Thay FileField bằng URLField
-    exercise_file = models.URLField(max_length=200)  # Thay FileField bằng URLField
+    lesson_file = models.FileField(upload_to="media/lesson", max_length=200)  # Thay FileField bằng URLField
+    exercise_file = models.FileField(upload_to="media/exercise", max_length=200)  # Thay FileField bằng URLField
     lesson_name = models.CharField(max_length=100, default="chua co")
     description = models.TextField(null=True, blank=True)
     course = models.ForeignKey(COURSE, on_delete=models.CASCADE)
-
+    session_number = models.CharField(max_length=100, null=True)
     class Meta:
         db_table = 'LESSON'
 
@@ -160,9 +160,9 @@ class LESSON_DETAIL(models.Model):
     lessondetail_id = models.AutoField(primary_key=True)
     lesson = models.ForeignKey(LESSON, on_delete=models.CASCADE)
     classes = models.ForeignKey(CLASS, on_delete=models.CASCADE)
-    session_number = models.CharField(max_length=100,null=True)
+    date = models.DateField(null=True,blank=True)
     class Meta:
-        db_table = 'LessonDetail'
+        db_table = 'LESSON_DETAIL'
 
 
 class EXERCISE(models.Model):
@@ -185,9 +185,7 @@ class SUBMISSION(models.Model):
     submit_date = models.DateTimeField(default=datetime.datetime.now)
     review = models.TextField(null=True, blank=True)
     exercise = models.ForeignKey(EXERCISE, on_delete=models.CASCADE)
-
-    # Thay submission_file bằng các trường mới
-    submission_file_content = models.BinaryField(null=True, blank=True)  # Lưu nội dung nhị phân của tệp
+    submission_file_content = models.FileField(upload_to="media/file_submission",null=True, blank=True)  # Lưu nội dung nhị phân của tệp
     submission_file_name = models.CharField(max_length=255, null=True, blank=True)  # Lưu tên tệp
     submission_file_type = models.CharField(max_length=50, null=True, blank=True)  # Lưu loại tệp (e.g., .pdf, .docx)
 
