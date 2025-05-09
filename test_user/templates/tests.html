@@ -174,7 +174,7 @@
 
         <!-- Timer -->
         <div class="timer">
-            Thời gian còn lại: <span id="time-remaining">{{ test.time|time:"H:i" }}</span>
+            Thời gian còn lại: <span id="time-remaining">00:00</span>
         </div>
     </div>
 
@@ -211,10 +211,9 @@
 </div>
 
 <script>
-    // Timer functionality
     function startTimer(duration, display) {
         var timer = duration, minutes, seconds;
-        setInterval(function () {
+        var interval = setInterval(function () {
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
 
@@ -224,19 +223,21 @@
             display.textContent = minutes + ":" + seconds;
 
             if (--timer < 0) {
-                timer = 0;
-                // Auto-submit form when time is up
-                document.querySelector('form').submit();
+                clearInterval(interval);
+                document.querySelector('form').submit(); // Tự động nộp bài
             }
         }, 1000);
     }
 
     window.onload = function () {
-        var timeString = "{{ test.time|time:'H:i' }}";
-        var parts = timeString.split(':');
-        var minutes = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        var display = document.querySelector('#time-remaining');
-        startTimer(minutes, display);
-    };
+    var duration = parseInt("{{ test_duration|default:50 }}") * 60;
+    var display = document.querySelector('#time-remaining');
+
+    if (!isNaN(duration) && display) {
+        startTimer(duration, display);
+    } else {
+        console.error("Timer error: duration or display not found");
+    }
+};
 </script>
 {% endblock %}

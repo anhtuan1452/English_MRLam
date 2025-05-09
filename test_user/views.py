@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from english.models import TEST, QUESTION, RESULT
@@ -46,6 +47,8 @@ def home_test(request, test_id):
 
     return render(request, 'home_test.html', context)
 
+
+@login_required  # Điều hướng nếu chưa đăng nhập
 def test_page(request, test_id):
     test = get_object_or_404(TEST, test_id=test_id)
     questions = QUESTION.objects.filter(test=test)
@@ -53,10 +56,32 @@ def test_page(request, test_id):
     if request.method == 'POST':
         total_score = 0
         for question in questions:
-            selected_answer = request.POST.get(f'answer_{question.id}')
+            selected_answer = request.POST.get(f'answer_{question.question_id}')
             if selected_answer == question.correct_answer:
                 total_score += 1
-        user = request.user
-        result = RESULT.objects.create(test=test, user=user, result=total_score)
-        return redirect('result_page', result_id=result.id)
-    return render(request, 'tests.html', {'test': test, 'questions': questions})
+
+        result = RESULT.objects.create(
+            test=test,
+            acc=request.user,
+            score=total_score,
+            total_questions=questions.count()
+        )
+        return redirect('result_page', result_id=result.result_id)
+
+    return render(request, 'tests.html', {
+        'test': test,
+        'questions': questions
+    })
+
+def result_page(request, result_id):
+    result = get_object_or_404(RESULT, id=result_id)
+    test = result.test
+    user = result.user
+    score = result.result
+
+    context = {
+        'test': test,
+        'user': user,
+        'score': score,
+    }
+    return render(request, 'result.html', context)

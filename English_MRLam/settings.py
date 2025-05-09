@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
+from django.conf.global_settings import LOGIN_URL
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -146,7 +148,7 @@ import os
 # settings.py
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'MaterialsFree', 'media')  # Đường dẫn tuyệt đối
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Cấu hình email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -156,3 +158,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'nguyenhoangatuan10b72020@gmail.com'  # Thay bằng email của bạn
 EMAIL_HOST_PASSWORD = 'axie ycom jdtb wdid'  # Thay bằng mật khẩu ứng dụng của Gmail
 DEFAULT_FROM_EMAIL = 'nguyenhoangatuan10b72020@gmail.com'  # Thay bằng email của bạn
+LOGIN_URL = '/'

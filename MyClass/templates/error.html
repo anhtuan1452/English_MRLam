@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    margin-top: 10%;
+    color: #333;
+    background-color: #f5f5f5;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  .error-title {
+    font-size: 24px;
+    color: #e74c3c;
+    margin-bottom: 15px;
+  }
+
+  .error-message {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .back-button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .back-button:hover {
+    background-color: #1765cc;
+  }
+</style>
+
+<div class="container">
+  <h1 class="error-title">Lỗi</h1>
+  <p class="error-message">{{ message }}</p>
+  <a href="{% url 'student_homework' %}" class="back-button">Quay lại danh sách buổi học</a>
+</div>
+{% endblock %}
