@@ -1,36 +1,46 @@
 /* Profile Layout - Improved Version */
-.profile-layout {
+/*.profile-layout {
     display: flex;
     min-height: 100vh;
     position: relative;
     width: 100%;
+}*/
+.profile-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
 }
 
 /* Sidebar cố định với thiết kế đẹp hơn */
 .sidebar {
-    width: 280px;
-    background: #2c3e50;
-    padding: 20px;
     position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    overflow-y: auto;
-    z-index: 100;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
+  top: 60px; /* bằng chiều cao header */
+  left: 0;
+  width: 280px;
+  height: calc(100vh - 60px); /* tránh bị tràn dưới */
+  background: #2c3e50;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 999; /* dưới header (z-index: 1000) */
 }
 
 /* Phần nội dung chính - Đã điều chỉnh */
-.main-content {
+/*.main-content {
     flex: 1;
     padding: 30px;
     margin-left: 280px;
     background: #f5f7fa;
     min-height: 100vh;
     width: calc(100% - 280px);
+}*/
+.main-content {
+margin-left: 280px; /* đúng bằng sidebar */
+  padding: 30px;
+  background-color: #ffffff;
+  min-height: 100vh;
+  padding-top: 60px; /* né khỏi header */
+  box-sizing: border-box;
 }
-
 /* Profile Info trong sidebar */
 .profile-info {
     text-align: center;

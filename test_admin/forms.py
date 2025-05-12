@@ -7,12 +7,22 @@ class TestForm(forms.ModelForm):
         model = TEST
         fields = ['test_name', 'test_description', 'duration']
         widgets = {
-            'test_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tên bài kiểm tra'}),
-            'test_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Mô tả bài kiểm tra'}),
-            'duration': forms.TimeInput(
-                format='%H:%M',
-                attrs={'class': 'form-control', 'placeholder': 'HH:MM'}
-            ),
+            'test_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'test_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'duration': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+class QuestionMediaForm(forms.ModelForm):
+    class Meta:
+        model = QUESTION_MEDIA
+        fields = ['audio_file', 'paragraph']
+        labels = {
+            'audio_file': 'File Audio (nếu có)',
+            'paragraph': 'Đoạn văn (nếu có)',
+        }
+        widgets = {
+            'audio_file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'paragraph': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
 # Form để lấy câu hỏi và đáp án
@@ -21,86 +31,41 @@ class QuestionForm(forms.ModelForm):
         model = QUESTION
         fields = ['question_text', 'answer', 'correct_answer']
 
+
 class CustomQuestionForm(forms.ModelForm):
-    answer_a = forms.CharField(
-        label='Đáp án A',
-        max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nhập đáp án A'})
-    )
-    answer_b = forms.CharField(
-        label='Đáp án B',
-        max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nhập đáp án B'})
-    )
-    answer_c = forms.CharField(
-        label='Đáp án C',
-        max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nhập đáp án C'})
-    )
+    answer_a = forms.CharField(label='Đáp án A', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    answer_b = forms.CharField(label='Đáp án B', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    answer_c = forms.CharField(label='Đáp án C', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    answer_d = forms.CharField(label='Đáp án D', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
-    answer_d = forms.CharField(
-        label='Đáp án D',
-        max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nhập đáp án D'})
-    )
-    # media_audio_file = forms.CharField(label='Link Audio (nếu có)', required=False, widget=forms.TextInput(
-    #     attrs={'class': 'form-control', 'placeholder': 'Dán link audio'}))
-    # media_paragraph = forms.CharField(label='Đoạn văn (nếu có)', required=False, widget=forms.Textarea(
-    #     attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Nhập đoạn văn'}))
-    link_audio = forms.CharField(
-        label='Link Audio (nếu có):',
-        max_length=255,
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control'})
-    )
-
-    paragraph = forms.CharField(
-        label='Đoạn văn (nếu có):',
-        required=False,
-        widget=forms.Textarea(attrs={'class': 'form-control'})
-    )
     class Meta:
         model = QUESTION
-        fields = ['question_text', 'correct_answer','question_media']
+        fields = ['question_text', 'correct_answer']
         labels = {
             'question_text': 'Câu hỏi',
             'correct_answer': 'Đáp án đúng (A/B/C/D)',
-            'question_media': 'Media'
         }
         widgets = {
-            'question_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Nhập nội dung câu hỏi'}),
-            'correct_answer': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'VD: A'}),
+            'question_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'correct_answer': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['question_media'].required = False
-        self.fields['question_media'].widget = forms.HiddenInput()
-        if self.instance and self.instance.answer:
-            answers = self.instance.answer.split(';')
-            self.fields['answer_a'].initial = answers[0] if len(answers) > 0 else ''
-            self.fields['answer_b'].initial = answers[1] if len(answers) > 1 else ''
-            self.fields['answer_c'].initial = answers[2] if len(answers) > 2 else ''
-            self.fields['answer_d'].initial = answers[3] if len(answers) > 3 else ''
+        answer = self.instance.answer or {}
+        self.fields['answer_a'].initial = answer.get('A', '')
+        self.fields['answer_b'].initial = answer.get('B', '')
+        self.fields['answer_c'].initial = answer.get('C', '')
+        self.fields['answer_d'].initial = answer.get('D', '')
 
     def clean(self):
         cleaned_data = super().clean()
-        a = cleaned_data.get('answer_a', '')
-        b = cleaned_data.get('answer_b', '')
-        c = cleaned_data.get('answer_c', '')
-        d = cleaned_data.get('answer_d', '')
-        self.instance.answer = ';'.join([a, b, c, d])
+        self.instance.answer = {
+            'A': cleaned_data.get('answer_a', ''),
+            'B': cleaned_data.get('answer_b', ''),
+            'C': cleaned_data.get('answer_c', ''),
+            'D': cleaned_data.get('answer_d', ''),
+        }
         return cleaned_data
 
-class QuestionMediaForm(forms.ModelForm):
-    class Meta:
-        model = QUESTION_MEDIA
-        fields = ['audio_file', 'paragraph']
-        labels = {
-            'audio_file': 'Link Audio (Google Drive)',
-            'paragraph': 'Đoạn văn',
-        }
-        widgets = {
-            'audio_file': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Link Google Drive'}),
-            'paragraph': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Đoạn văn đi kèm'}),
-        }
+

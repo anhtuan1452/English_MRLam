@@ -146,7 +146,7 @@ import os
 # settings.py
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'MaterialsFree', 'media')  # Đường dẫn tuyệt đối
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Cấu hình email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -1,323 +1,189 @@
 {% extends 'base-admin.html' %}
-{% load static %}
-{% block title %}
-  Thêm bài kiểm tra
-{% endblock %}
-
+{% block title %}Tạo bài kiểm tra{% endblock %}
 {% block content %}
 <style>
-  /* Main layout */
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background-color: #f8f9fa;
-    }
+  .container {
+    max-width: 100%;
+    padding: 1rem 2rem;
+  }
 
-    .container {
-      max-width: 100%;
-      margin-right: 0.5;
-      margin-left: 0;
-    }
+  h2.custom-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #5c6bc0;
+    border-bottom: 2px solid #5c6bc0;
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+  }
 
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
+  .card {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    border: 1px solid #e3e3e3;
+    border-radius: 8px;
+  }
 
-/* Tab styling */
-.nav-tabs {
-  border-bottom: 2px solid #e9ecef;
-  margin-bottom: 1.5rem;
-}
+  .card-header {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
 
-/* Tab không active (màu xám) */
-.nav-tabs .nav-link {
-  border: none;
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #6c757d; /* Màu xám */
-  background-color: transparent;
-  transition: all 0.2s ease;
-  border-bottom: 3px solid transparent; /* Ẩn gạch chân */
-}
+  .question-item {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    position: relative;
+  }
 
-/* Tab active (màu xanh) */
-.nav-tabs .nav-link.active {
-  color: #0d6efd !important; /* Màu xanh */
-  font-weight: 600;
-  border-bottom: 3px solid #0d6efd; /* Gạch chân xanh */
-}
+  .question-item h5 {
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 15px;
+  }
 
-/* Hiệu ứng hover */
-.nav-tabs .nav-link:hover {
-  color: #0a58ca; /* Màu xanh đậm hơn */
-}
+  .media-section {
+    background-color: #eef5ff;
+    padding: 1rem;
+    border-left: 4px solid #0d6efd;
+    margin-top: 1rem;
+    border-radius: 5px;
+  }
 
+  .remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
 
-    /* Search bar styling */
-    .input-group .form-control {
-      border-radius: 4px;
-      padding: 0.5rem 1rem;
-      border: 1px solid #ced4da;
-    }
+  .btn-outline-primary {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+  }
 
-    .input-group .btn-outline-secondary {
-      border-color: #ced4da;
-      color: #6c757d;
-    }
+  textarea.form-control {
+    resize: vertical;
+  }
 
-    /* Add new button */
-    .btn-danger {
-      background-color: #dc3545;
-      border-color: #dc3545;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.5rem 1rem;
-      font-weight: 500;
-    }
-
-    /* Table styling */
-.table {
-  table-layout: fixed;
-  width: 100%;
-}
-
-/* Table column widths */
-.table th:nth-child(1),
-.table td:nth-child(1) {
-  width: 5%;  /* STT column */
-}
-
-.table th:nth-child(2),
-.table td:nth-child(2) {
-  width: 50%;  /* Tên bài kiểm tra column - make this wider */
-}
-
-.table th:nth-child(3),
-.table td:nth-child(3) {
-  width: 15%;  /* Số câu hỏi column */
-}
-
-.table th:nth-child(4),
-.table td:nth-child(4) {
-  width: 10%;  /* Thời gian column */
-}
-/* Center align table header */
-.table thead th {
-  text-align: center;
-}
-/* Center align all table content */
-.table thead th,
-.table tbody td {
-  text-align: center;
-}
-
-/* Make sure the action buttons stay centered */
-.table tbody td:last-child {
-  text-align: center;
-}
-
-/* Remove margin from last button to keep them centered properly */
-td .btn-danger:last-child {
-  margin-right: 0;
-}
-
-    /* Action buttons */
-    .btn-primary, .btn-warning, .btn-danger {
-      padding: 0.25rem 0.75rem;
-      font-size: 0.75rem;
-      border-radius: 3px;
-      margin-right: 5px;
-      display: inline-block;
-    }
-
-    .btn-primary {
-      background-color: #0d6efd;
-      border: none;
-      color: white;
-      font-weight: 500;
-    }
-
-    .btn-warning {
-      background-color: #ffc107;
-      border: none;
-      color: white;
-      font-weight: 500;
-    }
-
-    td .btn-danger {
-      background-color: #dc3545;
-      border: none;
-      color: white;
-      font-weight: 500;
-    }
+  .form-control, .form-label {
+    font-size: 0.95rem;
+  }
 </style>
 
-  <div class="container">
-    <h2>Bài kiểm tra</h2>
-    <ul class="nav nav-tabs mb-3">
-        <li class="nav-item">
-            <a href="{% url 'admin_test_list' %}" class="nav-link active" role="tab">Bài kiểm tra</a>
-        </li>
-        <li class="nav-item">
-            <a href="{% url 'results' %}" class="nav-link" role="tab">Kết quả</a>
-        </li>
-    </ul>
+<div class="container">
+  <h2 class="custom-title">Tạo Bài Kiểm Tra</h2>
 
-    <form method="POST">
-      {% csrf_token %}
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
 
-      <!-- Thông tin bài kiểm tra -->
-      <div class="form-group mb-3">
-        <label for="test_name">Tên bài kiểm tra</label>
-        <input type="text" class="form-control" id="test_name" name="test_name" placeholder="Nhập tên bài kiểm tra">
+    <!-- Thông tin bài kiểm tra -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">Thông tin bài kiểm tra</div>
+      <div class="card-body">
+        {{ test_form.as_p }}
       </div>
+    </div>
 
-      <div class="form-group mb-3">
-        <label for="time_limit">Thời gian làm bài (phút)</label>
-        <input type="number" class="form-control" id="time_limit" name="time_limit" placeholder="Nhập thời gian làm bài">
+    <!-- Danh sách câu hỏi -->
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">Danh sách câu hỏi</div>
+      <div class="card-body" id="question-formset"></div>
+
+      <!-- Hidden fields cho formset -->
+      <input type="hidden" name="form-TOTAL_FORMS" id="id_form-TOTAL_FORMS" value="1">
+      <input type="hidden" name="form-INITIAL_FORMS" value="0">
+      <input type="hidden" name="form-MIN_NUM_FORMS" value="0">
+      <input type="hidden" name="form-MAX_NUM_FORMS" value="1000">
+
+      <div class="px-3 pb-3">
+        <button type="button" class="btn btn-outline-primary" onclick="addQuestion()">+ Thêm câu hỏi</button>
       </div>
+    </div>
 
-      <!-- Các câu hỏi -->
-      <div id="questions-container">
-        <h4>Câu hỏi</h4>
-        <!-- Các câu hỏi sẽ được thêm vào đây -->
+    <button type="submit" class="btn btn-danger">Lưu bài kiểm tra</button>
+  </form>
+</div>
+
+<!-- Template ẩn -->
+<div id="question-template" style="display: none;">
+  <div class="question-item">
+    <h5>Câu __INDEX__</h5>
+    <button type="button" class="btn btn-sm btn-outline-danger remove-btn" onclick="removeQuestion(this)">Xóa câu hỏi</button>
+
+    <label>Câu hỏi:</label>
+    <textarea name="form-__INDEX__-question_text" class="form-control mb-2" rows="2"></textarea>
+
+    <div class="row">
+      <div class="col-md-6">
+        <label>Đáp án A:</label>
+        <input type="text" name="form-__INDEX__-answer_a" class="form-control mb-2">
       </div>
+      <div class="col-md-6">
+        <label>Đáp án B:</label>
+        <input type="text" name="form-__INDEX__-answer_b" class="form-control mb-2">
+      </div>
+      <div class="col-md-6">
+        <label>Đáp án C:</label>
+        <input type="text" name="form-__INDEX__-answer_c" class="form-control mb-2">
+      </div>
+      <div class="col-md-6">
+        <label>Đáp án D:</label>
+        <input type="text" name="form-__INDEX__-answer_d" class="form-control mb-2">
+      </div>
+    </div>
 
-      <!-- Thêm câu hỏi mới -->
-      <button type="button" class="btn btn-primary mt-3" onclick="addQuestion()">+ Add question</button>
+    <label>Đáp án đúng:</label>
+    <select name="form-__INDEX__-correct_answer" class="form-select mb-3" required>
+      <option value="">-- Chọn đáp án đúng --</option>
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="C">C</option>
+      <option value="D">D</option>
+    </select>
 
-      <button type="submit" class="btn btn-danger mt-3">Lưu</button>
-    </form>
+
+    <div class="media-section">
+      <label>Audio (nếu có):</label>
+      <input type="file" name="form-__INDEX__-audio_file" class="form-control mb-2">
+      <label>Đoạn văn (nếu có):</label>
+      <textarea name="form-__INDEX__-paragraph" class="form-control" rows="2"></textarea>
+    </div>
   </div>
+</div>
 
-  <script>
-    let questionCount = 0; // Biến đếm số câu hỏi
+<!-- Script -->
+<script>
+let totalForms = 0;
 
-    // Hàm thêm câu hỏi mới
-    function addQuestion() {
-      questionCount++;  // Tăng số thứ tự câu hỏi
-      const newQuestion = document.createElement('div');
-      newQuestion.classList.add('form-group', 'mb-3');
-      newQuestion.id = `question-${questionCount}`;
+function addQuestion() {
+  const container = document.getElementById('question-formset');
+  const template = document.getElementById('question-template').innerHTML.replace(/__INDEX__/g, totalForms);
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = template;
+  container.appendChild(wrapper);
+  totalForms++;
+  document.getElementById('id_form-TOTAL_FORMS').value = totalForms;
+  updateQuestionNumbers();
+}
 
-      newQuestion.innerHTML = `
-        <label for="question_text_${questionCount}">Câu hỏi ${questionCount}</label>
-        <input type="text" class="form-control" id="question_text_${questionCount}" name="question_text_${questionCount}" placeholder="Nhập câu hỏi">
-        <div class="form-group mb-3">
-          <label for="num_choices_${questionCount}">Lựa chọn</label>
-          <input type="number" class="form-control mb-3" id="num_choices_${questionCount}" name="num_choices_${questionCount}" value="2" onchange="updateChoices(${questionCount})">
-          <div id="choices_${questionCount}">
-            <div class="input-group mb-2">
-              <input type="text" class="form-control" name="choice_${questionCount}_0" placeholder="Lựa chọn A">
-              <button type="button" class="btn btn-danger" onclick="removeChoice(${questionCount}, 0)">Remove</button>
-            </div>
-            <div class="input-group mb-2">
-              <input type="text" class="form-control" name="choice_${questionCount}_1" placeholder="Lựa chọn B">
-              <button type="button" class="btn btn-danger" onclick="removeChoice(${questionCount}, 1)">Remove</button>
-            </div>
-          </div>
-        </div>
+function removeQuestion(button) {
+  const item = button.closest('.question-item');
+  item.remove();
+  totalForms = document.querySelectorAll('.question-item').length;
+  document.getElementById('id_form-TOTAL_FORMS').value = totalForms;
+  updateQuestionNumbers();
+}
 
-        <!-- Chọn đáp án đúng -->
-        <div>
-          <label for="correct_${questionCount}">Chọn đáp án đúng</label>
-          <div id="correct-choices-${questionCount}">
-            <!-- Các radio buttons cho đáp án đúng sẽ hiển thị ở đây -->
-          </div>
-        </div>
-        <div class="form-group mt-3">
-          <label for="media_audio_url_${questionCount}">Link audio (nếu có):</label>
-          <input type="text" class="form-control" name="media_audio_url_${questionCount}" placeholder="Dán link audio">
-        </div>
+function updateQuestionNumbers() {
+  document.querySelectorAll('.question-item h5').forEach((el, idx) => {
+    el.textContent = `Câu ${idx + 1}`;
+  });
+}
 
-        <div class="form-group mt-2">
-          <label for="media_paragraph_${questionCount}">Đoạn văn (nếu có):</label>
-          <textarea class="form-control" name="media_paragraph_${questionCount}" rows="2" placeholder="Nhập đoạn văn"></textarea>
-        </div>
-        <button type="button" class="btn btn-danger mt-2" onclick="removeQuestion(${questionCount})">Remove question</button>
-      `;
-
-      document.getElementById('questions-container').appendChild(newQuestion);
-      updateChoices(questionCount);  // Tạo đáp án đúng ngay lập tức khi tạo câu hỏi
-    }
-
-    // Hàm xóa câu hỏi
-    function removeQuestion(questionIndex) {
-      const question = document.getElementById(`question-${questionIndex}`);
-      question.remove();
-
-      // Cập nhật lại số câu hỏi sau khi xóa
-      questionCount = Math.max(questionCount - 1, 0); // Đảm bảo không giảm xuống âm
-    }
-
-    // Hàm xóa lựa chọn
-    function removeChoice(questionIndex, choiceIndex) {
-      const choicesContainer = document.getElementById(`choices_${questionIndex}`);
-      const choiceToRemove = choicesContainer.getElementsByClassName('input-group')[choiceIndex];
-      choiceToRemove.remove();
-
-      // Cập nhật lại số lượng lựa chọn
-      updateChoices(questionIndex);
-    }
-
-    // Cập nhật số lượng lựa chọn và khoảng cách cho các đáp án
-    function updateChoices(questionIndex) {
-      const numChoices = document.getElementById(`num_choices_${questionIndex}`).value;
-      const choicesContainer = document.getElementById(`choices_${questionIndex}`);
-      const correctChoicesContainer = document.getElementById(`correct-choices-${questionIndex}`);
-
-      // Xóa các lựa chọn và checkbox cũ
-      choicesContainer.innerHTML = '';
-      correctChoicesContainer.innerHTML = '';
-
-      // Tạo lại các lựa chọn mới
-      for (let i = 0; i < numChoices; i++) {
-        const choiceInput = document.createElement('div');
-        choiceInput.classList.add('input-group', 'mb-2');  // Đảm bảo rằng mỗi lựa chọn có khoảng cách giống nhau
-        choiceInput.innerHTML = `
-          <input type="text" class="form-control" name="choice_${questionIndex}_${i}" placeholder="Lựa chọn ${String.fromCharCode(65 + i)}">
-          <button type="button" class="btn btn-danger" onclick="removeChoice(${questionIndex}, ${i})">Remove</button>
-        `;
-        choicesContainer.appendChild(choiceInput);
-
-        // Thêm radio button cho đáp án đúng
-        const radioLabel = document.createElement('label');
-        radioLabel.innerHTML = `Lựa chọn ${String.fromCharCode(65 + i)} `;
-        const radioButton = document.createElement('input');
-        radioButton.type = 'radio';
-        radioButton.name = `correct_${questionIndex}`;
-        radioButton.value = i;
-        correctChoicesContainer.appendChild(radioLabel);
-        correctChoicesContainer.appendChild(radioButton);
-      }
-    }
-  </script>
-
-  <style>
-    /* Thêm margin-bottom cho ô nhập số lượng lựa chọn */
-    .form-group.mb-3 input[type="number"] {
-      margin-bottom: 10px; /* Khoảng cách dưới ô nhập số lượng lựa chọn */
-    }
-
-    /* Thêm margin-bottom cho các lựa chọn */
-    .input-group.mb-2 {
-      margin-bottom: 10px; /* Khoảng cách giữa các ô lựa chọn */
-    }
-
-    /* Thêm margin cho button Remove */
-    .btn.btn-danger {
-      margin-left: 10px; /* Thêm khoảng cách giữa nút Remove và ô nhập */
-    }
-
-    /* Thêm margin cho các radio button trong phần đáp án đúng */
-    #correct-choices-${questionCount} input[type="radio"] {
-      margin-right: 10px; /* Khoảng cách giữa radio và chữ */
-      margin-bottom: 10px; /* Khoảng cách giữa các radio */
-    }
-  </style>
-
+// Tự thêm 1 form đầu tiên khi load trang
+window.onload = () => {
+  if (totalForms === 0) addQuestion();
+}
+</script>
 {% endblock %}
