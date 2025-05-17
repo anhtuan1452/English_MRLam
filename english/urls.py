@@ -7,7 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
     path('', views.home, name='home'),
-    # path('home/', views.home, name='home'),
+    path('home/', views.home, name='home'),
     path('materials/', views.materials, name='materials'),
     path('tests/', views.tests, name='tests'), # Thêm URL này
 ]

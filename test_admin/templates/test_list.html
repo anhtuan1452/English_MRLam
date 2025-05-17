@@ -115,6 +115,7 @@
 /* Center align table header */
 .table thead th {
   text-align: center;
+  background-color: #e0f2fe
 }
 /* Center align all table content */
 .table thead th,
@@ -185,7 +186,7 @@ td .btn-danger:last-child {
         </form>
       </div>
       <!-- Add New Button -->
-      <a href="{% url 'admin_test_add' %}" class="btn btn-danger">
+      <a href="{% url 'admin_test_add' %}" class="btn btn-danger" style="padding: 0.5rem 1.5rem; border-radius: 0.375rem; font-size:1rem">
         + Thêm mới
       </a>
     </div>
