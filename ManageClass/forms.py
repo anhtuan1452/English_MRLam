@@ -1,5 +1,5 @@
 from django import forms
-from english.models import CLASS, LESSON_DETAIL
+from english.models import CLASS, LESSON_DETAIL,LESSON
 
 class ClassUpdateForm(forms.ModelForm):
     class Meta:
@@ -14,12 +14,19 @@ class ClassUpdateForm(forms.ModelForm):
             'timetable': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-
+class LessonForm(forms.ModelForm):
+    class Meta:
+        model = LESSON
+        fields = ['lesson_name', 'session_number', 'description']
+        widgets = {
+            'lesson_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'session_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
 class LessonDetailForm(forms.ModelForm):
     class Meta:
         model = LESSON_DETAIL
-        exclude = ['lesson']
+        fields = ['date']
         widgets = {
-            'session_number': forms.NumberInput(attrs={'class': 'form-control'}),
-            'lesson_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }

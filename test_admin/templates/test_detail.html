@@ -6,39 +6,33 @@
 
 {% block content %}
 <style>
-/* Main layout */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: #f8f9fa;
 }
-
 .container {
   max-width: 100%;
-
   margin-right: 0.5;
   margin-left: 0;
 }
-
 h2 {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1rem;
 }
 .custom-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #5c6bc0;
-        border-bottom: 2px solid;
-        margin: 1.5rem 0 1rem;
-        padding: 8px 0;
-    }
-/* Tab styling */
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #5c6bc0;
+  border-bottom: 2px solid;
+  margin: 1.5rem 0 1rem;
+  padding: 8px 0;
+}
 .nav-tabs {
   border-bottom: 2px solid #e9ecef;
   margin-bottom: 1.5rem;
 }
-
 .nav-tabs .nav-link {
   border: none;
   padding: 0.75rem 1.25rem;
@@ -49,17 +43,14 @@ h2 {
   transition: all 0.2s ease;
   border-bottom: 3px solid transparent;
 }
-
 .nav-tabs .nav-link.active {
   color: #0d6efd !important;
   font-weight: 600;
   border-bottom: 3px solid #0d6efd;
 }
-
 .nav-tabs .nav-link:hover {
   color: #0a58ca;
 }
-/* Cấu trúc chung cho bài kiểm tra */
 .test-container {
   width: 100%;
   margin: 0 auto;
@@ -68,27 +59,21 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 8px;
 }
-
 .test-header {
   text-align: center;
   margin-bottom: 20px;
 }
-
 .test-header h1 {
   font-size: 2em;
   color: #333;
 }
-
 .test-header p {
   font-size: 1.2em;
   color: #555;
 }
-
-/* Định dạng câu hỏi */
 .question-container {
   margin-bottom: 20px;
 }
-
 .question {
   margin-bottom: 20px;
   padding: 10px;
@@ -96,140 +81,134 @@ h2 {
   border-radius: 5px;
   border: 1px solid #ddd;
 }
-
 .question-text {
   font-size: 1.2em;
   margin-bottom: 10px;
 }
-
 .choices {
   margin-top: 10px;
 }
-
 .choices label {
   display: block;
   font-size: 1.1em;
   margin-bottom: 8px;
 }
-
 input[type="radio"] {
   margin-right: 10px;
 }
 
-/* Định dạng các nút */
-.test-footer {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.test-footer button {
-  padding: 10px 20px;
-  font-size: 1.1em;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.test-footer button:hover {
-  background-color: #45a049;
-}
-
-/* Định dạng cho bộ đếm thời gian */
 #timer {
   font-weight: bold;
   color: #e74c3c;
 }
-
-/* Di chuyển nút sửa và xóa ra góc phải */
 .button-group {
   text-align: right;
   margin-bottom: 15px;
 }
-
 .button-group a {
   margin-left: 10px;
+}
+    .question-media-group {
+  margin-bottom: 40px;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 2px solid #cdd5eb;
+  border-radius: 8px;
+}
+
+.question-media-header {
+  background-color: #e6f0ff;
+  padding: 15px;
+  border-left: 5px solid #0d6efd;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.question-media-header p {
+  margin: 0;
+  font-weight: bold;
+  color: #0d47a1;
+}
+
+.question {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 20px;
 }
 </style>
 
 <div class="container">
-    <h2 class="custom-title">Bài kiểm tra</h2>
+  <h2 class="custom-title">Bài kiểm tra</h2>
 
-    <ul class="nav nav-tabs mb-3">
-        <li class="nav-item">
-            <a href="{% url 'admin_test_list' %}" class="nav-link active" role="tab">Bài kiểm tra</a>
-        </li>
-        <li class="nav-item">
-            <a href="{% url 'results' %}" class="nav-link" role="tab">Kết quả</a>
-        </li>
-    </ul>
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <a href="{% url 'admin_test_list' %}" class="nav-link active">Bài kiểm tra</a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'results' %}" class="nav-link">Kết quả</a>
+    </li>
+  </ul>
 
-    <!-- Nút sửa và xóa bài kiểm tra, di chuyển vào góc phải -->
-    <div class="button-group">
-        <a href="{% url 'test_edit' test_id=test.test_id %}" class="btn btn-warning">Sửa</a>
-        <form method="post" action="{% url 'test_delete' test.test_id %}" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài kiểm tra này?');" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Xóa</button>
-        </form>
-    </div>
-
-    <form method="POST">
-        {% csrf_token %}
-
-        <div class="test-container">
-            <div class="test-header">
-                <h1>{{ test.test_name }}</h1>
-                <p>{{ test.test_description }}</p>
-            </div>
-
-            <div class="question-container">
-                {% for item in question_forms %}
-                    {% with form=item.form media=item.media %}
-                    <div class="question">
-                        <!-- Hiển thị số câu hỏi và in đậm -->
-                        <p><strong>Câu {{ forloop.counter }}:</strong> {{ form.instance.question_text }}</p>
-
-                        <!-- Hiển thị MEDIA nếu có -->
-                        {% if media %}
-                            {% if media.audio_file and media.audio_file != 'none' %}
-                                <p><strong>Audio:</strong></p>
-                                <audio controls style="margin-bottom: 10px;">
-                                    <source src="{{ MEDIA_URL }}{{ media.audio_file }}" type="audio/mpeg">
-                                    Trình duyệt không hỗ trợ phát âm thanh.
-                                </audio>
-                            {% endif %}
-                            {% if media.paragraph and media.paragraph != 'none' %}
-                                <div class="question-paragraph" style="background-color: #eef5ff; padding: 10px; border-left: 4px solid #0d6efd; margin-bottom: 10px;">
-                                    <strong>Đoạn văn:</strong>
-                                    <p style="margin: 0;">{{ media.paragraph }}</p>
-                                </div>
-                            {% endif %}
-                        {% endif %}
-
-                        <!-- Hiển thị đáp án đúng -->
-                        <p><strong>Đáp án đúng: </strong>{{ form.instance.correct_answer }}</p>
-
-                        <!-- Hiển thị danh sách các đáp án -->
-                        <div class="choices">
-                            {% for choice in form.choices %}
-                            <label>
-                                <input type="radio" name="question_{{ form.instance.question_id }}" value="{{ 'ABCD'|slice:forloop.counter0 }}">
-                                {{ choice }}
-                            </label>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endwith %}
-                {% endfor %}
-
-            </div>
-
-            <div class="test-footer">
-                <button type="submit">Nộp bài</button>
-            </div>
-        </div>
+  <div class="button-group">
+    <a href="{% url 'test_edit' test_id=test.test_id %}" class="btn btn-warning">Sửa</a>
+    <form method="post" action="{% url 'test_delete' test.test_id %}" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài kiểm tra này?');" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Xóa</button>
     </form>
+  </div>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="test-container">
+      <div class="test-header">
+        <h1>{{ test.test_name }}</h1>
+        <p>{{ test.test_description }}</p>
+      </div>
+
+    <div class="question-container">
+  {% for media, questions in media_groups %}
+    <div class="question-media-group">
+
+      {% if media.audio_file or media.paragraph %}
+        <div class="question-media-header">
+          {% if media.audio_file %}
+            <p>🎧 Audio:</p>
+            <audio controls style="margin-bottom: 10px; width: 100%;">
+              <source src="{{ media.audio_file.url }}" type="audio/mpeg">
+              Trình duyệt không hỗ trợ phát âm thanh.
+            </audio>
+
+          {% endif %}
+          {% if media.paragraph %}
+            <p>📖 Đoạn văn:</p>
+            <div style="margin-top: 5px;">{{ media.paragraph }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% for q in questions %}
+        <div class="question">
+          <p><strong>Câu {{ q.display_number }}.</strong> {{ q.question_text }}</p>
+          <p><strong>Đáp án đúng:</strong> {{ q.correct_answer }}</p>
+          <div class="choices">
+            {% for key, value in q.answer.items %}
+              <label>
+                <input type="radio" name="question_{{ q.question_id }}" value="{{ key }}">
+                {{ key }}. {{ value }}
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+
+
+    </div>
+  </form>
 </div>
 
 {% endblock %}

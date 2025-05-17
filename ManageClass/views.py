@@ -10,10 +10,9 @@ from django.utils.timezone import now
 
 from django.contrib.auth.models import User
 
-from ManageClass.forms import  ClassUpdateForm
+from ManageClass.forms import ClassUpdateForm, LessonForm
 from english.models import (
-    CLASS, USER_CLASS, USER_PROFILE, COURSE,
-    ROLLCALL, ROLLCALL_USER, SUBMISSION, EXERCISE,
+    CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL_USER, SUBMISSION, EXERCISE,
     LESSON, LESSON_DETAIL
 )
 from course_admin.forms import LessonDetailForm, LessonDetailFormSet
@@ -34,46 +33,98 @@ def class_list(request):
     })
 
 
+# views.py
+import json
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_http_methods
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import Count
+from django.forms import modelformset_factory
+from django.utils.timezone import now
+
+from django.contrib.auth.models import User
+
+from ManageClass.forms import ClassUpdateForm, LessonForm
+from english.models import (
+    CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL_USER, SUBMISSION, EXERCISE,
+    LESSON, LESSON_DETAIL
+)
+from course_admin.forms import LessonDetailForm, LessonDetailFormSet
+
+# Create a formset for LessonDetailForm
+LessonDetailFormSet = modelformset_factory(
+    LESSON_DETAIL,
+    form=LessonDetailForm,
+    fields=['date'],
+    extra=0  # No extra forms, only edit existing lesson details
+)
+
 def class_detail(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
-
-    # Fetching lessons related to the class via the course
-    lesson_details = LESSON_DETAIL.objects.filter(lesson__course=class_instance.course).select_related('lesson')
-
-    # Mặc định khởi tạo form
+    lesson_details = LESSON_DETAIL.objects.filter(classes=class_instance).select_related('lesson')
     class_form = ClassUpdateForm(instance=class_instance)
-    lesson_form = LessonDetailForm()
+    lesson_form = LessonForm()
+    detail_form = LessonDetailForm()
+    # Initialize formset for editing lesson dates
+    lesson_detail_formset = LessonDetailFormSet(queryset=lesson_details)
+    zipped_form_details = zip(lesson_detail_formset.forms, lesson_details)
 
     if request.method == 'POST':
         action = request.POST.get('action')
+        print('POST action:', action)  # Debug
+        print('POST data:', request.POST)  # Debug
 
         if action == 'update_class':
             class_form = ClassUpdateForm(request.POST, instance=class_instance)
             if class_form.is_valid():
                 class_form.save()
-                return redirect('class_detail', class_id=class_instance.pk)
+                return redirect('class_detail', class_id=class_id)
 
         elif action == 'add_lesson':
-            lesson_form = LessonDetailForm(request.POST)
-            if lesson_form.is_valid():
-                lesson_detail = lesson_form.save(commit=False)
+            lesson_form = LessonForm(request.POST)
+            detail_form = LessonDetailForm(request.POST)
+            print('Lesson form valid:', lesson_form.is_valid())  # Debug
+            print('Detail form valid:', detail_form.is_valid())  # Debug
+            print('Detail form errors:', detail_form.errors)  # Debug
+            if lesson_form.is_valid() and detail_form.is_valid():
+                new_lesson = lesson_form.save(commit=False)
+                new_lesson.course = class_instance.course
+                new_lesson.save()
 
-                # Tạo bài học mới và gán cho course của lớp học
-                new_lesson = LESSON.objects.create(course=class_instance.course)
+                lesson_detail = detail_form.save(commit=False)
                 lesson_detail.lesson = new_lesson
+                lesson_detail.classes = class_instance
                 lesson_detail.save()
 
-                return redirect('class_detail', class_id=class_instance.pk)
+                return redirect('class_detail', class_id=class_id)
+            else:
+                print('Lesson form errors:', lesson_form.errors)  # Debug
+                print('Detail form errors:', detail_form.errors)  # Debug
 
-    context = {
+        elif action == 'update_lesson_dates':
+            lesson_detail_formset = LessonDetailFormSet(request.POST, queryset=lesson_details)
+            print('Formset valid:', lesson_detail_formset.is_valid())  # Debug
+            print('Formset errors:', lesson_detail_formset.errors)  # Debug
+            if lesson_detail_formset.is_valid():
+                lesson_detail_formset.save()
+                messages.success(request, "Cập nhật ngày học thành công!")
+                return redirect('class_detail', class_id=class_id)
+            else:
+                messages.error(request, "Có lỗi khi cập nhật ngày học.")
+
+    return render(request, 'class_detail.html', {
         'class_instance': class_instance,
         'lesson_details': lesson_details,
         'class_form': class_form,
-        'form': lesson_form,
-    }
-    return render(request, 'class_detail.html', context)
+        'lesson_form': lesson_form,
+        'detail_form': detail_form,
+        'lesson_detail_formset': lesson_detail_formset,
+        "zipped_form_details": zipped_form_details,
+    })
 
-
+# ... (rest of the views.py remains unchanged)
 # Bài tập trong lớp
 def class_exercise(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
@@ -93,14 +144,20 @@ def class_exercise(request, class_id):
 # Điểm danh trong lớp
 def class_rollcall(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
-    lesson_details = LESSON_DETAIL.objects.filter(lesson__class_field=class_instance).select_related('lesson')
+
+    # Đúng: Lọc bài học theo khóa học của lớp
+    lesson_details = LESSON_DETAIL.objects.filter(
+        lesson__course=class_instance.course
+    ).select_related('lesson')
 
     rollcall_data = []
     for lesson_detail in lesson_details:
         rollcall_users = []
         rollcall = getattr(lesson_detail, 'rollcall', None)
         if rollcall:
-            rollcall_users = ROLLCALL_USER.objects.filter(rollcall=rollcall).select_related('userclass__user')
+            rollcall_users = ROLLCALL_USER.objects.filter(
+                rollcall=rollcall
+            ).select_related('userclass__user')
 
         rollcall_data.append({
             'lesson_detail': lesson_detail,
@@ -112,6 +169,7 @@ def class_rollcall(request, class_id):
         'class_instance': class_instance,
         'rollcall_data': rollcall_data,
     })
+
 
 # Thêm học viên vào lớp
 def add_student_to_class(request, class_id):
@@ -131,6 +189,10 @@ def add_student_to_class(request, class_id):
     })
 
 # Thêm lớp mới
+class ClassForm:
+    pass
+
+
 def add_class(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)

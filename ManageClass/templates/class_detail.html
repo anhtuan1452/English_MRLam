@@ -31,6 +31,18 @@
         background-color: #000;
         border: none;
     }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
 </style>
 
 <div class="container-fluid tab-section">
@@ -93,14 +105,50 @@
 
     <hr>
 
+    <!-- Danh sách buổi học (Table with editable dates) -->
     <h3>Danh sách buổi học</h3>
-    <ul>
-        {% for lesson_detail in lesson_details %}
-        <li>{{ lesson_detail.lesson.lesson_name }} - Buổi {{ lesson_detail.session_number }}</li>
-        {% empty %}
-        <li>Chưa có buổi học nào</li>
-        {% endfor %}
-    </ul>
+    {% if lesson_details %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_lesson_dates">
+            {{ lesson_detail_formset.management_form }}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên buổi học</th>
+                        <th>Số buổi</th>
+                        <th>Ngày học</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in lesson_detail_formset %}
+                        {% for lesson_detail in lesson_details %}
+                            {% if forloop.counter0 == forloop.parentloop.counter0 %}
+                                <tr>
+                                    <td>{{ lesson_detail.lesson.lesson_name }}</td>
+                                    <td>{{ lesson_detail.session_number }}</td>
+                                    <td>
+                                        {{ form.date }}
+                                        {% if form.date.errors %}
+                                            <div class="text-danger">{{ form.date.errors }}</div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if lesson_detail_formset.non_form_errors %}
+                <div class="text-danger">{{ lesson_detail_formset.non_form_errors }}</div>
+            {% endif %}
+            <div class="text-end mt-4">
+                <button type="submit" class="btn btn-danger">Lưu ngày học</button>
+            </div>
+        </form>
+    {% else %}
+        <p>Chưa có buổi học nào</p>
+    {% endif %}
 
     <hr>
 
@@ -109,14 +157,28 @@
     <form method="post">
         {% csrf_token %}
         <input type="hidden" name="action" value="add_lesson">
-        <div class="form-group">
-            {{ form.as_p }}
+
+        <div class="form-group mb-3">
+            <label for="id_lesson_name" class="form-label">Tên buổi học</label>
+            {{ lesson_form.lesson_name }}
+            {% if lesson_form.lesson_name.errors %}
+                <div class="text-danger">{{ lesson_form.lesson_name.errors }}</div>
+            {% endif %}
         </div>
+
+        <div class="form-group mb-3">
+            <label for="id_session_number" class="form-label">Số buổi học</label>
+            {{ lesson_form.session_number }}
+            {% if lesson_form.session_number.errors %}
+                <div class="text-danger">{{ lesson_form.session_number.errors }}</div>
+            {% endif %}
+        </div>
+
+
 
         <div class="text-end mt-4">
             <button type="submit" class="btn btn-danger me-2">Thêm Buổi Học</button>
         </div>
     </form>
 </div>
-
 {% endblock %}

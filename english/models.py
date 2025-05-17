@@ -5,7 +5,7 @@ from django.db import models
 
 
 class USER_PROFILE(models.Model):
-    userprofile = models.OneToOneField(User, on_delete=models.CASCADE)
+    userprofile = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     SEX_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female'),
