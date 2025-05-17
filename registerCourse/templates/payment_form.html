@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="payment-form-container">
+    <!-- Hiển thị thông tin khóa học -->
+    <div class="course-info">
+      <img src="{{ course.image.url }}" alt="{{ course.course_name }}" class="course-image" />
+      <div class="course-details">
+        <h2 class="course-title">{{ course.course_name }}</h2>
+        <p class="course-price">{{ course.price|floatformat:0 }} VND</p>
+      </div>
+    </div>
+
+    <!-- Form đăng ký -->
+    <form method="post" class="payment-form">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="full_name">Họ và Tên</label>
+        <input id="full_name" name="full_name" type="text" placeholder="Nhập họ và tên" class="form-control" required />
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Số điện thoại</label>
+        <input id="phone" name="phone" type="text" placeholder="Nhập số điện thoại" class="form-control" required />
+      </div>
+
+      <div class="form-group">
+        <label for="class_id">Chọn lớp học</label>
+        <select id="class_id" name="class_id" class="form-control" required>
+          {% for cls in classes %}
+            <option value="{{ cls.class_id }}">{{ cls.class_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-submit">THANH TOÁN</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+{% block styles %}
+  <style>
+    .payment-form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-info {
+      display: flex;
+      margin-bottom: 30px;
+      align-items: center;
+    }
+
+    .course-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 8px;
+      margin-right: 20px;
+    }
+
+    .course-details {
+      flex: 1;
+    }
+
+    .course-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .course-price {
+      font-size: 18px;
+      font-weight: 500;
+      color: #ff5e00;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .payment-form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      font-size: 14px;
+      color: #333;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-top: 5px;
+    }
+
+    .form-control:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .btn-submit {
+      padding: 12px 20px;
+      background-color: #ff5e00;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .btn-submit:hover {
+      background-color: #e34d00;
+    }
+
+    .payment-form .form-group:last-child {
+      text-align: center;
+    }
+  </style>
+{% endblock %}
