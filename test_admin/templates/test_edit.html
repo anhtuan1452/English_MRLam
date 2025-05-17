@@ -7,6 +7,35 @@
 
 {% block content %}
 <style>
+  /* Tab styling */
+.nav-tabs {
+  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 1.5rem;
+}
+
+/* Tab không active (màu xám) */
+.nav-tabs .nav-link {
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6c757d; /* Màu xám */
+  background-color: transparent;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent; /* Ẩn gạch chân */
+}
+
+/* Tab active (màu xanh) */
+.nav-tabs .nav-link.active {
+  color: #0d6efd !important; /* Màu xanh */
+  font-weight: 600;
+  border-bottom: 3px solid #0d6efd; /* Gạch chân xanh */
+}
+
+/* Hiệu ứng hover */
+.nav-tabs .nav-link:hover {
+  color: #0a58ca; /* Màu xanh đậm hơn */
+}
 .question {
   margin-bottom: 30px;
   padding: 20px;
@@ -18,98 +47,110 @@
 .question h5 {
   margin-bottom: 15px;
 }
-    .custom-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #5c6bc0;
-        border-bottom: 2px solid;
-        margin: 1.5rem 0 1rem;
-        padding: 8px 0;
-    }
+.custom-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #5c6bc0;
+  border-bottom: 2px solid;
+  margin: 1.5rem 0 1rem;
+  padding: 8px 0;
+}
+.media-block {
+  background-color: #f1f5ff;
+  padding: 15px;
+  border-left: 4px solid #0d6efd;
+  margin-bottom: 15px;
+  border-radius: 6px;
+}
 </style>
 
 <div class="container mt-4">
-    <h2 class="custom-title">Chỉnh sửa bài kiểm tra</h2>
+  <h2 class="custom-title">Chỉnh sửa bài kiểm tra</h2>
 
-    <!-- Tabs điều hướng -->
-    <ul class="nav nav-tabs mb-4">
-        <li class="nav-item">
-            <a href="{% url 'admin_test_list' %}" class="nav-link active">Bài kiểm tra</a>
-        </li>
-        <li class="nav-item">
-            <a href="{% url 'results' %}" class="nav-link">Kết quả</a>
-        </li>
-    </ul>
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a href="{% url 'admin_test_list' %}" class="nav-link active">Bài kiểm tra</a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'results' %}" class="nav-link">Kết quả</a>
+    </li>
+  </ul>
 
-    <!-- Form bắt đầu -->
-    <form method="POST" class="needs-validation" novalidate>
-        {% csrf_token %}
+  <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+    {% csrf_token %}
 
-        <!-- Thông tin bài kiểm tra -->
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                Thông tin bài kiểm tra
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    {{ test_form.test_name.label_tag }}
-                    {{ test_form.test_name }}
-                </div>
-                <div class="mb-3">
-                    {{ test_form.test_description.label_tag }}
-                    {{ test_form.test_description }}
-                </div>
-                <div class="mb-3">
-                    {{ test_form.duration.label_tag }}
-                    {{ test_form.duration }}
-                </div>
-            </div>
+    <!-- Test info -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        Thông tin bài kiểm tra
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          {{ test_form.test_name.label_tag }}
+          {{ test_form.test_name }}
         </div>
-        <!-- Danh sách câu hỏi -->
-        {% for form in question_forms %}
-        <div class="question">
-            <h5>Câu {{ forloop.counter }}</h5>
+        <div class="mb-3">
+          {{ test_form.test_description.label_tag }}
+          {{ test_form.test_description }}
+        </div>
+        <div class="mb-3">
+          {{ test_form.duration.label_tag }}
+          {{ test_form.duration }}
+        </div>
+      </div>
+    </div>
+
+    <!-- List of media groups and questions -->
+    {% for group in question_groups %}
+      <div class="question">
+        <h5>🎧 Nhóm Media {{ forloop.counter }}</h5>
+
+        <!-- Media block -->
+        <div class="media-block">
+          <div class="mb-3">
+            {{ group.media_form.audio_file.label_tag }}
+            {{ group.media_form.audio_file }}
+          </div>
+          <div class="mb-3">
+            {{ group.media_form.paragraph.label_tag }}
+            {{ group.media_form.paragraph }}
+          </div>
+        </div>
+
+        <!-- Questions in group -->
+        {% for question_form in group.question_forms %}
+          <div class="border-top pt-3 mt-3">
+            <h6 class="text-secondary">Câu hỏi</h6>
             <div class="mb-3">
-                {{ form.question_text.label_tag }}
-                {{ form.question_text }}
+              {{ question_form.question_text.label_tag }}
+              {{ question_form.question_text }}
             </div>
-            <div class="mb-3">
-                {{ form.question_media.label_tag }}
-                {{ form.question_media }}
-            </div>
+
             <div class="row">
-                <div class="col-md-6 mb-3">
-                    {{ form.answer_a.label_tag }}
-                    {{ form.answer_a }}
-                </div>
-                <div class="col-md-6 mb-3">
-                    {{ form.answer_b.label_tag }}
-                    {{ form.answer_b }}
-                </div>
-                <div class="col-md-6 mb-3">
-                    {{ form.answer_c.label_tag }}
-                    {{ form.answer_c }}
-                </div>
-                <div class="col-md-6 mb-3">
-                    {{ form.answer_d.label_tag }}
-                    {{ form.answer_d }}
-                </div>
+              <div class="col-md-6 mb-3">{{ question_form.answer_a.label_tag }} {{ question_form.answer_a }}</div>
+              <div class="col-md-6 mb-3">{{ question_form.answer_b.label_tag }} {{ question_form.answer_b }}</div>
+              <div class="col-md-6 mb-3">{{ question_form.answer_c.label_tag }} {{ question_form.answer_c }}</div>
+              <div class="col-md-6 mb-3">{{ question_form.answer_d.label_tag }} {{ question_form.answer_d }}</div>
             </div>
-            <div class="mb-3">
-                {{ form.correct_answer.label_tag }}
-                {{ form.correct_answer }}
-            </div>
-        </div>
-        {% endfor %}
 
-        <!-- Nút điều khiển -->
-        <div class="d-flex justify-content-between mt-4">
-            <a href="{% url 'admin_test_details' test.test_id %}" class="btn btn-secondary">Quay lại</a>
-            <div>
-                <a href="{% url 'admin_test_list' %}" class="btn btn-warning me-2">Hủy</a>
-                <button type="submit" class="btn btn-success">Lưu</button>
+            <div class="mb-3">
+              {{ question_form.correct_answer.label_tag }}
+              {{ question_form.correct_answer }}
             </div>
-        </div>
-    </form>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <!-- Action buttons -->
+    <div class="d-flex justify-content-between mt-4">
+      <a href="{% url 'admin_test_details' test.test_id %}" class="btn btn-secondary">Quay lại</a>
+      <div>
+        <a href="{% url 'admin_test_list' %}" class="btn btn-warning me-2">Hủy</a>
+        <button type="submit" class="btn btn-success">Lưu</button>
+      </div>
+    </div>
+  </form>
 </div>
 {% endblock %}

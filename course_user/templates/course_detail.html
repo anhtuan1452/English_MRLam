@@ -266,7 +266,7 @@
                                 <h3>{{ other_course.course_name }}</h3>
                                 <p>GV: {{ other_course.teacher_name }}</p>
                                 <p class="price">{{ course.price|floatformat:0 }} vnđ</p>
-                                <a href="{% url 'payment' %}" class="btn-register">Đăng ký ngay</a>
+                                <a href="{% url 'start_payment' course.course_id %}" class="btn-register">Đăng ký ngay</a>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -280,7 +280,7 @@
                 <img src="{% static 'images/course.png' %}" alt="Course">
                 <h2>Học phí</h2>
                 <span class="price-main">{{ course.price|floatformat:0 }}</span>
-                <a href="{% url 'payment' %}" class="btn-register">ĐĂNG KÝ</a>
+                <a href="{% url 'start_payment' course.course_id %}" class="btn-register">ĐĂNG KÝ</a>
             </div>
 
             <div class="instructor-box">
