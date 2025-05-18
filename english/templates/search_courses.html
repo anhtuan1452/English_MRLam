@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}Mr Lam English - Khóa học{% endblock %}
+
+{% block content %}
+<style>
+    .courses-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 24px;
+        padding: 30px 40px;
+        margin-bottom: 122px;
+    }
+    .search{
+      margin-top: 100px;
+    }
+
+    .course-card {
+        flex: 1 1 280px;
+        max-width: 320px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease;
+        min-height: 280px;
+        align-items: flex-start;
+    }
+
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    .course-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #333;
+        justify-content: flex-start;
+    }
+
+    .course-teacher {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 12px;
+    }
+
+    .course-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #555;
+        margin-bottom: 16px;
+    }
+
+    .course-price {
+        color: #e53935;
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+
+    .register-btn {
+        margin-top: auto;
+        text-align: center;
+        background-color: #e53935;
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s;
+        width: 100%
+    }
+
+    .register-btn:hover {
+        background-color: #d32f2f;
+    }
+
+    .section-title {
+        width: 100%;
+        font-size: 26px;
+        font-weight: bold;
+        text-decoration: none;
+        color: #5c6bc0;
+        margin-left: 40px;
+        border-bottom: 2px solid #5c6bc0; /* Thêm đường kẻ dưới tiêu đề */
+        padding-bottom: 10px; /* Khoảng cách giữa chữ và đường kẻ */
+    }
+</style>
+
+<div class="search">
+    <h2 class="section-title">ENGLISH COURSE</h2>
+  <div class="courses-container">
+    {% for course in courses %}
+    <div class="course-card">
+        <img src="{% static 'images/course.png' %}" alt="English Course" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
+        <h3 class="course-title">{{ course.course_name }}</h3>
+        <p class="course-teacher">{{ course.teacher_name }}</p>
+        <p class="course-price">{{ course.price }}</p>
+        <a href="{% url 'course_detail' course_id=course.course_id %}" class="register-btn">Đăng ký ngay</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

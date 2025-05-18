@@ -37,7 +37,7 @@
 </style>
 
 <div class="container" style=" margin:20px auto;">
-  <h2>Buổi học: {{ course.course_name }}</h2>
+  <h2>Bài học: {{ course.course_name }}</h2>
   <form method="post">
     {% csrf_token %}
     {% if form.non_field_errors %}
@@ -62,9 +62,9 @@
       </div>
     </div>
 
-    <button type="submit" class="btn save-btn">{% if lesson_detail %} Cập nhật {% else %} Thêm mới {% endif %}</button>
+    <button type="submit" class="btn save-btn">{% if lesson %} Cập nhật {% else %} Thêm mới {% endif %}</button>
     <a href="{% url 'admin_xemkhoahoc' course.course_id %}" class="btn delete-btn">Hủy</a>
-    {% if lesson_detail %}
+    {% if lesson %}
         <button type="submit" name="delete" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa bài học này?');">Xóa</button>
     {% endif %}
   </form>
