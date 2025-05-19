@@ -1,6 +1,6 @@
-{% extends 'base-admin.html' %}
+{% extends "base-admin.html" %}
 
-{% block title %}Chỉnh sửa lớp học{% endblock %}
+{% block title %}Mô tả lớp học{% endblock %}
 
 {% block content %}
 <style>
@@ -31,24 +31,10 @@
         background-color: #000;
         border: none;
     }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        background-color: #f2f2f2;
-    }
 </style>
 
 <div class="container-fluid tab-section">
-    <h2 class="custom-title">
-        <a href="{% url 'class_list' %}" class="text-decoration-none text-primary">Danh sách lớp học</a> > Lớp {{ class_instance.class_name }}
-    </h2>
+    <h2 class="custom-title">Danh sách lớp học > Lớp {{ class_instance.class_name }}</h2>
 
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
@@ -62,97 +48,51 @@
         </li>
     </ul>
 
-    <!-- Form cập nhật mô tả lớp học -->
-    <form method="post" id="update-class-form">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="update_class">
+    <div class="form-wrapper">
+        <form method="post">
+            {% csrf_token %}
 
-        <div class="form-group">
-            <label class="form-label">Tên lớp học</label>
-            {{ class_form.class_name }}
-        </div>
+            <div class="form-group">
+                <label for="{{ form.class_name.id_for_label }}" class="form-label">Tên lớp học</label>
+                {{ form.class_name }}
+            </div>
 
-        <div class="form-group">
-            <label>Tên khóa học</label>
-            <input type="text" value="{{ class_instance.course }}" readonly class="form-control" />
-        </div>
+            <div class="form-group">
+                <label for="{{ form.course.id_for_label }}" class="form-label">Tên khóa học</label>
+                {{ form.course }}
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">Ngày bắt đầu</label>
-            {{ class_form.begin_time }}
-        </div>
+            <div class="form-group">
+                <label for="{{ form.begin_time.id_for_label }}" class="form-label">Ngày bắt đầu</label>
+                {{ form.begin_time }}
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">Ngày kết thúc</label>
-            {{ class_form.end_time }}
-        </div>
+            <div class="form-group">
+                <label for="{{ form.end_time.id_for_label }}" class="form-label">Ngày kết thúc</label>
+                {{ form.end_time }}
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">Trạng thái lớp học</label>
-            {{ class_form.status }}
-        </div>
+            <div class="form-group">
+                <label for="class_size" class="form-label">Sĩ số</label>
+                <input type="text" class="form-control" value="{{ class_size }}" readonly />
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">Thời khóa biểu</label>
-            {{ class_form.timetable }}
-        </div>
+            <div class="form-group">
+                <label for="status" class="form-label">Trạng thái lớp học</label>
+                <input type="text" name="status" class="form-control" value="{{ class_instance.status }}" />
+            </div>
+            <div class="form-group">
+                <label for="{{ form.timetable.id_for_label }}" class="form-label">Thời khóa biểu</label>
+                {{ form.timetable }}
+            </div>
 
-        <div class="text-end mt-4">
-            <button type="submit" class="btn btn-danger me-2">Lưu thay đổi</button>
-            <a href="{% url 'class_list' %}" class="btn btn-dark">Hủy</a>
-        </div>
-    </form>
 
-    <!-- Form xóa lớp học -->
-    <form method="post" id="delete-class-form" onsubmit="return confirm('Bạn có chắc muốn xóa lớp học này?');">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="delete_class">
-        <div class="text-end mt-2">
-            <button type="submit" class="btn btn-danger">Xóa lớp học</button>
-        </div>
-    </form>
+            <div class="text-end mt-4">
+                <button type="submit" class="btn btn-danger me-2">Lưu</button>
+                <a href="{% url 'class_list' %}" class="btn btn-dark">Hủy</a>
+            </div>
 
-    <hr>
-
-    <!-- Danh sách buổi học -->
-    <h3>Danh sách buổi học</h3>
-    {% if lesson_detail_formset %}
-    <form method="post" id="update-lesson-dates-form">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="update_lesson_dates">
-        {{ lesson_detail_formset.management_form }}
-        <table>
-            <thead>
-                <tr>
-                    <th>Tên buổi học</th>
-                    <th>Số buổi</th>
-                    <th>Ngày học</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for form, lesson_detail in zipped_form_details %}
-                <tr>
-                    <td>{{ lesson_detail.lesson.lesson_name }}</td>
-                    <td>{{ lesson_detail.lesson.session_number }}</td>
-                    <td>
-                        {{ form.date }}
-                        {% if form.date.errors %}
-                            <div class="text-danger">{{ form.date.errors }}</div>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% if lesson_detail_formset.non_form_errors %}
-            <div class="text-danger">{{ lesson_detail_formset.non_form_errors }}</div>
-        {% endif %}
-        <div class="text-end mt-4">
-            <button type="submit" class="btn btn-danger">Lưu ngày học</button>
-        </div>
-    </form>
-    {% else %}
-    <p>Chưa có buổi học nào trong khóa học này.</p>
-    {% endif %}
+        </form>
+    </div>
 </div>
 {% endblock %}

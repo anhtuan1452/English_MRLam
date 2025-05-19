@@ -3,9 +3,7 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="custom-title">
-        <a href="{% url 'class_list' %}" class="text-decoration-none text-primary">Danh sách lớp học</a> > Lớp {{ class_instance.class_name }}
-    </h2>
+    <h3 class="mb-3">Danh sách lớp học > Lớp {{ submission.userclass.classes.class_name }}</h3>
     <p><strong>Học viên:</strong> {{ submission.userclass.user.get_full_name }}</p>
     <p><strong>Ngày nộp:</strong> {{ submission.submit_date|date:"d/m/Y H:i" }}</p>
     <p><strong>Bài tập:</strong> {{ submission.exercise.lessondetail.lesson.lesson_name }}</p>
