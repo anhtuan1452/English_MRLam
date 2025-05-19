@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Tài liệu - HL Lam{% endblock %}
+
+{% block styles %}
+<style>
+    .container {
+        width: 100%;
+        padding: 40px 30px;
+        margin-top: 50px;
+    }
+
+    .custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        margin: 0.5rem 0 1rem;
+    }
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: flex-start;
+    }
+
+    .card {
+        position: relative;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        flex: 0 0 23%;
+        max-width: 23%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 15px 20px;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .card-text {
+        font-size: 0.95rem;
+        color: #777;
+    }
+
+    .speech-bubble {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 90px;
+        height: 90px;
+        background-color: #f44336;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-align: center;
+        z-index: 2;
+        padding: 10px;
+        line-height: 1.2;
+    }
+
+    a.stretched-link {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="custom-title">Tài liệu FREE</h2>
+    <div class="row">
+        {% for doc in materials %}
+        <div class="card">
+            {% if doc.doc_name == "Bí kíp Câu hỏi đuôi" %}
+            <div class="speech-bubble">QUESTION TAGS</div>
+            {% elif doc.doc_name == "So sánh quá khứ đơn và hiện tại hoàn thành" %}
+            <div class="speech-bubble">Past Simple vs.<br>Present Perfect</div>
+            {% endif %}
+            <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" alt="{{ doc.doc_name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ doc.doc_name }}</h5>
+                <a href="{% url 'materials_detail' doc.doc_id %}" class="stretched-link"></a>
+            </div>
+        </div>
+        {% empty %}
+        <p>Không có tài liệu nào.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

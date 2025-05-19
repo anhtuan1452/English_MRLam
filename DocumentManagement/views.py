@@ -5,7 +5,6 @@ from english.models import DOCUMENT
 from .forms import DocumentForm
 import os
 
-# Danh sách tài liệu
 
 def document_list(request):
     documents = DOCUMENT.objects.select_related('auth_user_id').all().order_by('-doc_id')

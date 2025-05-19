@@ -65,7 +65,7 @@
                         <tr>
                             <td class="ps-3">{{ forloop.counter }}</td>
                             <td>{{ document.doc_name|default:"(Không có tên)" }}</td>
-                            <td>{{ document.auth_user_id.username }}</td>
+                            <td>{{ document.auth_user_id.first_name }} {{ document.auth_user_id.last_name }}</td>
                             <td>PDF</td>
                             <td>
                                 <a href="{% url 'document_detail_edit' document.doc_id %}" class="btn btn-sm btn-common">Sửa</a>

@@ -56,7 +56,8 @@
             <!-- Tên tài liệu -->
             <div class="form-group">
                 <label class="form-label">Tên tài liệu</label>
-                <input type="text" name="doc_name" class="form-control" value="{{ form.doc_name.value|default_if_none:'' }}" placeholder="Nhập tên tài liệu">
+                <input type="text" name="doc_name" class="form-control"
+       value="{{ form.doc_name.value|default:'' }}" placeholder="Nhập tên tài liệu">
                 {% if form.doc_name.errors %}
                     <div class="text-danger">{{ form.doc_name.errors }}</div>
                 {% endif %}
@@ -83,7 +84,6 @@
             <div class="text-end mt-4">
                 <button type="submit" name="save" class="btn btn-danger me-2">Lưu</button>
                 <button type="submit" name="delete" class="btn btn-dark me-2" onclick="return confirm('Bạn có chắc chắn muốn xóa tài liệu này?');">Xóa</button>
-                <a href="{% url 'document_list' %}" class="btn btn-outline-secondary">Hủy</a>
             </div>
         </form>
     </div>
