@@ -1,4 +1,9 @@
+from django.contrib import messages
+from django.contrib.auth import logout
+from django.contrib.auth.views import LogoutView
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse_lazy
 
 from english.models import COURSE, DOCUMENT
 
@@ -65,3 +70,10 @@ def search_materials(request):
     }
     return render(request, 'search_materials.html', context)
 
+class CustomLogoutView(LogoutView):
+    next_page = reverse_lazy('login')
+
+    def get(self, request, *args, **kwargs):
+        logout(request)  # Thực hiện đăng xuất thủ công
+        messages.success(request, 'Đăng xuất thành công!')
+        return HttpResponseRedirect(self.next_page)  # Chuyển hướng đến trang đăng nhập

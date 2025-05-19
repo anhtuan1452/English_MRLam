@@ -61,14 +61,20 @@
          <a href="{% url 'user_list' %}">Người dùng</a>
        </div>
      </nav>
+       <form action="{% url 'logout' %}" method="post" style="display: inline;">
+           {% csrf_token %}
+           <div class="mt-auto" style="margin-top: auto; border-top: 1px solid rgba(0,0,0,.125); padding-top: 10px;">
+               <div class="sidebar-item">
+                   <button type="submit" class="sidebar-item" style="background: none; border: none; color: inherit; padding: 0; font: inherit; cursor: pointer;">
+                       <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+                       Đăng xuất </button>
 
+
+               </div>
+             </div>
+
+       </form>
      <!-- Logout button -->
-     <div class="mt-auto" style="margin-top: auto; border-top: 1px solid rgba(0,0,0,.125); padding-top: 10px;">
-       <div class="sidebar-item">
-         <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
-         <a href="#">Đăng xuất</a>
-       </div>
-     </div>
    </div>
 
    <!-- Main content -->
