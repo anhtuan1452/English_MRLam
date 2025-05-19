@@ -29,7 +29,7 @@ urlpatterns = [
     path('test_user/',include('test_user.urls')),
     path('MyClass/',include('MyClass.urls')),
     path('course_admin/',include('course_admin.urls')),
-    path('registercourse/',include('registerCourse.urls')),
+    path('',include('registerCourse.urls')),
     path('class_admin/',include('ManageClass.urls')),
     path('materials/',include('MaterialsFree.urls')),
     path('manage_class/',include('ManageClass.urls')),

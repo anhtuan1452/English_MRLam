@@ -64,3 +64,18 @@ class LessonForm(forms.ModelForm):
     class Meta:
         model = LESSON
         fields = ['lesson_name', 'description', 'session_number']  # các trường chính của LESSON
+from django.forms import modelformset_factory
+class LessonDetailForm(forms.ModelForm):
+    class Meta:
+        model = LESSON_DETAIL
+        fields = ['date']  # Chỉ giữ trường date, vì session_number thuộc về LESSON
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        }
+
+LessonDetailFormSet = modelformset_factory(
+    LESSON_DETAIL,
+    form=LessonDetailForm,
+    fields=['date'],
+    extra=1
+)

@@ -10,71 +10,77 @@
         margin: 1.5rem 0 1rem;
         padding: 8px 0;
     }
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-control {
+        height: 50px;
+        border-radius: 8px;
+    }
+    .btn-danger {
+        background-color: #d32f2f;
+        border: none;
+    }
+    .btn-dark {
+        background-color: #000;
+        border: none;
+    }
+    .btn-outline-secondary {
+        background-color: #f8f9fa;
+        border: none;
+    }
 </style>
-<div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div class="d-flex align-items-center">
-            <a href="{% url 'document_list' %}" class="btn btn-outline-secondary btn-sm me-3">
-                <i class="fas fa-arrow-left me-1"></i> Quay lại
-            </a>
-            <h2 class="custom-title mb-0">Thêm tài liệu</h2>
-        </div>
+
+<div class="container-fluid tab-section">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'document_list' %}" class="btn btn-outline-secondary btn-sm me-3">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại
+        </a>
+        <h2 class="custom-title mb-0">{{ title }}</h2>
     </div>
 
-    <div class="card">
-        <div class="card-body">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
+    <div class="form-wrapper">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
-                <!-- Mã khóa học -->
-                <div class="mb-3">
-                    <label for="{{ form.course.id_for_label }}" class="form-label">Mã Khóa_Buổi học</label>
-                    {{ form.course }}
-                    {% if form.course.errors %}
-                        <div class="text-danger">{{ form.course.errors }}</div>
-                    {% endif %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
                 </div>
+            {% endif %}
 
-                <!-- Tiêu đề -->
-                <div class="mb-3">
-                    <label for="lesson_title" class="form-label">Tiêu đề</label>
-                    <input type="text" name="lesson_title" class="form-control" placeholder="VD: English Level 1_Buổi 1" required>
-                </div>
+            <div class="form-group">
+                <label class="form-label">Tên tài liệu</label>
+                <input type="text" name="doc_name" class="form-control" value="{{ form.doc_name.value }}" placeholder="Nhập tên tài liệu">
+                {% if form.doc_name.errors %}
+                    <div class="text-danger">{{ form.doc_name.errors }}</div>
+                {% endif %}
+            </div>
 
-                <!-- Nội dung -->
-                <div class="mb-3">
-                    <label for="{{ form.lesson_description.id_for_label }}" class="form-label">Nội dung</label>
-                    <textarea name="{{ form.lesson_description.name }}" class="form-control" rows="4" placeholder="Mô tả nội dung của tài liệu" required></textarea>
-                    {% if form.lesson_description.errors %}
-                        <div class="text-danger">{{ form.lesson_description.errors }}</div>
-                    {% endif %}
-                </div>
+            <div class="form-group">
+                <label class="form-label">Tệp PDF</label>
+                {% if document.doc_file %}
+                    <div class="mb-2">
+                        <i class="fas fa-file-pdf text-danger"></i>
+                        <a href="{{ document.doc_file.url }}" target="_blank">{{ file_name }}</a>
+                    </div>
+                {% endif %}
+                <input type="file" name="doc_file" class="form-control">
+                {% if form.doc_file.errors %}
+                    <div class="text-danger">{{ form.doc_file.errors }}</div>
+                {% endif %}
+            </div>
 
-                <!-- File bài học -->
-                <div class="mb-3">
-                    <label for="{{ form.lesson_file.id_for_label }}" class="form-label">File bài học</label>
-                    {{ form.lesson_file }}
-                    {% if form.lesson_file.errors %}
-                        <div class="text-danger">{{ form.lesson_file.errors }}</div>
-                    {% endif %}
-                </div>
-
-                <!-- File bài tập -->
-                <div class="mb-3">
-                    <label for="{{ form.exercise_file.id_for_label }}" class="form-label">File bài tập</label>
-                    {{ form.exercise_file }}
-                    {% if form.exercise_file.errors %}
-                        <div class="text-danger">{{ form.exercise_file.errors }}</div>
-                    {% endif %}
-                </div>
-
-                <div class="text-end">
-                    <button type="submit" class="btn btn-danger">Lưu</button>
-                    <a href="{% url 'document_list' %}" class="btn btn-secondary me-2">Hủy</a>
-
-                </div>
-            </form>
-        </div>
+            <div class="text-end mt-4">
+                <button type="submit" name="save" class="btn btn-danger me-2">Lưu</button>
+                <button type="submit" name="delete" class="btn btn-dark me-2" onclick="return confirm('Bạn có chắc chắn muốn xóa tài liệu này?');">Xóa</button>
+                <a href="{% url 'document_list' %}" class="btn btn-outline-secondary">Hủy</a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
