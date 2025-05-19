@@ -39,9 +39,10 @@
 #         }
 #
 # forms.py
+
 from django import forms
 from django.forms import modelformset_factory
-from english.models import CLASS, LESSON_DETAIL, LESSON
+from english.models import CLASS, LESSON_DETAIL, LESSON,COURSE
 
 class ClassUpdateForm(forms.ModelForm):
     class Meta:
@@ -71,17 +72,19 @@ class ClassUpdateForm(forms.ModelForm):
 class ClassForm(forms.ModelForm):
     class Meta:
         model = CLASS
-        fields = ['class_name', 'course', 'begin_time', 'end_time']
+        fields = ['class_name', 'course', 'begin_time', 'end_time', 'status', 'timetable']
         widgets = {
             'class_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'course': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'course': forms.Select(attrs={'class': 'form-control'}),
             'begin_time': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'end_time': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'timetable': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['course'].disabled = True
+        self.fields['course'].queryset = COURSE.objects.all()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -111,17 +114,16 @@ class LessonDetailForm(forms.ModelForm):
 
     def clean_date(self):
         date = self.cleaned_data.get('date')
-        # Kiểm tra xem instance đã có classes hay chưa
         if hasattr(self.instance, 'classes') and self.instance.classes:
             class_instance = self.instance.classes
             if date and (date < class_instance.begin_time or date > class_instance.end_time):
                 raise forms.ValidationError("Ngày học phải nằm trong khoảng từ ngày bắt đầu đến ngày kết thúc của lớp.")
         return date
 
-# Định nghĩa LessonDetailFormSet
 LessonDetailFormSet = modelformset_factory(
     LESSON_DETAIL,
     form=LessonDetailForm,
-    extra=0,  # Không cho phép thêm mới form trong formset
-    can_delete=False  # Không cho phép xóa form trong formset
+    fields=['date'],
+    extra=0,
+    can_delete=False
 )
