@@ -23,7 +23,7 @@
                 <a href="{% url 'course' %}">Khóa học</a>
                 <a href="{% url 'materials_list' %}">Tài liệu</a>
                 <a href="{% url 'home_test' test_id=1%}">Bài test</a>
-                {% if True %}
+                {% if user.is_authenticated %}
                     <a href="{% url 'student_homework' %}">Lớp học</a>
                 {% endif %}
             </nav>
@@ -31,7 +31,7 @@
 
         <div class="header-right">
     <div class="search-container">
-        {% block serch %}
+        {% block search %}
             {% include 'search_dropdown.html' %}
         {% endblock %}
     </div>

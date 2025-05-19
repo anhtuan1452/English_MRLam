@@ -25,8 +25,8 @@
   .form-group {
     display: flex;
     flex-direction: column;
-    grid-column: 1 / 3;
     margin-bottom:20px;
+    width:48%;
   }
 
   .form-group label {
@@ -38,6 +38,7 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    width:100%;
   }
 
   .btn {
@@ -68,10 +69,14 @@
 
   /* Phần chứa thông tin thanh toán */
   .payment-info {
+    position: relative;
     flex: 1;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
+    widh:643px;
+    height:635px;
+    margin-top: -47px;
   }
 
   .payment-info h3 {
@@ -89,14 +94,14 @@
     font-weight: 700;
     color: #5c6bc0;
     border-bottom: 2px solid;
-    margin: 1.5rem 0 1rem;
-    padding: 8px 0;
     width:290px;
   }
       /* Container cho bảng */
   .table-container {
     width: 100%;
     margin-top: 20px;
+    width: 602px;
+
   }
 
   /* Style cho bảng */
@@ -114,6 +119,10 @@
     padding: 12px 15px;
     border: 1px solid #ddd;
   }
+  th:nth-child(1){
+    width:124px;
+    height:42px;
+  }
 
   /* Style cho các ô trong bảng */
   td {
@@ -121,6 +130,7 @@
     padding: 12px 15px;
     border: 1px solid #ddd;
     color: #333;
+    height: 65px;
   }
 
   /* Style cho nút "Đang học" */
@@ -145,7 +155,53 @@
     color: #333;
     border-bottom: 2px solid #ddd;
     margin-bottom: 20px;
-    padding: 8px 0;
+  }
+  .box-container{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width:600px;
+  }
+  .image-show{
+  margin-top: 29px;
+  }
+  .image-show{
+    width: 287px;
+    height: 287px;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+  }
+  img{
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  #qrImageGroup input{
+  position: relative;
+  width: 287px;
+  height: 287px;
+  border: 1px dashed #5c6bc0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  overflow: hidden;
+}
+  #id_qr::file-selector-button {
+    display: none;
+  }
+  .pagination{
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    margin-top: 20px;
+    gap: 20px;
   }
 </style>
 <h2>Tài khoản thanh toán</h2>
@@ -154,25 +210,38 @@
     <div class="form-container">
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      <div class="form-group" id="accountOwnerGroup">
-        {{ form.account_owner.label_tag }}
-        {{ form.account_owner }}
+      <div class="box-container">
+        <div class="form-group" id="accountOwnerGroup">
+          {{ form.account_owner.label_tag }}
+          {{ form.account_owner }}
+        </div>
+        <div class="form-group" id="accountNumberGroup">
+          {{ form.account_number.label_tag }}
+          {{ form.account_number }}
+        </div>
       </div>
-      <div class="form-group" id="accountNumberGroup">
-        {{ form.account_number.label_tag }}
-        {{ form.account_number }}
+      <div class="box-container">
+        <div class="form-group" id="bankNameGroup">
+          {{ form.bank_name.label_tag }}
+          {{ form.bank_name }}
+        </div>
+        <div class="form-group" id="courseIdGroup">
+          {{ form.course_id.label_tag }}
+          {{ form.course_id }}
+        </div>
       </div>
-      <div class="form-group" id="bankNameGroup">
-        {{ form.bank_name.label_tag }}
-        {{ form.bank_name }}
-      </div>
-      <div class="form-group" id="courseIdGroup">
-        {{ form.course_id.label_tag }}
-        {{ form.course_id }}
-      </div>
-      <div class="form-group" id="qrImageGroup">
-        {{ form.qr.label_tag }}
-        {{ form.qr }}  <!-- Trường tải lên hình ảnh QR -->
+      <div class="box-container">
+        <div class="form-group" id="qrImageGroup">
+          {{ form.qr.label_tag }}
+          {{ form.qr }}  <!-- Trường tải lên hình ảnh QR -->
+        </div>
+        <div class="image-show">
+          {% if form.instance.qr %}
+              <img src="{{ form.instance.qr.url }}" alt="QR hiện tại">
+          {% else %}
+              <p>Chưa có mã QR.</p>
+          {% endif %}
+        </div>
       </div>
       <button type="submit" class="btn save-btn">Lưu</button>
       <a href="{% url 'payment_list' %}" class="btn delete-btn">Hủy</a>
@@ -192,7 +261,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for payment_info in payment_infos %}
+      {% for payment_info in page_obj %}
       <tr>
         <td>{{ payment_info.user.get_full_name }}</td>
         <td>{{ payment_info.message }}</td>
@@ -205,7 +274,56 @@
       {% endfor %}
     </tbody>
   </table>
+  <div class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-primary">« Trước</a>
+  {% else %}
+    <span class="btn btn-secondary disabled">« Trước</span>
+  {% endif %}
+
+  <span>Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-primary">Sau »</a>
+  {% else %}
+    <span class="btn btn-secondary disabled">Sau »</span>
+  {% endif %}
 </div>
 </div>
 
+</div>
+
+<!-- ========== SCRIPT PREVIEW ẢNH ========== -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Lấy input file QR – đổi selector nếu id khác
+    const qrInput = document.querySelector('#id_qr');
+    const previewBox = document.getElementById('previewBox');
+
+    if (qrInput) {
+      qrInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Chỉ xử lý file ảnh
+        if (!file.type.startsWith('image/')) {
+          alert('Vui lòng chọn file hình ảnh hợp lệ!');
+          qrInput.value = '';  // reset
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          // Xóa ảnh cũ (nếu có) rồi thêm mới
+          previewBox.innerHTML = '';
+          const img = document.createElement('img');
+          img.src = ev.target.result;
+          img.alt = 'Xem trước QR';
+          previewBox.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  });
+</script>
 {% endblock %}

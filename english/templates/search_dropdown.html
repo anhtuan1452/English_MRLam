@@ -117,50 +117,16 @@
 <!-- templates/search_dropdown.html -->
 <div class="search-container">
   <!-- Icon tìm kiếm -->
-  <li class="fas fa-search search-icon"></li>
+    <li class="fas fa-search search-icon"></li>
   <!-- Ô input -->
-  <input
-    type="search"
-    placeholder="Search here"
-    class="search-input"
-    id="searchInput"
-  />
-
-  <!-- Dropdown gợi ý -->
-  <div class="search-dropdown" id="searchDropdown">
-    <!-- Tìm kiếm gần đây -->
-    <div class="section">
-      <h4>Tìm kiếm gần đây</h4>
-      <div class="recent-search-tags">
-        <span class="tag">english basic</span>
-        <span class="tag">english communicate</span>
-        <span class="tag">english</span>
-        <span class="tag">english for new beginners</span>
-      </div>
-    </div>
-    <!-- ...Các phần khác: Tìm kiếm phổ biến, khóa học phổ biến... -->
-  </div>
+    {% if request.path|slice:":10" == "/materials" %}
+        <form method="GET" action="{% url 'search_materials' %}" class="search-form">
+            <input type="text" name="q" placeholder="Tìm kiếm tài liệu..." class="search-input" required>
+        </form>
+    {% else %}
+        <form method="GET" action="{% url 'search_courses' %}" class="search-form">
+            <input type="text" name="q" placeholder="Tìm kiếm khóa học..." class="search-input" required>
+        </form>
+    {% endif %}
 </div>
 
-<!-- Gắn script để handle hiển thị/ẩn dropdown -->
-<script>
-  const searchInput = document.getElementById('searchInput');
-  const searchDropdown = document.getElementById('searchDropdown');
-
-  // Khi focus hoặc click vào input -> Hiển thị dropdown
-  searchInput.addEventListener('focus', () => {
-    searchDropdown.style.display = 'block';
-  });
-  searchInput.addEventListener('click', () => {
-    searchDropdown.style.display = 'block';
-  });
-
-  // Ẩn dropdown khi click ra ngoài
-  document.addEventListener('click', (event) => {
-    const isClickInside = searchDropdown.contains(event.target)
-      || searchInput.contains(event.target);
-    if (!isClickInside) {
-      searchDropdown.style.display = 'none';
-    }
-  });
-</script>
