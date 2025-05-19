@@ -4,6 +4,13 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+def submission_upload_path(instance, filename):
+    """
+    Generate the upload path for submission files.
+    Format: media/file_submission/<Classid>/<Studentid>/<ExerciseID>/<filename>
+    """
+    return f'file_submission/Class_id [{instance.userclass.classes.class_id}]/User_id[{instance.userclass.user.id}]/Ex_id[{instance.exercise.exercise_id}]/{filename}'
+
 class USER_PROFILE(models.Model):
     userprofile = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     SEX_CHOICES = [
@@ -185,9 +192,11 @@ class SUBMISSION(models.Model):
     submit_date = models.DateTimeField(default=datetime.datetime.now)
     review = models.TextField(null=True, blank=True)
     exercise = models.ForeignKey(EXERCISE, on_delete=models.CASCADE)
-    submission_file_content = models.FileField(upload_to="media/file_submission",null=True, blank=True)  # Lưu nội dung nhị phân của tệp
-    submission_file_name = models.CharField(max_length=255, null=True, blank=True)  # Lưu tên tệp
-    submission_file_type = models.CharField(max_length=50, null=True, blank=True)  # Lưu loại tệp (e.g., .pdf, .docx)
+    submission_file_content = models.FileField(
+        upload_to=submission_upload_path,  # Use the named function instead of lambda
+        null=True,
+        blank=True
+    )
 
     class Meta:
         db_table = 'SUBMISSION'

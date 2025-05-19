@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block title %}Đăng nhập{% endblock %}
 
@@ -19,13 +20,18 @@
         <form method="POST" action="{% url 'login' %}">
             {% csrf_token %}
             <div class="form-group">
-                <label class="form-label">Tên đăng nhập hoặc email</label>
-                <input type="text" class="form-input" name="username" placeholder="Tên đăng nhập hoặc email" required>
+                <label class="form-label" for="{{ form.username.id_for_label }}">Tên đăng nhập hoặc email</label>
+                {{ form.username|add_class:"form-input" }}
+                {% if form.username.errors %}
+                    <div class="error">{{ form.username.errors.as_text }}</div>
+                {% endif %}
             </div>
-
             <div class="form-group">
-                <label class="form-label">Mật Khẩu</label>
-                <input type="password" class="form-input" name="password" placeholder="Nhập mật khẩu" required>
+                <label class="form-label" for="{{ form.password.id_for_label }}">Mật Khẩu</label>
+                {{ form.password|add_class:"form-input" }}
+                {% if form.password.errors %}
+                    <div class="error">{{ form.password.errors.as_text }}</div>
+                {% endif %}
             </div>
 
             <div class="remember-forgot">
@@ -44,7 +50,6 @@
         <img src="{% static 'img1.png' %}" alt="Học sinh đang đọc sách">
     </div>
 </div>
-
 <style>
     * {
         margin: 0;

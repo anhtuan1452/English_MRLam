@@ -90,7 +90,7 @@ def class_rollcall(request, class_id):
         except ROLLCALL.DoesNotExist:
             rollcall = None  # Không có điểm danh cho buổi học này
 
-        # Lưu dữ liệu điểm danh vào list để render trong template
+        # Lưu dữ liệu điểm danh vào list để render trong templates
         rollcall_data.append({
             'lesson_detail': lesson_detail,
             'rollcall_users': rollcall_users,
