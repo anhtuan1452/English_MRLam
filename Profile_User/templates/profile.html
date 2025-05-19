@@ -33,14 +33,15 @@
 
 
     .tab-content {
-    display: none;
-    margin-top: 0;
-    padding-top: 0;
-    min-height: 500px;
-}
-.tab-content.active {
-    display: block;
-}
+        display: none;
+        margin-top: 0;
+        padding-top: 0;
+        min-height: 500px;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
 
     a {
         text-decoration: none;
@@ -52,23 +53,30 @@
     p {
         margin: 0;
     }
-  .list-group-item.active {
-    background-color: #dc3545 !important; /* đỏ tươi (Bootstrap danger) */
-    border-color: #dc3545 !important;
-    color: white !important;
-}
-  .list-group-item.active:hover {
-    background-color: #c82333 !important; /* đỏ đậm hơn khi hover */
-}
-.section-title {
+
+    .list-group-item.active {
+        background-color: #dc3545 !important;
+        /* đỏ tươi (Bootstrap danger) */
+        border-color: #dc3545 !important;
+        color: white !important;
+    }
+
+    .list-group-item.active:hover {
+        background-color: #c82333 !important;
+        /* đỏ đậm hơn khi hover */
+    }
+
+    .section-title {
         width: 100%;
         font-size: 26px;
         font-weight: bold;
         text-decoration: none;
         color: #5c6bc0;
 
-        border-bottom: 2px solid #5c6bc0; /* Thêm đường kẻ dưới tiêu đề */
-        padding-bottom: 10px; /* Khoảng cách giữa chữ và đường kẻ */
+        border-bottom: 2px solid #5c6bc0;
+        /* Thêm đường kẻ dưới tiêu đề */
+        padding-bottom: 10px;
+        /* Khoảng cách giữa chữ và đường kẻ */
     }
 </style>
 <div class="container py-5">
@@ -160,8 +168,7 @@
             </div>
 
             <!-- Password Change -->
-            <div class="tab-content {% if active_tab == 'password' %}active{% endif %}" id="password"
-                >
+            <div class="tab-content {% if active_tab == 'password' %}active{% endif %}" id="password">
                 <h4 class="mb-4 section-title">Đổi mật khẩu</h4>
                 <form method="POST">
                     {% csrf_token %}
@@ -196,7 +203,7 @@
             </div>
 
             <!-- Email Update -->
-            <div class="tab-content {% if active_tab == 'email' %}active{% endif %}" id="email" >
+            <div class="tab-content {% if active_tab == 'email' %}active{% endif %}" id="email">
                 <h4 class="mb-4 section-title">Thay đổi email</h4>
 
                 {% if messages %}
@@ -235,93 +242,93 @@
 
 
             <!-- Enrolled Classes -->
-            <div class="tab-content {% if active_tab == 'classes' %}active{% endif %}" id="classes"
-                >
+            <!-- Enrolled Classes -->
+            <div class="tab-content {% if active_tab == 'classes' %}active{% endif %}" id="classes">
                 <h4 class="mb-4 section-title">Lớp học đã đăng ký</h4>
-                {% if enrolled_classes %}
-                <ul class="list-group">
-                    {% for c in enrolled_classes %}
-                    <li class="list-group-item">{{ c.class_name }}</li>
+                {% if class_exercises %}
+                <div class="row">
+                    {% for item in class_exercises %}
+                    <div class="col-md-6 mb-4">
+                        <div class="border rounded p-3 shadow-sm h-100">
+                            <h5 class="text-danger">{{ item.class.class_name }}</h5>
+                            {% if item.lessons %}
+                            <table class="table table-sm table-bordered mt-2 mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="w-75">Buổi học</th>
+                                        <th class="w-25">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lesson in item.lessons %}
+                                    <tr>
+                                        <td>{{ lesson.lesson_name }}</td>
+                                        <td>
+                                            {% if lesson.status == "Đã nộp" %}
+                                            <span class="badge bg-success">{{ lesson.status }}</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">{{ lesson.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <p class="text-muted">Không có bài tập nào.</p>
+                            {% endif %}
+                        </div>
+                    </div>
                     {% endfor %}
-                </ul>
+                </div>
                 {% else %}
                 <p>Bạn chưa đăng ký lớp nào.</p>
                 {% endif %}
             </div>
+
+
         </div>
     </div>
 </div>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const navItems = document.querySelectorAll(".list-group-item");
-    const tabContents = document.querySelectorAll(".tab-content");
+    document.addEventListener("DOMContentLoaded", function () {
+        const navItems = document.querySelectorAll(".list-group-item");
+        const tabContents = document.querySelectorAll(".tab-content");
 
-    // Chỉ đọc localStorage nếu không có active_tab trong URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const queryTab = urlParams.get("active_tab");
+        // Chỉ đọc localStorage nếu không có active_tab trong URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryTab = urlParams.get("active_tab");
 
-    let selectedTab = queryTab || localStorage.getItem("activeTab");
+        let selectedTab = queryTab || localStorage.getItem("activeTab");
 
-    if (selectedTab) {
-        const trigger = document.querySelector(`.list-group-item[data-tab="${selectedTab}"]`);
-        if (trigger) trigger.click();
-    }
+        if (selectedTab) {
+            const trigger = document.querySelector(`.list-group-item[data-tab="${selectedTab}"]`);
+            if (trigger) trigger.click();
+        }
 
-    navItems.forEach((item) => {
-        item.addEventListener("click", function () {
-            const tabId = this.getAttribute("data-tab");
-            localStorage.setItem("activeTab", tabId);
+        navItems.forEach((item) => {
+            item.addEventListener("click", function () {
+                const tabId = this.getAttribute("data-tab");
+                localStorage.setItem("activeTab", tabId);
 
-            tabContents.forEach((tab) => {
-                tab.classList.remove("active");
-                tab.style.display = "none";
+                tabContents.forEach((tab) => {
+                    tab.classList.remove("active");
+                    tab.style.display = "none";
+                });
+                navItems.forEach((btn) => btn.classList.remove("active"));
+
+                this.classList.add("active");
+                const activeTab = document.getElementById(tabId);
+                if (activeTab) {
+                    activeTab.classList.add("active");
+                    activeTab.style.display = "block";
+                }
             });
-            navItems.forEach((btn) => btn.classList.remove("active"));
-
-            this.classList.add("active");
-            const activeTab = document.getElementById(tabId);
-            if (activeTab) {
-                activeTab.classList.add("active");
-                activeTab.style.display = "block";
-            }
         });
     });
-});
 
 </script>
 
-<!--<script>-->
-<!--    document.addEventListener("DOMContentLoaded", function () {-->
-<!--        const navItems = document.querySelectorAll(".list-group-item");-->
-<!--        const tabContents = document.querySelectorAll(".tab-content");-->
-
-<!--        navItems.forEach((item) => {-->
-<!--            item.addEventListener("click", function () {-->
-<!--                const tabId = this.getAttribute("data-tab");-->
-<!--                localStorage.setItem("activeTab", tabId);-->
-
-<!--                tabContents.forEach((tab) => {-->
-<!--                    tab.classList.remove("active");-->
-<!--                    tab.style.display = "none";-->
-<!--                });-->
-<!--                navItems.forEach((btn) => btn.classList.remove("active"));-->
-
-<!--                this.classList.add("active");-->
-<!--                const activeTab = document.getElementById(tabId);-->
-<!--                if (activeTab) {-->
-<!--                    activeTab.classList.add("active");-->
-<!--                    activeTab.style.display = "block";-->
-<!--                }-->
-<!--            });-->
-<!--        });-->
-
-<!--        const savedTab = localStorage.getItem("activeTab");-->
-<!--        if (savedTab) {-->
-<!--            const trigger = document.querySelector(`.list-group-item[data-tab="${savedTab}"]`);-->
-<!--            if (trigger) trigger.click();-->
-<!--        }-->
-<!--    });-->
-<!--</script>-->
 {% endblock %}
 {% block footer %}
 

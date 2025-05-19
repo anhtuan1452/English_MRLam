@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 
 from .forms import UserProfileForm, PasswordChangeCustomForm, EmailUpdateForm
-from english.models import USER_CLASS
+from english.models import USER_CLASS, LESSON_DETAIL, EXERCISE, SUBMISSION
 import random
 from django.core.mail import send_mail
 from django.conf import settings
@@ -85,7 +85,31 @@ def profile_view(request):
                 else:
                     messages.error(request, 'Mã xác nhận không đúng.')
             active_tab = 'email'
+
     enrolled_classes = USER_CLASS.objects.filter(user=user).select_related('classes')
+    class_exercises = []
+    for uc in enrolled_classes:
+        lessons = LESSON_DETAIL.objects.filter(classes=uc.classes).select_related('lesson')
+        lesson_info = []
+
+        for lesson in lessons:
+            try:
+                exercise = EXERCISE.objects.get(lessondetail=lesson)
+                submission = SUBMISSION.objects.filter(userclass=uc, exercise=exercise).first()
+                status = "Đã nộp" if submission else "Chưa nộp"
+                lesson_info.append({
+                    'lesson_name': lesson.lesson.lesson_name,
+                    'date': lesson.date,
+                    'exercise': exercise,
+                    'status': status
+                })
+            except EXERCISE.DoesNotExist:
+                continue
+
+        class_exercises.append({
+            'class': uc.classes,
+            'lessons': lesson_info
+        })
 
     return render(request, 'profile.html', {
         'user': user,
@@ -93,6 +117,7 @@ def profile_view(request):
         'password_form': password_form,
         'email_form': email_form,
         'enrolled_classes': [uc.classes for uc in enrolled_classes],
+        'class_exercises': class_exercises,
         'active_tab': active_tab,
     })
 
