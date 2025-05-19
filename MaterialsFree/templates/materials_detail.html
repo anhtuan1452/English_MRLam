@@ -97,14 +97,22 @@
 
         <!-- Download button -->
         <div class="download-wrapper">
-            <a href="{{ file_url }}" download>
-                <button class="download-btn">DOWNLOAD</button>
-            </a>
+            {% if file_url %}
+                <a href="{{ file_url }}" target="_blank">
+                    <button class="download-btn">DOWNLOAD</button>
+                </a>
+            {% else %}
+                <p>Không có file để tải xuống.</p>
+            {% endif %}
         </div>
 
-        <!-- Full-width iframe -->
+        <!-- Hiển thị PDF bằng iframe -->
         <div class="iframe-wrapper">
-            <iframe src="{{ file_url }}#toolbar=0"></iframe>
+            {% if file_url %}
+                <iframe src="{{ file_url }}"></iframe>
+            {% else %}
+                <p>Không thể hiển thị tài liệu này.</p>
+            {% endif %}
         </div>
     </div>
 </div>
