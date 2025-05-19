@@ -76,9 +76,13 @@
                 </a>
             </div>
         </div>
-        <a href="{% url 'logout' %}" class="login-btn">
-            Log out <i class="fas fa-sign-out-alt"></i>
-        </a>
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="login-btn">Log out <i class="fas fa-sign-out-alt"></i></button>
+            </form>
+
+
+
     {% else %}
         <div class="auth-buttons">
             <a href="{% url 'login' %}" class="login-btn">

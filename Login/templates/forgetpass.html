@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block title %}Quên mật khẩu{% endblock %}
 
@@ -20,14 +21,16 @@
     <form method="POST" action="{% url 'forget_password' %}">
         {% csrf_token %}
         <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input" name="email" placeholder="Nhập email của bạn" required>
+            <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+            {{ form.email|add_class:"form-input" }}
+            {% if form.email.errors %}
+                <div class="error">{{ form.email.errors.as_text }}</div>
+            {% endif %}
         </div>
 
         <button type="submit" class="confirm-btn">Gửi liên kết</button>
     </form>
 </div>
-
 <style>
     * {
         margin: 0;
