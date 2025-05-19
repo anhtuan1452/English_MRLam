@@ -83,15 +83,24 @@ def test_edit_view(request, test_id):
             for q_index, question in enumerate(group_questions):
                 prefix = f'q{question.question_id}'
                 question_form = CustomQuestionForm(request.POST, instance=question, prefix=prefix)
+
                 if question_form.is_valid():
                     q = question_form.save(commit=False)
                     q.test = test
                     q.question_media = media_instance
                     q.save()
                 else:
+                    # ✅ Gán lại giá trị các đáp án để giữ hiển thị nếu form lỗi
+                    question_form.instance.answer = {
+                        'A': request.POST.get(f'{prefix}-answer_a', ''),
+                        'B': request.POST.get(f'{prefix}-answer_b', ''),
+                        'C': request.POST.get(f'{prefix}-answer_c', ''),
+                        'D': request.POST.get(f'{prefix}-answer_d', '')
+                    }
                     all_valid = False
                     valid_group = False
                     print(f"❌ Câu hỏi lỗi: {question_form.errors}")
+
                 question_forms.append(question_form)
 
             question_groups.append({
