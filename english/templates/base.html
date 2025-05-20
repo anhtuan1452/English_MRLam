@@ -43,8 +43,12 @@
         <div class="profile-dropdown-container" style="position: relative; margin-right: 16px;">
             <!-- Trigger button -->
             <a href="javascript:void(0)" class="profile-link" id="profileToggle" style="display: flex; align-items: center;">
-                <img class="user-avatar" src="{% static 'images/facebook-icon.png' %}" alt="User Avatar"
-                     style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                {% if user.profile.image %}
+                    <img src="{{ user.profile.image.url }}" alt="Avatar" class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                    {% else %}
+                    <img src="{% static 'images/avt.jpg' %}" alt="Avatar"
+                        class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                    {% endif %}
                 <p class="user-name" style="margin-right: 8px;">{{ user.username }}</p>
                 <i class="fas fa-chevron-down"></i>
             </a>

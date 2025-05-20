@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="success-wrapper">
-  <h2 class="success-title">Thanh toán thành công</h2>
+  <h2 class="success-title">THANH TOÁN THÀNH CÔNG</h2>
   <img src="{% static 'images/course.png' %}" alt="Khoá học" class="course-image" />
   <div class="btn-wrapper">
     <a href="/" class="btn-home">Quay lại trang chủ <i class="fas fa-arrow-circle-right"></i></a>
@@ -11,24 +11,29 @@
 </div>
 {% endblock %}
 
-{% block footer %}
-{% endblock %}
+
 
 {% block styles %}
 <style>
 .success-wrapper {
   text-align: center;
-  margin-top: 60px;
+  padding-top: 90px;
+  padding-bottom: 100px;
 }
 
 .success-title {
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem;
+  padding: 8px 0;
+  color: #5c6bc0;
 }
 
 .course-image {
-  width: 400px;
+  width: 600px;
   max-width: 90%;
   height: auto;
   margin-bottom: 30px;

@@ -31,6 +31,15 @@
         background-color: #000;
         border: none;
     }
+    .btn-save {
+        background-color: #198754;
+        color: #fff;
+        border: 1px solid #198754;
+    }
+    .btn-save:hover {
+        background-color: #157347;
+        border-color: #146c43;
+    }
     table {
         width: 100%;
         border-collapse: collapse;
@@ -43,11 +52,16 @@
     th {
         background-color: #f2f2f2;
     }
+    .error-message {
+        color: #d32f2f;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
 </style>
 
 <div class="container-fluid tab-section">
     <h2 class="custom-title">
-        <a href="{% url 'class_list' %}" class="text-decoration-none text-primary">Danh sách lớp học</a> > Lớp {{ class_instance.class_name }}
+        <a href="{% url 'class_list' %}" class="text-decoration-none text-primary">Danh sách lớp học</a>&nbsp;>&nbsp;Lớp {{ class_instance.class_name }}
     </h2>
 
     <ul class="nav nav-tabs mb-3">
@@ -63,52 +77,68 @@
     </ul>
 
     <!-- Form cập nhật mô tả lớp học -->
-    <form method="post" id="update-class-form">
+    <form method="post" id="update-class-form" class="mb-4">
         {% csrf_token %}
         <input type="hidden" name="action" value="update_class">
 
         <div class="form-group">
             <label class="form-label">Tên lớp học</label>
             {{ class_form.class_name }}
+            {% if class_form.class_name.errors %}
+                <div class="error-message">{{ class_form.class_name.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="form-group">
             <label>Tên khóa học</label>
             <input type="text" value="{{ class_instance.course }}" readonly class="form-control" />
+            {{ class_form.course.as_hidden }}
         </div>
 
         <div class="form-group">
             <label class="form-label">Ngày bắt đầu</label>
             {{ class_form.begin_time }}
+            {% if class_form.begin_time.errors %}
+                <div class="error-message">{{ class_form.begin_time.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="form-group">
             <label class="form-label">Ngày kết thúc</label>
             {{ class_form.end_time }}
+            {% if class_form.end_time.errors %}
+                <div class="error-message">{{ class_form.end_time.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="form-group">
             <label class="form-label">Trạng thái lớp học</label>
             {{ class_form.status }}
+            {% if class_form.status.errors %}
+                <div class="error-message">{{ class_form.status.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="form-group">
             <label class="form-label">Thời khóa biểu</label>
             {{ class_form.timetable }}
+            {% if class_form.timetable.errors %}
+                <div class="error-message">{{ class_form.timetable.errors }}</div>
+            {% endif %}
         </div>
 
-        <div class="text-end mt-4">
-            <button type="submit" class="btn btn-danger me-2">Lưu thay đổi</button>
-            <a href="{% url 'class_list' %}" class="btn btn-dark">Hủy</a>
-        </div>
-    </form>
+        <!-- Nút Lưu và Xóa để cùng hàng -->
+        <div class="d-flex justify-content-end align-items-center mt-4">
+            <!-- Nút Lưu -->
+            <button type="submit" class="btn btn-save me-2">Lưu</button>
 
-    <!-- Form xóa lớp học -->
-    <form method="post" id="delete-class-form" onsubmit="return confirm('Bạn có chắc muốn xóa lớp học này?');">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="delete_class">
-        <div class="text-end mt-2">
-            <button type="submit" class="btn btn-danger">Xóa lớp học</button>
+            <!-- Form Xóa lớp học, hiển thị inline-block -->
+            <form method="post" id="delete-class-form" class="d-inline-block"
+                  onsubmit="return confirm('Bạn có chắc muốn xóa lớp học này?');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_class">
+                <button type="submit" class="btn btn-danger">Xóa </button>
+            </form>
         </div>
     </form>
 
@@ -121,6 +151,9 @@
         {% csrf_token %}
         <input type="hidden" name="action" value="update_lesson_dates">
         {{ lesson_detail_formset.management_form }}
+        {% if lesson_detail_formset.non_form_errors %}
+            <div class="error-message">{{ lesson_detail_formset.non_form_errors }}</div>
+        {% endif %}
         <table>
             <thead>
                 <tr>
@@ -130,29 +163,45 @@
                 </tr>
             </thead>
             <tbody>
-                {% for form, lesson_detail in zipped_form_details %}
+                {% for form in lesson_detail_formset %}
                 <tr>
-                    <td>{{ lesson_detail.lesson.lesson_name }}</td>
-                    <td>{{ lesson_detail.lesson.session_number }}</td>
+                    <td>{{ form.instance.lesson.lesson_name }}</td>
+                    <td>{{ form.instance.lesson.session_number }}</td>
                     <td>
+                        <!-- Thêm hidden field lessondetail_id để xử lý -->
+                        <input type="hidden" name="form-{{ forloop.counter0 }}-lessondetail_id" value="{{ form.instance.lessondetail_id }}">
                         {{ form.date }}
                         {% if form.date.errors %}
-                            <div class="text-danger">{{ form.date.errors }}</div>
+                            <div class="error-message">{{ form.date.errors }}</div>
                         {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        {% if lesson_detail_formset.non_form_errors %}
-            <div class="text-danger">{{ lesson_detail_formset.non_form_errors }}</div>
-        {% endif %}
         <div class="text-end mt-4">
-            <button type="submit" class="btn btn-danger">Lưu ngày học</button>
+            <button type="submit" class="btn btn-save me-2">Lưu ngày học</button>
         </div>
     </form>
     {% else %}
     <p>Chưa có buổi học nào trong khóa học này.</p>
     {% endif %}
 </div>
+
+<script>
+    // Kiểm tra định dạng ngày trước khi gửi form (tùy chọn)
+    document.getElementById('update-lesson-dates-form').addEventListener('submit', function(event) {
+        let dateInputs = document.querySelectorAll('input[type="date"]');
+        let valid = true;
+        dateInputs.forEach(input => {
+            if (input.value && !/^\d{4}-\d{2}-\d{2}$/.test(input.value)) {
+                valid = false;
+                alert('Vui lòng nhập ngày theo định dạng YYYY-MM-DD');
+            }
+        });
+        if (!valid) {
+            event.preventDefault();
+        }
+    });
+</script>
 {% endblock %}
