@@ -229,7 +229,7 @@
   <div class="breadcrumb">
     <span class="breadcrumb-item">Nhà của tôi</span>
     <span class="breadcrumb-separator">/</span>
-    <span class="breadcrumb-item">Các khóa học của tôi</span>
+    <a href="{% url 'student_homework' class_id %}" class="breadcrumb-item">Danh sách bài tập</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-item active">Nộp bài tập về nhà Buổi {{ lesson.lesson_id }}</span>
   </div>

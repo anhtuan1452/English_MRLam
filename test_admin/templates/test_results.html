@@ -25,7 +25,7 @@
         font-weight: 700;
         color: #5c6bc0;
         border-bottom: 2px solid;
-        margin: 1.5rem 0 1rem;
+        margin: 0.5rem 0 1rem;
         padding: 8px 0;
     }
 /* Tab styling */
@@ -92,7 +92,6 @@
 /* Center align table header */
 .table thead th {
   text-align: center;
-  background-color: #e0f2fe;
 }
 /* Center align all table content */
 .table thead th,
@@ -109,13 +108,17 @@
 .table th:nth-child(2),
 .table td:nth-child(2) {
   width: 19%;  /* Họ và tên */
-  text-align: left;  /* Căn trái cho tên */
   padding-left: 1.5rem;
 }
 
 .table th:nth-child(3),
 .table td:nth-child(3) {
+
   width: 30%;  /* Bài kiểm tra */
+}
+.table td:nth-child(2) ,
+.table td:nth-child(3) {
+    text-align: left;
 }
 
 .table th:nth-child(4),
@@ -180,13 +183,6 @@
       color: white;
       font-weight: 500;
     }
-
-<!--    td .btn-danger {-->
-<!--      background-color: #dc3545;-->
-<!--      border: none;-->
-<!--      color: white;-->
-<!--      font-weight: 500;-->
-<!--    }-->
     td .btn-danger {
       background-color: #fee2e2;
       border: none;
@@ -195,7 +191,7 @@
     }
 </style>
 <div class="container">
-    <h2 class="custom-title">{{ page_title }}</h2>
+    <h2 class="custom-title mb-0">{{ page_title }}</h2>
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a href="{% url 'admin_test_list' %}" class="nav-link" role="tab">Bài kiểm tra</a>
@@ -204,12 +200,19 @@
             <a href="{% url 'results' %}" class="nav-link active" role="tab">Kết quả</a>
         </li>
     </ul>
-    <div class="input-group" style="max-width: 400px;">
-        <input type="text" class="form-control" placeholder="Nhập tên bài kiểm tra" aria-label="Nhập tên bài kiểm tra">
-        <button class="btn btn-outline-secondary" type="button">
-          <i data-lucide="search"></i> <!-- Thêm biểu tượng tìm kiếm -->
-        </button>
-    </div>
+    <form method="GET" style="position: relative; max-width: 500px; width: 100%; margin-bottom: 1rem;">
+      <input type="text" name="q" placeholder="Nhập tên bài kiểm tra"
+             value="{{ query }}"
+             style="width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border: 1px solid #e2e8f0; border-radius: 0.375rem;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round"
+           style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </form>
+
     
     <hr>
     

@@ -7,22 +7,25 @@ from django.db import transaction
 from django.db.models import Count, ProtectedError
 from django.forms import modelformset_factory
 from django.utils.timezone import now
-
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.conf import settings
 
 from ManageClass.forms import ClassUpdateForm, LessonDetailForm, ClassForm  # ,, LessonForm
+from ManageClass.forms import ClassUpdateForm, LessonDetailForm, ClassForm
 from english.models import (
     CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL_USER, SUBMISSION, EXERCISE,
-    LESSON, LESSON_DETAIL, ROLLCALL
+    LESSON, LESSON_DETAIL
 )
+from course_admin.forms import LessonDetailForm as CourseLessonDetailForm, LessonDetailFormSet as CourseLessonDetailFormSet
 
+# Create a formset for LessonDetailForm (for class_detail view, editing dates only)
 LessonDetailFormSet = modelformset_factory(
     LESSON_DETAIL,
-    form=LessonDetailForm,  # From ManageClass.forms
+    form=LessonDetailForm,
     fields=['date'],
-    extra=0  # No extra forms, only edit existing lesson details
+    extra=0
 )
-
 
 def class_list(request):
     query = request.GET.get("q")
@@ -130,7 +133,6 @@ def class_detail(request, class_id):
                 messages.success(request, "Cập nhật lớp học thành công!")
                 return redirect('class_detail', class_id=class_id)
             else:
-                print(f"Class form errors: {class_form.errors}")  # Debug
                 messages.error(request, "Có lỗi khi cập nhật lớp học.")
 
         elif action == 'update_lesson_dates':
@@ -179,18 +181,71 @@ def class_detail(request, class_id):
 
 def class_exercise(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
-    submissions = SUBMISSION.objects.filter(
-        userclass__classes=class_instance
-    ).select_related('userclass__user', 'exercise__lessondetail__lesson')
+    students = USER_CLASS.objects.filter(classes=class_instance).select_related('user')
+    lesson_details = LESSON_DETAIL.objects.filter(classes=class_instance).select_related('lesson').order_by(
+        'lesson__session_number')
 
-    if not submissions:
-        submissions = None
+    # Tổng số học viên trong lớp
+    total_students = students.count()
+
+    lesson_data = []
+    for lesson_detail in lesson_details:
+        exercise = EXERCISE.objects.filter(lessondetail=lesson_detail).first()
+        student_submissions = []
+
+        # Thống kê cho buổi học này
+        submission_stats = {
+            'submitted_count': 0,  # Số bài đã nộp
+            'not_submitted_count': total_students,  # Số bài chưa nộp (mặc định bằng tổng số học viên)
+            'checked_count': 0,  # Số bài đã chấm
+            'unchecked_count': 0,  # Số bài chưa chấm
+        }
+
+        if exercise:
+            # Lấy tất cả bài nộp cho bài tập này
+            submissions = SUBMISSION.objects.filter(exercise=exercise)
+
+            # Số bài đã nộp
+            submitted_count = submissions.count()
+            submission_stats['submitted_count'] = submitted_count
+
+            # Số bài chưa nộp
+            submission_stats['not_submitted_count'] = total_students - submitted_count
+
+            # Số bài đã chấm (status='done')
+            checked_count = submissions.filter(status='Done').count()
+            submission_stats['checked_count'] = checked_count
+
+            # Số bài chưa chấm (status='check')
+            unchecked_count = submissions.filter(status='Checking').count() + submissions.filter(status='Check').count()
+            submission_stats['unchecked_count'] = unchecked_count
+
+        for student in students:
+            submission = None
+            if exercise:
+                submission = SUBMISSION.objects.filter(
+                    userclass=student,
+                    exercise=exercise
+                ).select_related('userclass__user').first()
+
+            student_submissions.append({
+                'student': student,
+                'submission': submission,
+            })
+
+        lesson_data.append({
+            'lesson_detail': lesson_detail,
+            'exercise': exercise,
+            'student_submissions': student_submissions,
+            'submission_stats': submission_stats,  # Thêm thống kê
+        })
 
     return render(request, 'class_exercise.html', {
         'class_instance': class_instance,
         'class_id': class_id,
-        'submissions': submissions
+        'lesson_data': lesson_data,
     })
+
 
 
 # views.py
@@ -427,15 +482,69 @@ from django.views.decorators.csrf import csrf_exempt  # hoặc sử dụng @csrf
 #     # Nếu không phải AJAX hoặc thiếu tham số
 #     return JsonResponse({'error': 'Yêu cầu không hợp lệ.'}, status=400)
 
-def exercise_detail_view(request, class_id, exercise_id):
+
+def exercise_detail_view(request, class_id, submission_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
-    exercise = get_object_or_404(EXERCISE, pk=exercise_id)
-    submissions = SUBMISSION.objects.filter(
-        exercise=exercise,
-        userclass__classes=class_instance
-    ).select_related('userclass__user')
+    submission = get_object_or_404(SUBMISSION, pk=submission_id, userclass__classes=class_instance)
+
+    if request.method == 'POST':
+        review = request.POST.get('review')
+        action = request.POST.get('action')
+
+        if not review:
+            messages.error(request, "Vui lòng cung cấp nhận xét.")
+            return redirect('exercise_detail', class_id=class_id, submission_id=submission_id)
+
+        submission.review = review
+        if action == 'redo':
+            submission.status = 'Check'
+            subject = f'Yêu cầu làm lại bài tập: {submission.exercise.lessondetail.lesson.lesson_name}'
+            message = f"""
+Kính gửi {submission.userclass.user.get_full_name},
+
+Bài tập "{submission.exercise.lessondetail.lesson.lesson_name}" của bạn cần được làm lại. Dưới đây là nhận xét từ giáo viên:
+
+{review}
+
+Vui lòng nộp lại bài tập qua hệ thống trước hạn chót.
+
+Trân trọng,
+Hệ thống quản lý lớp học
+"""
+            messages.success(request, "Yêu cầu làm lại bài tập đã được gửi tới học viên!")
+        else:  # action == 'done'
+            submission.status = 'Done'
+            subject = f'Nhận xét bài tập: {submission.exercise.lessondetail.lesson.lesson_name}'
+            message = f"""
+Kính gửi {submission.userclass.user.get_full_name},
+
+Bài tập "{submission.exercise.lessondetail.lesson.lesson_name}" của bạn đã được chấm. Dưới đây là nhận xét từ giáo viên:
+
+{review}
+
+Trân trọng,
+Hệ thống quản lý lớp học
+"""
+            messages.success(request, "Nhận xét bài tập đã được gửi tới học viên!")
+
+        submission.save()
+
+        try:
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[submission.userclass.user.email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            messages.error(request, f"Lỗi khi gửi email: {str(e)}")
+            return redirect('exercise_detail', class_id=class_id, submission_id=submission_id)
+
+        return redirect('class_exercise', class_id=class_id)
+
     return render(request, 'exercise_detail.html', {
         'class_instance': class_instance,
-        'exercise': exercise,
-        'submissions': submissions,
+        'submission': submission,
     })
+
