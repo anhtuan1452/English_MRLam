@@ -134,42 +134,42 @@ def test_edit_view(request, test_id):
 
 from django.forms import formset_factory
 
-def test_add_view(request):
-    QuestionFormSet = formset_factory(CustomQuestionForm, extra=0)
-    MediaFormSet = formset_factory(QuestionMediaForm, extra=0)
-
-    if request.method == 'POST':
-        question_formset = QuestionFormSet(request.POST)
-        media_formset = MediaFormSet(request.POST, request.FILES)
-        test_form = TestForm(request.POST)
-
-        if test_form.is_valid() and question_formset.is_valid() and media_formset.is_valid():
-            test = test_form.save()
-
-            for q_form, m_form in zip(question_formset, media_formset):
-                media = m_form.save(commit=False)
-                if m_form.cleaned_data.get('audio_file') or m_form.cleaned_data.get('paragraph'):
-                    media.save()
-                else:
-                    media = None
-
-                question = q_form.save(commit=False)
-                question.test = test
-                question.question_media = media
-                question.save()
-
-            return redirect('admin_test_list')
-
-    else:
-        test_form = TestForm()
-        question_formset = QuestionFormSet()
-        media_formset = MediaFormSet()
-
-    return render(request, 'test_add.html', {
-        'test_form': test_form,
-        'question_formset': zip(question_formset, media_formset),
-        'question_total': len(question_formset)
-    })
+# def test_add_view(request):
+#     QuestionFormSet = formset_factory(CustomQuestionForm, extra=0)
+#     MediaFormSet = formset_factory(QuestionMediaForm, extra=0)
+#
+#     if request.method == 'POST':
+#         question_formset = QuestionFormSet(request.POST)
+#         media_formset = MediaFormSet(request.POST, request.FILES)
+#         test_form = TestForm(request.POST)
+#
+#         if test_form.is_valid() and question_formset.is_valid() and media_formset.is_valid():
+#             test = test_form.save()
+#
+#             for q_form, m_form in zip(question_formset, media_formset):
+#                 media = m_form.save(commit=False)
+#                 if m_form.cleaned_data.get('audio_file') or m_form.cleaned_data.get('paragraph'):
+#                     media.save()
+#                 else:
+#                     media = None
+#
+#                 question = q_form.save(commit=False)
+#                 question.test = test
+#                 question.question_media = media
+#                 question.save()
+#
+#             return redirect('admin_test_list')
+#
+#     else:
+#         test_form = TestForm()
+#         question_formset = QuestionFormSet()
+#         media_formset = MediaFormSet()
+#
+#     return render(request, 'test_add.html', {
+#         'test_form': test_form,
+#         'question_formset': zip(question_formset, media_formset),
+#         'question_total': len(question_formset)
+#     })
 
 def list_result_view(request):
     query = request.GET.get('q', '').strip()
@@ -207,3 +207,85 @@ def result_delete(request, result_id):
         result.delete()
         # return redirect('results')
     return redirect('results')
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from english.models import TEST, QUESTION, QUESTION_MEDIA
+from .forms import TestForm
+
+def test_add_view(request):
+    if request.method == 'POST':
+        test_form = TestForm(request.POST)
+        if test_form.is_valid():
+            test = test_form.save()
+
+            # Tìm tất cả nhóm media trong POST
+            media_indexes = set()
+            for key in request.POST:
+                if key.startswith('media-') and '-q-' not in key:
+                    try:
+                        media_indexes.add(int(key.split('-')[1]))
+                    except:
+                        pass
+
+            media_has_question = True
+
+            for i in sorted(media_indexes):
+                # Lấy dữ liệu media
+                audio = request.FILES.get(f'media-{i}-audio_file')
+                paragraph = request.POST.get(f'media-{i}-paragraph')
+
+                if not audio and not paragraph:
+                    media = None
+                else:
+                    media = QUESTION_MEDIA.objects.create(audio_file=audio, paragraph=paragraph)
+
+                # Lấy các câu hỏi cho nhóm media i
+                question_indexes = []
+                for key in request.POST:
+                    if key.startswith(f'media-{i}-q-') and key.endswith('-question_text'):
+                        try:
+                            q_index = int(key.split('-')[3])
+                            question_indexes.append(q_index)
+                        except:
+                            pass
+
+                if not question_indexes:
+                    media_has_question = False
+                    messages.error(request, f'Nhóm Media {i+1} không có câu hỏi nào.')
+                    break
+
+                for j in sorted(question_indexes):
+                    question_text = request.POST.get(f'media-{i}-q-{j}-question_text')
+                    correct_answer = request.POST.get(f'media-{i}-q-{j}-correct_answer')
+                    answer = {
+                        'A': request.POST.get(f'media-{i}-q-{j}-answer_a'),
+                        'B': request.POST.get(f'media-{i}-q-{j}-answer_b'),
+                        'C': request.POST.get(f'media-{i}-q-{j}-answer_c'),
+                        'D': request.POST.get(f'media-{i}-q-{j}-answer_d'),
+                    }
+                    QUESTION.objects.create(
+                        test=test,
+                        question_text=question_text,
+                        correct_answer=correct_answer,
+                        answer=answer,
+                        question_media=media
+                    )
+
+            if not media_has_question:
+                test.delete()  # rollback
+                return render(request, 'test_add.html', {'test_form': test_form})
+
+            return redirect('admin_test_list')
+
+        else:
+            messages.error(request, 'Form bài kiểm tra không hợp lệ.')
+
+    else:
+        test_form = TestForm()
+
+    return render(request, 'test_add.html', {
+        'test_form': test_form
+    })
