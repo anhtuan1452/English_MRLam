@@ -70,10 +70,3 @@ def search_materials(request):
     }
     return render(request, 'search_materials.html', context)
 
-class CustomLogoutView(LogoutView):
-    next_page = reverse_lazy('login')
-
-    def get(self, request, *args, **kwargs):
-        logout(request)  # Thực hiện đăng xuất thủ công
-        messages.success(request, 'Đăng xuất thành công!')
-        return HttpResponseRedirect(self.next_page)  # Chuyển hướng đến trang đăng nhập

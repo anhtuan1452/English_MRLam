@@ -248,57 +248,62 @@ body {
                         <label for="first_name" class="form-label">Họ</label>
                         <input type="text" id="first_name" name="first_name" class="form-input" value="{{ user.first_name }}" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="last_name" class="form-label">Tên</label>
                         <input type="text" id="last_name" name="last_name" class="form-input" value="{{ user.last_name }}" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="dob" class="form-label">Ngày sinh</label>
-                        <input type="date" id="dob" name="dob" class="form-input" value="{{ user.User_Profile.dob|date:'Y-m-d' }}" required>
+                        <input type="date" id="dob" name="dob" class="form-input" value="{{ user_profile.dob|date:'Y-m-d' }}" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="sex" class="form-label">Giới tính</label>
                         <div class="select-wrapper">
                             <select id="sex" name="sex" class="form-select" required>
-                                <option value="Nam" {% if user.sex == 'Nam' %}selected{% endif %}>Nam</option>
-                                <option value="Nữ" {% if user.sex == 'Nữ' %}selected{% endif %}>Nữ</option>
-                                <option value="Khác" {% if user.sex == 'Khác' %}selected{% endif %}>Khác</option>
+                                <option value="M" {% if user_profile.sex == 'M' %}selected{% endif %}>Nam</option>
+                                <option value="F" {% if user_profile.sex == 'F' %}selected{% endif %}>Nữ</option>
+                                <option value="O" {% if user_profile.sex == 'O' %}selected{% endif %}>Khác</option>
                             </select>
                             <div class="select-arrow"></div>
                         </div>
                     </div>
-                    
+
+                    <div class="form-group">
+                        <label for="description" class="form-label">Mô tả</label>
+                        <textarea id="description" name="description" class="form-input" rows="3">{{ user_profile.description }}</textarea>
+                    </div>
+
                     <div class="form-group">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" id="email" name="email" class="form-input" value="{{ user.email }}" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="username" class="form-label">Tên tài khoản</label>
                         <input type="text" id="username" name="username" class="form-input" value="{{ user.username }}" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="password" class="form-label">Mật khẩu</label>
                         <input type="password" id="password" name="password" class="form-input" placeholder="Nhập mật khẩu mới">
                         <small class="form-hint">Để trống nếu không muốn thay đổi mật khẩu</small>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Nhập lại mật khẩu mới">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="role" class="form-label">Vai trò</label>
                         <div class="select-wrapper">
                             <select id="role" name="role" class="form-select" required>
-                                <option value="admin" {% if user.account.role == 'admin' %}selected{% endif %}>Admin</option>
-                                <option value="student" {% if user.account.role == 'student' %}selected{% endif %}>Học viên</option>
-                                <option value="teacher" {% if user.account.role == 'teacher' %}selected{% endif %}>Giáo viên</option>
+                                <option value="admin" {% if user.is_superuser %}selected{% endif %}>Admin</option>
+                                <option value="teacher" {% if user.is_staff and not user.is_superuser %}selected{% endif %}>Giáo viên</option>
+                                <option value="student" {% if not user.is_staff and not user.is_superuser %}selected{% endif %}>Học viên</option>
                             </select>
                             <div class="select-arrow"></div>
                         </div>
@@ -308,18 +313,15 @@ body {
         </div>
 
         <div class="action-buttons">
-            <button type="submit" class="btn btn-success" href="{% url 'user_list' %}">Lưu</button>
+            <button type="submit" class="btn btn-success">Lưu</button>
         </div>
     </form>
 </div>
 
 <script>
-    // Form validation
     document.getElementById('userForm').addEventListener('submit', function(e) {
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
-        
-        // Chỉ kiểm tra nếu người dùng đã nhập mật khẩu mới
         if (password || confirmPassword) {
             if (password !== confirmPassword) {
                 e.preventDefault();
@@ -329,4 +331,3 @@ body {
     });
 </script>
 {% endblock %}
-

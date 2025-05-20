@@ -31,19 +31,15 @@ class CustomLoginView(LoginView):
         return super().form_valid(form)
 def register_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        email = request.POST.get('email')  # Lấy email từ form
-
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            if User.objects.filter(email=email).exists():
+            if User.objects.filter(email=form.cleaned_data['email']).exists():
                 messages.error(request, 'Email đã được sử dụng.')
                 return render(request, 'resgister_content.html', {'form': form})
 
             try:
                 with transaction.atomic():
-                    user = form.save(commit=False)
-                    user.email = email
-                    user.save()
+                    user = form.save()  # Form tùy chỉnh đã xử lý email, first_name, last_name
                     USER_PROFILE.objects.create(
                         userprofile=user,
                         dob=None,
@@ -59,7 +55,7 @@ def register_view(request):
             for error in form.errors.values():
                 messages.error(request, error.as_text())
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'resgister_content.html', {'form': form})
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, PasswordResetCompleteView
 
@@ -107,6 +103,28 @@ from django.urls import reverse_lazy
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 
+# forms.py
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True, label="Email")
+    first_name = forms.CharField(max_length=30, required=True, label="Tên")
+    last_name = forms.CharField(max_length=30, required=True, label="Họ")
+
+    class Meta:
+        model = User
+        fields = ("username", "first_name", "last_name", "email", "password1", "password2")
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"]
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
+        if commit:
+            user.save()
+        return user
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy('login')
 
