@@ -10,20 +10,19 @@ from django.utils.timezone import now
 
 from django.contrib.auth.models import User
 
-from ManageClass.forms import ClassUpdateForm, LessonDetailForm, ClassForm #,, LessonForm
+from ManageClass.forms import ClassUpdateForm, LessonDetailForm, ClassForm  # ,, LessonForm
 from english.models import (
     CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL_USER, SUBMISSION, EXERCISE,
-    LESSON, LESSON_DETAIL
+    LESSON, LESSON_DETAIL, ROLLCALL
 )
-from course_admin.forms import LessonDetailForm as CourseLessonDetailForm, LessonDetailFormSet as CourseLessonDetailFormSet
 
-# Create a formset for LessonDetailForm (for class_detail view, editing dates only)
 LessonDetailFormSet = modelformset_factory(
     LESSON_DETAIL,
     form=LessonDetailForm,  # From ManageClass.forms
     fields=['date'],
     extra=0  # No extra forms, only edit existing lesson details
 )
+
 
 def class_list(request):
     query = request.GET.get("q")
@@ -39,6 +38,53 @@ def class_list(request):
         'now': now().date(),
     })
 
+
+def add_class(request):
+    if request.method == 'POST':
+        form = ClassForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                # Lưu CLASS
+                class_instance = form.save()
+                # Tự động tạo LESSON_DETAIL cho tất cả LESSON của COURSE
+                lessons = LESSON.objects.filter(course=class_instance.course).order_by('session_number')
+                lesson_details = [
+                    LESSON_DETAIL(lesson=lesson, classes=class_instance, date=None)
+                    for lesson in lessons
+                ]
+                LESSON_DETAIL.objects.bulk_create(lesson_details)
+                messages.success(request, "Thêm lớp học thành công!")
+                return redirect('class_list')
+        else:
+            messages.error(request, "Có lỗi khi thêm lớp học.")
+    else:
+        form = ClassForm()
+    return render(request, 'add_class.html', {'form': form})
+
+
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_http_methods
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import Count, ProtectedError
+from django.forms import modelformset_factory
+from django.utils.timezone import now
+from django.contrib.auth.models import User
+from ManageClass.forms import ClassUpdateForm, LessonDetailForm, ClassForm
+from english.models import (
+    CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL_USER,
+    SUBMISSION, EXERCISE, LESSON, LESSON_DETAIL, ROLLCALL
+)
+
+LessonDetailFormSet = modelformset_factory(
+    LESSON_DETAIL,
+    form=LessonDetailForm,
+    fields=['date'],
+    extra=0
+)
+
+
 def class_detail(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
 
@@ -49,17 +95,21 @@ def class_detail(request, class_id):
     lesson_details = LESSON_DETAIL.objects.filter(classes=class_instance).select_related('lesson')
     lesson_detail_dict = {ld.lesson_id: ld for ld in lesson_details}
 
-    # Tự động tạo LESSON_DETAIL cho các LESSON chưa có
-    for lesson in lessons:
-        if lesson.lesson_id not in lesson_detail_dict:
-            LESSON_DETAIL.objects.create(
-                lesson=lesson,
-                classes=class_instance,
-                date=None  # Ngày học để trống, người dùng sẽ nhập
-            )
+    # Tự động tạo và lưu LESSON_DETAIL cho các LESSON chưa có
+    with transaction.atomic():
+        for lesson in lessons:
+            if lesson.lesson_id not in lesson_detail_dict:
+                lesson_detail = LESSON_DETAIL(
+                    lesson=lesson,
+                    classes=class_instance,
+                    date=None
+                )
+                lesson_detail.save()
+                lesson_detail_dict[lesson.lesson_id] = lesson_detail
 
     # Lấy lại lesson_details sau khi tạo mới
-    lesson_details = LESSON_DETAIL.objects.filter(classes=class_instance).select_related('lesson').order_by('lesson__session_number')
+    lesson_details = LESSON_DETAIL.objects.filter(classes=class_instance).select_related('lesson').order_by(
+        'lesson__session_number')
 
     # Khởi tạo các form
     class_form = ClassUpdateForm(instance=class_instance)
@@ -70,6 +120,8 @@ def class_detail(request, class_id):
 
     if request.method == 'POST':
         action = request.POST.get('action')
+        print(f"POST action: {action}")  # Debug
+        print(f"POST data: {request.POST}")  # Debug
 
         if action == 'update_class':
             class_form = ClassUpdateForm(request.POST, instance=class_instance)
@@ -78,16 +130,33 @@ def class_detail(request, class_id):
                 messages.success(request, "Cập nhật lớp học thành công!")
                 return redirect('class_detail', class_id=class_id)
             else:
+                print(f"Class form errors: {class_form.errors}")  # Debug
                 messages.error(request, "Có lỗi khi cập nhật lớp học.")
 
         elif action == 'update_lesson_dates':
             lesson_detail_formset = LessonDetailFormSet(request.POST, queryset=lesson_details)
             if lesson_detail_formset.is_valid():
-                lesson_detail_formset.save()
-                messages.success(request, "Cập nhật ngày học thành công!")
-                return redirect('class_detail', class_id=class_id)
+                try:
+                    with transaction.atomic():
+                        instances = lesson_detail_formset.save(commit=False)
+                        for instance in instances:
+                            # Không cần gán lại instance.classes = class_instance
+                            # vì instance đã có liên kết với class_instance
+                            instance.save()
+
+                        # Lưu các mối quan hệ many-to-many (nếu có)
+                        lesson_detail_formset.save_m2m()
+
+                        messages.success(request, "Cập nhật ngày học thành công.")
+                        return redirect('class_detail', class_id=class_instance.class_id)
+                except Exception as e:
+                    print(f"Error saving formset: {str(e)}")  # Debug
+                    messages.error(request, f"Có lỗi khi lưu ngày học: {str(e)}")
             else:
-                messages.error(request, "Có lỗi khi cập nhật ngày học.")
+                print(f"Formset errors: {lesson_detail_formset.errors}")  # Debug
+                for i, form in enumerate(lesson_detail_formset):
+                    print(f"Form {i} errors: {form.errors}")  # Debug chi tiết từng form
+                messages.error(request, "Có lỗi trong việc cập nhật ngày học. Vui lòng kiểm tra dữ liệu.")
 
         elif action == 'delete_class':
             try:
@@ -106,6 +175,8 @@ def class_detail(request, class_id):
         'zipped_form_details': zipped_form_details,
     })
 
+
+
 def class_exercise(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
     submissions = SUBMISSION.objects.filter(
@@ -121,25 +192,101 @@ def class_exercise(request, class_id):
         'submissions': submissions
     })
 
+
+# views.py
+
+
+@require_http_methods(["GET", "POST"])
 def class_rollcall(request, class_id):
+    """
+    Hiển thị và xử lý điểm danh cho từng buổi (LESSON_DETAIL) của lớp.
+    - GET: render template với danh sách buổi và form status hiện tại.
+    - POST: nhận lesson_detail_id + status của từng USER_CLASS để lưu/cập nhật vào ROLLCALL và ROLLCALL_USER.
+    """
     class_instance = get_object_or_404(CLASS, pk=class_id)
+
+    # Lấy danh sách tất cả học viên (USER_CLASS) của lớp này
+    user_classes = USER_CLASS.objects.filter(classes=class_instance).select_related('user')
+
+    # Lấy danh sách LESSON_DETAIL chỉ của lớp này (classes=class_instance)
     lesson_details = LESSON_DETAIL.objects.filter(
-        lesson__course=class_instance.course
-    ).select_related('lesson')
+        classes=class_instance
+    ).select_related('lesson').order_by('lesson__session_number')
 
+    # Xử lý POST: người dùng submit form "Lưu điểm danh" cho một buổi cụ thể
+    if request.method == "POST":
+        lesson_detail_id = request.POST.get('lesson_detail_id')
+        if not lesson_detail_id:
+            messages.error(request, "Không xác định được buổi học để lưu điểm danh.")
+            return redirect('class_rollcall', class_id=class_id)
+
+        # Lấy buổi học tương ứng
+        lesson_detail = get_object_or_404(
+            LESSON_DETAIL,
+            pk=lesson_detail_id,
+            classes=class_instance
+        )
+
+        # Tạo hoặc lấy ROLLCALL gắn với buổi này
+        rollcall, _ = ROLLCALL.objects.get_or_create(lessondetail=lesson_detail)
+
+        total_changes = 0
+        # Duyệt qua từng USER_CLASS trong lớp, đọc status từ form
+        for uc in user_classes:
+            # Khóa chính của USER_CLASS là uc.userclass_id
+            uc_id = uc.userclass_id
+            # Tên field trong form: "status_<lesson_detail_id>_<userclass_id>"
+            field_name = f"status_{lesson_detail_id}_{uc_id}"
+            status_value = request.POST.get(field_name)
+            # Nếu không chọn (empty) thì bỏ qua
+            if status_value not in ['present', 'absent']:
+                continue
+
+            # Tạo mới hoặc cập nhật ROLLCALL_USER
+            ru, created = ROLLCALL_USER.objects.get_or_create(
+                rollcall=rollcall,
+                userclass=uc,
+                defaults={'status': status_value}
+            )
+            if created:
+                total_changes += 1
+            else:
+                # Nếu đã tồn tại nhưng status khác, cập nhật
+                if ru.status != status_value:
+                    ru.status = status_value
+                    ru.save()
+                    total_changes += 1
+
+        messages.success(
+            request,
+            f"Đã lưu điểm danh buổi “{lesson_detail.lesson.lesson_name}” "
+            f"(Buổi #{lesson_detail.lesson.session_number}). Tổng thay đổi: {total_changes}"
+        )
+        return redirect('class_rollcall', class_id=class_id)
+
+    # Nếu GET: chuẩn bị dữ liệu cho template
     rollcall_data = []
-    for lesson_detail in lesson_details:
-        rollcall_users = []
-        rollcall = getattr(lesson_detail, 'rollcall', None)
-        if rollcall:
-            rollcall_users = ROLLCALL_USER.objects.filter(
-                rollcall=rollcall
-            ).select_related('userclass__user')
-
+    for ld in lesson_details:
+        # Lấy ROLLCALL (nếu đã có) cho buổi này
+        rollcall = getattr(ld, 'rollcall', None)
+        users_data = []
+        for uc in user_classes:
+            uc_id = uc.userclass_id
+            if rollcall:
+                ru = ROLLCALL_USER.objects.filter(
+                    rollcall=rollcall,
+                    userclass=uc
+                ).first()
+                status = ru.status if ru else ''
+            else:
+                status = ''
+            users_data.append({
+                'userclass': uc,
+                'status': status,
+            })
         rollcall_data.append({
-            'lesson_detail': lesson_detail,
-            'rollcall_users': rollcall_users,
-            'has_rollcall': rollcall is not None,
+            'lesson_detail': ld,
+            'users_data': users_data,
         })
 
     return render(request, 'class_rollcall.html', {
@@ -164,6 +311,7 @@ def add_student_to_class(request, class_id):
         'users': users_not_in_class
     })
 
+
 # Placeholder ClassForm (needs proper implementation)
 
 
@@ -171,42 +319,113 @@ def add_class(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Thêm lớp học thành công!")
-            return redirect('class_list')
+            with transaction.atomic():
+                # Lưu CLASS
+                class_instance = form.save()
+                # Tự động tạo LESSON_DETAIL cho tất cả LESSON của COURSE
+                lessons = LESSON.objects.filter(course=class_instance.course).order_by('session_number')
+                lesson_details = [
+                    LESSON_DETAIL(lesson=lesson, classes=class_instance, date=None)
+                    for lesson in lessons
+                ]
+                LESSON_DETAIL.objects.bulk_create(lesson_details)
+                messages.success(request, "Thêm lớp học thành công!")
+                return redirect('class_list')
+        else:
+            messages.error(request, "Có lỗi khi thêm lớp học.")
     else:
         form = ClassForm()
     return render(request, 'add_class.html', {'form': form})
 
-def update_rollcall(request):
-    if request.method == 'POST':
-        rollcall_data = request.POST.get('rollcall_data')
-        if rollcall_data:
-            try:
-                rollcall_data = json.loads(rollcall_data)
-                for user_id, data in rollcall_data.items():
-                    lesson_detail_id = data.get('lesson_detail_id')
-                    status = data.get('status')
-                    if not lesson_detail_id or not str(lesson_detail_id).isdigit():
-                        continue
-                    try:
-                        lesson_detail = LESSON_DETAIL.objects.get(pk=lesson_detail_id)
-                    except LESSON_DETAIL.DoesNotExist:
-                        continue
-                    try:
-                        user = ROLLCALL_USER.objects.get(
-                            userclass__user__id=user_id,
-                            rollcall__lessondetail=lesson_detail
-                        )
-                        user.status = status
-                        user.save()
-                    except ROLLCALL_USER.DoesNotExist:
-                        continue
-                return JsonResponse({'message': 'Cập nhật trạng thái thành công!'})
-            except Exception as e:
-                return JsonResponse({'message': f'Lỗi xử lý dữ liệu: {str(e)}'}, status=400)
-        return JsonResponse({'message': 'Dữ liệu gửi lên không hợp lệ'}, status=400)
-    return JsonResponse({'message': 'Chỉ chấp nhận phương thức POST'}, status=405)
+
+# views.py (tiếp tục bên dưới hoặc ở đoạn thích hợp)
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt  # hoặc sử dụng @csrf_protect trên toàn project
+
+# @require_http_methods(["POST"])
+# @csrf_exempt  # nếu bạn đã cấu hình CSRF token trong template, bạn có thể bỏ dòng này
+# def update_rollcall(request):
+#     # Kiểm tra xem có phải AJAX request không
+#     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+#         # --- TRƯỜNG HỢP 1: Tạo mới điểm danh ---
+#         if request.POST.get('create_rollcall'):
+#             lesson_detail_id = request.POST.get('lesson_detail_id')
+#             if not lesson_detail_id:
+#                 return JsonResponse({'error': 'Missing lesson_detail_id'}, status=400)
+#
+#             lesson_detail = get_object_or_404(LESSON_DETAIL, pk=lesson_detail_id)
+#             # Tạo hoặc lấy ROLLCALL tương ứng
+#             rollcall, created = ROLLCALL.objects.get_or_create(lessondetail=lesson_detail)
+#
+#             # Lấy tất cả USER_CLASS của lớp đó
+#             user_classes = USER_CLASS.objects.filter(classes=lesson_detail.classes)
+#
+#             new_rollcall_users = []
+#             for uc in user_classes:
+#                 # Nếu chưa có ROLLCALL_USER cho cặp (rollcall, userclass), tạo mới
+#                 exist = ROLLCALL_USER.objects.filter(rollcall=rollcall, userclass=uc).exists()
+#                 if not exist:
+#                     new_rollcall_users.append(
+#                         ROLLCALL_USER(rollcall=rollcall, userclass=uc, status='absent')
+#                     )
+#
+#             if new_rollcall_users:
+#                 ROLLCALL_USER.objects.bulk_create(new_rollcall_users)
+#
+#             return JsonResponse({'message': 'Tạo điểm danh thành công.'})
+#
+#         # --- TRƯỜNG HỢP 2: Cập nhật điểm danh ---
+#         elif request.POST.get('rollcall_data'):
+#             try:
+#                 data = json.loads(request.POST.get('rollcall_data'))
+#             except json.JSONDecodeError:
+#                 return JsonResponse({'error': 'Dữ liệu rollcall_data không hợp lệ.'}, status=400)
+#
+#             # Giả định tất cả các entry đều có chung lesson_detail_id
+#             # Lấy lesson_detail_id từ phần tử đầu
+#             first_item = next(iter(data.values()), None)
+#             if not first_item or 'lesson_detail_id' not in first_item:
+#                 return JsonResponse({'error': 'Không tìm thấy lesson_detail_id trong dữ liệu.'}, status=400)
+#
+#             lesson_detail_id = first_item['lesson_detail_id']
+#             lesson_detail = get_object_or_404(LESSON_DETAIL, pk=lesson_detail_id)
+#
+#             # Lấy ROLLCALL hiện tại (bắt buộc đã tồn tại, vì đã tạo lúc create_rollcall)
+#             try:
+#                 rollcall = ROLLCALL.objects.get(lessondetail=lesson_detail)
+#             except ROLLCALL.DoesNotExist:
+#                 return JsonResponse({'error': 'Rollcall chưa được tạo trước đó.'}, status=400)
+#
+#             updated_instances = []
+#             # Với mỗi userclass_id, cập nhật hoặc tạo mới ROLLCALL_USER
+#             for uc_id_str, item in data.items():
+#                 try:
+#                     uc_id = int(uc_id_str)
+#                     status = item.get('status')
+#                 except (ValueError, KeyError):
+#                     continue
+#
+#                 uc = get_object_or_404(USER_CLASS, pk=uc_id)
+#                 # get_or_create: nếu đã có, get ra instance; nếu chưa, tạo mới với status được truyền
+#                 ru, created = ROLLCALL_USER.objects.get_or_create(
+#                     rollcall=rollcall,
+#                     userclass=uc,
+#                     defaults={'status': status}
+#                 )
+#                 if not created:
+#                     # Nếu tồn tại nhưng status khác, update
+#                     if ru.status != status:
+#                         ru.status = status
+#                         updated_instances.append(ru)
+#
+#             # Bulk update cho những bản ghi cũ có thay đổi status
+#             if updated_instances:
+#                 ROLLCALL_USER.objects.bulk_update(updated_instances, ['status'])
+#
+#             return JsonResponse({'message': 'Cập nhật điểm danh thành công.'})
+#
+#     # Nếu không phải AJAX hoặc thiếu tham số
+#     return JsonResponse({'error': 'Yêu cầu không hợp lệ.'}, status=400)
 
 def exercise_detail_view(request, class_id, exercise_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
@@ -220,4 +439,3 @@ def exercise_detail_view(request, class_id, exercise_id):
         'exercise': exercise,
         'submissions': submissions,
     })
-
