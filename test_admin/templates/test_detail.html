@@ -153,10 +153,12 @@ input[type="radio"] {
   </ul>
 
   <div class="button-group">
-    <a href="{% url 'test_edit' test_id=test.test_id %}" class="btn btn-warning">Sửa</a>
+    <a href="{% url 'test_edit' test_id=test.test_id %}" class="btn btn-warning"
+       style="color: white; font-weight: 500;">Sửa</a>
     <form method="post" action="{% url 'test_delete' test.test_id %}" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài kiểm tra này?');" style="display:inline;">
       {% csrf_token %}
-      <button type="submit" class="btn btn-danger">Xóa</button>
+      <button type="submit" class="btn btn-danger"
+      style="color: white; font-weight: 500;">Xóa</button>
     </form>
   </div>
 

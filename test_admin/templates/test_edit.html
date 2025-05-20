@@ -145,10 +145,13 @@
 
     <!-- Action buttons -->
     <div class="d-flex justify-content-between mt-4">
-      <a href="{% url 'admin_test_details' test.test_id %}" class="btn btn-secondary">Quay lại</a>
+      <a href="{% url 'admin_test_details' test.test_id %}" class="btn btn-secondary"
+      style="color: white; font-weight: 500;">Quay lại</a>
       <div>
-        <a href="{% url 'admin_test_list' %}" class="btn btn-warning me-2">Hủy</a>
-        <button type="submit" class="btn btn-success">Lưu</button>
+        <a href="{% url 'admin_test_list' %}" class="btn btn-warning me-2"
+        style="color: white; font-weight: 500;">Hủy</a>
+        <button type="submit" class="btn btn-success"
+        style="color: white; font-weight: 500;">Lưu</button>
       </div>
     </div>
   </form>

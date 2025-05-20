@@ -171,88 +171,16 @@ def test_add_view(request):
         'question_total': len(question_formset)
     })
 
-
-
-def test_add(request):
-    if request.method == 'POST':
-        test_name = request.POST.get('test_name')
-        time_limit = request.POST.get('time_limit')
-        test = TEST.objects.create(test_name=test_name, duration=f'00:{time_limit}:00')  # chuyển đổi sang kiểu TimeField nếu cần
-
-        num_questions = int(request.POST.get('num_questions', 0))
-
-        for i in range(num_questions):
-            question_text = request.POST.get(f'question_text_{i}')
-            audio_url = request.POST.get(f'media_audio_url_{i}', '').strip()
-            paragraph = request.POST.get(f'media_paragraph_{i}', '').strip()
-
-            media = None
-            if audio_url or paragraph:
-                media = QUESTION_MEDIA.objects.create(audio_file=audio_url, paragraph=paragraph)
-
-            answer_choices = []
-            for j in range(int(request.POST.get(f'num_choices_{i}', 0))):
-                answer_choices.append(request.POST.get(f'choice_{i}_{j}', ''))
-
-            correct_index = request.POST.get(f'correct_{i}')
-            correct_answer = chr(65 + int(correct_index)) if correct_index else ''
-
-            question = QUESTION.objects.create(
-                test=test,
-                question_text=question_text,
-                answer=';'.join(answer_choices),
-                correct_answer=correct_answer,
-                question_media=media
-            )
-
-        return redirect('admin_ql_test')
-
-    return render(request, 'test_add1.html')
-
-QuestionFormSet = formset_factory(CustomQuestionForm, extra=1, can_delete=True)
-
-def test_create(request):
-    if request.method == 'POST':
-        test_form = TestForm(request.POST)
-        question_formset = QuestionFormSet(request.POST, prefix='questions')
-
-        if test_form.is_valid() and question_formset.is_valid():
-            # Lưu bài kiểm tra
-            test = test_form.save()
-
-            # Lưu các câu hỏi
-            for form in question_formset:
-                if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
-                    question = form.save(commit=False)
-
-                    audio = form.cleaned_data.get('link_audio')
-                    paragraph = form.cleaned_data.get('paragraph')
-                    if audio or paragraph:
-                        media = QUESTION_MEDIA.objects.create(audio_file=audio or '', paragraph=paragraph or '')
-                        question.question_media = media
-
-                    question.test = test
-                    question.save()
-
-            return redirect('admin_test_details', test_id=test.test_id)
-        else:
-            print("Test Form Errors:", test_form.errors.as_json())
-            print("Question Formset Errors:", question_formset.errors)
-            print("POST Data:", request.POST)
-    else:
-        test_form = TestForm()
-        question_formset = QuestionFormSet(prefix='questions')
-
-    return render(request, 'test_create.html', {
-        'test_form': test_form,
-        'question_formset': question_formset,
-    })
-
-# ------------
-# Đã đúng còn phần test add
-
 def list_result_view(request):
-    results = RESULT.objects.all().select_related('test', 'acc')
+    query = request.GET.get('q', '').strip()
+    results = RESULT.objects.select_related('test', 'acc')
+
+    if query:
+        results = results.filter(
+            acc__first_name__icontains=query
+        ) | results.filter(
+            acc__last_name__icontains=query
+        )
 
     data = []
     for index, result in enumerate(results, start=1):
@@ -269,6 +197,7 @@ def list_result_view(request):
             'test_results': data,
             'page_title': 'Bài kiểm tra',
             'section_title': 'Kết quả',
+            'query': query
         }
     return render(request, 'test_results.html', context)
 def result_delete(request, result_id):
