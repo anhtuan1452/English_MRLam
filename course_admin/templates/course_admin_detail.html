@@ -80,6 +80,8 @@
   .wrapper_table { max-height: 210px; overflow-y: auto; margin-bottom: 20px; }
   .sessions-table thead { background: #f1f1f1; }
   .sessions-table thead th { position: sticky; top: 0; background-color: #f1f1f1; z-index: 2; }
+  .sessions-table thead th:nth-child(2) {width: 63px;}
+
   .sessions-table th,
   .sessions-table td {
     padding: 10px;
@@ -164,27 +166,27 @@
 
   <!-- Danh sách buổi học -->
   <div class="sessions-section">
-    <h2>Các buổi học</h2>
+    <h2>Các bài học</h2>
     <div class="wrapper_table">
       <table class="sessions-table">
         <thead>
           <tr>
             <th>#</th>
-            <th>Buổi</th>
+            <th>Bài</th>
             <th>Chủ đề</th>
             <th>Mô tả</th>
           </tr>
         </thead>
         <tbody>
-          {% for ld in lesson_details %}
+          {% for ld in lessons %}
             <tr
-              onclick="window.location.href='{% url 'view_lesson_detail' course.course_id ld.lessondetail_id %}'"
+              onclick="window.location.href='{% url 'view_lesson' course.course_id ld.lesson_id %}'"
               style="cursor:pointer;"
             >
               <td>{{ forloop.counter }}</td>
               <td>{{ ld.session_number }}</td>
-              <td>{{ ld.lesson.lesson_name }}</td>
-              <td>{{ ld.lesson.description|default:"Không có" }}</td>
+              <td>{{ ld.lesson_name }}</td>
+              <td>{{ ld.description|default:"Không có" }}</td>
             </tr>
           {% empty %}
             <tr><td colspan="4">Chưa có buổi học nào.</td></tr>
@@ -194,7 +196,7 @@
     </div>
 
     <!-- Nút thêm -->
-    <a href="{% url 'add_lesson_detail' course.course_id %}"
+    <a href="{% url 'add_lesson' course.course_id %}"
        class="btn add-session-btn"
        style="display:inline-block; text-align:center;">
       Thêm buổi học

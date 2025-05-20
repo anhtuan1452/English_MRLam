@@ -44,7 +44,9 @@
 </style>
 
 <div class="container-fluid tab-section">
-    <h2 class="custom-title">Danh sách lớp học > Lớp {{ class_instance.class_name }}</h2>
+    <h2 class="custom-title">
+        <a href="{% url 'class_list' %}" class="text-decoration-none text-primary">Danh sách lớp học</a> > Lớp {{ class_instance.class_name }}
+    </h2>
 
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">

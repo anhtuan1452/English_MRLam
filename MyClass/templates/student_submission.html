@@ -25,7 +25,8 @@
 
   /* Dynamic background color based on submission status */
   .container.late {
-    background-color: #ffe6e6; /* Light red for late submissions */
+    background-color: white;
+    /* Light red for late submissions */
   }
 
   .container.on-time {
@@ -120,8 +121,11 @@
   }
 
   /* Thêm style cho ô "Thời gian còn lại" */
-  .status-row.time-remaining {
+  .status-row.ontime-remaining {
     background-color: #e6f4e6; /* Màu xanh cho ô thời gian còn lại */
+  }
+  .status-row.latetime-remaining {
+    background-color: #ffe6e6; /* Màu xanh cho ô thời gian còn lại */
   }
 
   .file-upload-container {
@@ -225,7 +229,7 @@
   <div class="breadcrumb">
     <span class="breadcrumb-item">Nhà của tôi</span>
     <span class="breadcrumb-separator">/</span>
-    <span class="breadcrumb-item">Các khóa học của tôi</span>
+    <a href="{% url 'student_homework' class_id %}" class="breadcrumb-item">Danh sách bài tập</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-item active">Nộp bài tập về nhà Buổi {{ lesson.lesson_id }}</span>
   </div>
@@ -254,7 +258,7 @@
           <span class="status-label">Ngày hết hạn</span>
           <span class="status-value">{{ due_date }}</span>
         </div>
-        <div class="status-row time-remaining"> <!-- Thêm class time-remaining -->
+        <div class="status-row {% if time_remaining == 'Đã hết hạn' %}latetime-remaining{% else %}ontime-remaining{% endif %}"> <!-- Thêm class time-remaining -->
           <span class="status-label">Thời gian còn lại</span>
           <span class="status-value">{{ time_remaining }}</span>
         </div>
@@ -263,7 +267,7 @@
           <span class="status-value">{{ last_edit }}</span>
         </div>
       </div>
-
+      {% if time_remaining != 'Đã hết hạn' %}
       <form method="post" enctype="multipart/form-data" class="file-upload-container">
         {% csrf_token %}
         <input type="file" id="file-upload" class="file-input" name="submission_file" accept=".docx,.pdf">
@@ -271,12 +275,12 @@
         <span class="file-name">Chưa chọn tệp</span>
         <button type="submit" class="submit-button">Nộp bài</button>
       </form>
-
-      {% if submission and submission.submission_file_name %}
+      {% endif %}
+      {% if submission and submission.submission_file_content %}
         <div class="submitted-file-container">
           <div class="submitted-file-label">Tệp đã nộp:</div>
           <a href="{% url 'download_submission' submission.submission_id %}" class="submitted-file-link" download>
-            {{ submission.submission_file_name }}
+            {{ submission_file_name }}
           </a>
         </div>
       {% endif %}

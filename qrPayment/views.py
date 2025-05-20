@@ -1,5 +1,6 @@
 import base64
 
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 
 from english.models import PAYMENT, PAYMENT_INFO
@@ -17,6 +18,10 @@ def payment_detail(request, payment_id):
     payment = get_object_or_404(PAYMENT, pk=payment_id)  # Lấy thông tin thanh toán theo ID
     payment_infos = PAYMENT_INFO.objects.filter(payment_id=payment_id).order_by(
         '-time_at')  # Lấy các thông tin thanh toán liên quan
+
+    paginator = Paginator(payment_infos, 7)  # 7 dòng/trang
+    page_number = request.GET.get('page', 1)  # ?page=1 nếu không có param
+    page_obj = paginator.get_page(page_number)
     if request.method == 'POST':
         form = PaymentForm(request.POST, request.FILES, instance=payment)  # Truyền instance để chỉnh sửa
         if 'delete' in request.POST:  # Kiểm tra xem nút "Xóa" có được nhấn không
@@ -29,7 +34,7 @@ def payment_detail(request, payment_id):
         form = PaymentForm(instance=payment)  # Nếu là GET, hiển thị form với dữ liệu của thanh toán cần chỉnh sửa
 
     return render(request, 'payment_detail.html',
-                  {'form': form, 'payment_detail': payment, 'payment_infos': payment_infos})  # Trả về form chỉnh sửa thanh toán
+                  {'form': form, 'payment_detail': payment, 'payment_infos': payment_infos, 'page_obj': page_obj})  # Trả về form chỉnh sửa thanh toán
 def add_payment(request):
     if request.method == 'POST':
         form = PaymentForm(request.POST, request.FILES)  # Xử lý file upload

@@ -1,5 +1,11 @@
+from django.contrib import messages
+from django.contrib.auth import logout
+from django.contrib.auth.views import LogoutView
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse_lazy
 
+from english.models import COURSE, DOCUMENT
 
 
 # Create your views here.
@@ -35,4 +41,32 @@ def admin_ql_thanhtoan(request):
 
 def admin_ql_khoahoc(request):
     return render(request, 'ql_khoahoc.html')
+
+def search_courses(request):
+    query = request.GET.get('q', '')
+    courses = []
+
+    if query:
+        # Ví dụ tìm kiếm tên trong Course hoặc Material
+        courses = COURSE.objects.filter(course_name__icontains=query)
+
+    context = {
+        'query': query,
+        'courses': courses,
+    }
+    return render(request, 'search_courses.html', context)
+
+
+def search_materials(request):
+    query = request.GET.get('q', '')
+    materials = []
+
+    if query:
+        materials = DOCUMENT.objects.filter(doc_name__icontains=query)
+
+    context = {
+        'query': query,
+        'materials': materials,
+    }
+    return render(request, 'search_materials.html', context)
 

@@ -8,13 +8,27 @@ import time
 def start_payment(request, course_id):
     # Lấy thông tin khóa học
     course = COURSE.objects.get(course_id=course_id)
-    # Lấy các lớp học của khóa học
+
+    # Lấy danh sách các lớp thuộc khóa học
     classes = CLASS.objects.filter(course=course)
 
     if request.method == 'POST':
         full_name = request.POST.get('full_name')
         phone = request.POST.get('phone')
         class_id = request.POST.get('class_id')
+
+        # Kiểm tra nếu user đã đăng ký đúng lớp này rồi thì không cho phép
+        already_registered = USER_CLASS.objects.filter(
+            user=request.user,
+            classes__class_id=class_id
+        ).exists()
+
+        if already_registered:
+            return render(request, 'payment_form.html', {
+                'course': course,
+                'classes': classes,
+                'error_message': 'Bạn đã đăng ký lớp này rồi.'
+            })
 
         # Lấy thông tin thanh toán của khóa học
         payment = PAYMENT.objects.filter(course_id=course).first()
@@ -23,11 +37,14 @@ def start_payment(request, course_id):
         payment_info = PAYMENT_INFO.objects.create(
             payment=payment,
             user=request.user,
-            message=f"Đăng ký {course.course_name} - {phone}"
+            message=f"Đăng ký {course.course_name} - {phone}",
+            time_at=timezone.now()
         )
 
-        # Lưu tạm thông tin lớp học đã chọn vào session
+        # Lưu class_id vào session để sau khi thanh toán xong gán vào USER_CLASS
         request.session['class_id'] = class_id
+        print("Redirecting to QR:", payment_info.paymentinfo_id)
+
         return redirect(f'/payment/qr/{payment_info.paymentinfo_id}/')
 
     return render(request, 'payment_form.html', {

@@ -321,12 +321,12 @@ body {
                 {% for user_class in user_classes %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ user_class.class_instance.class_name }}</td>
-                    <td>{{ user_class.class_instance.begin_time|date:"d M Y" }}</td>
+                    <td>{{ user_class.classes.class_name }}</td>
+                    <td>{{ user_class.classes.begin_time|date:"d M Y" }}</td>
                     <td>
-                        {% if user_class.class_instance.begin_time|date:"Y-m-d" <= now|date:"Y-m-d" and user_class.class_instance.end_time|date:"Y-m-d" >= now|date:"Y-m-d" %}
+                        {% if user_class.classes.begin_time|date:"Y-m-d" <= now|date:"Y-m-d" and user_class.classes.end_time|date:"Y-m-d" >= now|date:"Y-m-d" %}
                             <span class="status-badge">Đang học</span>
-                        {% elif user_class.class_instance.begin_time|date:"Y-m-d" > now|date:"Y-m-d" %}
+                        {% elif user_class.classes.begin_time|date:"Y-m-d" > now|date:"Y-m-d" %}
                             <span class="status-badge status-pending">Chưa bắt đầu</span>
                         {% else %}
                             <span class="status-badge status-completed">Đã hoàn thành</span>

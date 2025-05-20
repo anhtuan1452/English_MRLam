@@ -6,227 +6,343 @@
 {% block content %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-  body {
-    padding-top: 60px !important;
+    body {
+        margin: 2%;
+        padding-top: 40px !important;
+    }
 
-  }
     .sidebar-fixed {
-    position: fixed;
-    top: 80px; /* bằng chiều cao của navbar/header */
-    left: 0;
-    width: 260px; /* hoặc 100% nếu trên mobile */
-    height: calc(100vh - 80px);
-    overflow-y: auto;
-    background-color: white;
-    border-right: 1px solid #ddd;
-    padding: 20px;
-    z-index: 1000;
-  }
+        position: fixed;
+        top: 80px;
+        /* bằng chiều cao của navbar/header */
+        left: 0;
+        width: 260px;
+        /* hoặc 100% nếu trên mobile */
+        height: calc(100vh - 80px);
+        overflow-y: auto;
+        background-color: white;
+        border-right: 1px solid #ddd;
+        padding: 20px;
+        z-index: 1000;
+    }
 
-  .content-fixed {
-    margin-left: 260px; /* bằng với sidebar width */
-  }
+    .content-fixed {
+        margin-left: 260px;
+        /* bằng với sidebar width */
+    }
 
-  .tab-content {
-    align-items: unset !important;
-    justify-content: unset !important;
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
+
+    .tab-content {
+        display: none;
+        margin-top: 0;
+        padding-top: 0;
+        min-height: 500px;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+        margin: 0;
+        padding: 0;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    .list-group-item.active {
+        background-color: #dc3545 !important;
+        /* đỏ tươi (Bootstrap danger) */
+        border-color: #dc3545 !important;
+        color: white !important;
+    }
+
+    .list-group-item.active:hover {
+        background-color: #c82333 !important;
+        /* đỏ đậm hơn khi hover */
+    }
+
+    .section-title {
+        width: 100%;
+        font-size: 26px;
+        font-weight: bold;
+        text-decoration: none;
+        color: #5c6bc0;
+
+        border-bottom: 2px solid #5c6bc0;
+        /* Thêm đường kẻ dưới tiêu đề */
+        padding-bottom: 10px;
+        /* Khoảng cách giữa chữ và đường kẻ */
+    }
+    .alert {
+    margin-bottom: 20px;
+    font-size: 15px;
+    border-radius: 8px;
+}
 </style>
-</style>
-<div class="container py-5" >
-  <div class="row">
-    <div class="col-md-3 sidebar-fixed" >
-      <div class="text-center mb-4">
-        <div class="rounded-circle overflow-hidden border border-3" style="width: 120px; height: 120px; margin: auto;">
-          {% if user.profile.image %}
-            <img src="{{ user.profile.image.url }}" alt="Avatar" class="img-fluid h-100 w-100 object-fit-cover">
-          {% else %}
-            <img src="{% static 'images/default-avatar.png' %}" alt="Avatar" class="img-fluid h-100 w-100 object-fit-cover">
-          {% endif %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-3 sidebar-fixed">
+            <div class="text-center mb-4">
+                <div class="rounded-circle overflow-hidden border border-3"
+                    style="width: 120px; height: 120px; margin: auto;">
+                    {% if user.profile.image %}
+                    <img src="{{ user.profile.image.url }}" alt="Avatar" class="img-fluid h-100 w-100 object-fit-cover">
+                    {% else %}
+                    <img src="{% static 'images/avt.jpg' %}" alt="Avatar"
+                        class="img-fluid h-100 w-100 object-fit-cover">
+                    {% endif %}
+                </div>
+                <h5 class="mt-3">{{ user.get_full_name }}</h5>
+            </div>
+            <div class="list-group">
+                <button type="button"
+                    class="list-group-item list-group-item-action {% if active_tab == 'personal-info' %}active{% endif %}"
+                    data-tab="personal-info">Thông tin cá nhân</button>
+                <button type="button"
+                    class="list-group-item list-group-item-action {% if active_tab == 'password' %}active{% endif %}"
+                    data-tab="password">Mật khẩu</button>
+                <button type="button"
+                    class="list-group-item list-group-item-action {% if active_tab == 'email' %}active{% endif %}"
+                    data-tab="email">Email</button>
+                <button type="button"
+                    class="list-group-item list-group-item-action {% if active_tab == 'classes' %}active{% endif %}"
+                    data-tab="classes">Lớp học của tôi</button>
+            </div>
         </div>
-        <h5 class="mt-3">{{ user.get_full_name }}</h5>
-      </div>
-      <div class="list-group">
-        <button type="button" class="list-group-item list-group-item-action {% if active_tab == 'personal-info' %}active{% endif %}" data-tab="personal-info">Thông tin cá nhân</button>
-        <button type="button" class="list-group-item list-group-item-action {% if active_tab == 'password' %}active{% endif %}" data-tab="password">Mật khẩu</button>
-        <button type="button" class="list-group-item list-group-item-action {% if active_tab == 'email' %}active{% endif %}" data-tab="email">Email</button>
-        <button type="button" class="list-group-item list-group-item-action {% if active_tab == 'classes' %}active{% endif %}" data-tab="classes">Lớp học của tôi</button>
-      </div>
+
+        <div class="col-md-9 content-fixed">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} auto-dismiss" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            <!-- Personal Info -->
+            <div class="tab-content {% if active_tab == 'personal-info' %}active{% endif %}" id="personal-info">
+                <h4 class="mb-4 section-title">Thông tin cá nhân</h4>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="personal-info-submit" value="1">
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label">Họ và tên đệm</label>
+                            <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Tên</label>
+                            <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label">Ngày sinh</label>
+                            {{ profile_form.dob|add_class:"form-control" }}
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Giới tính</label>
+                            {{ profile_form.sex|add_class:"form-select" }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        {{ profile_form.description|add_class:"form-control" }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ảnh đại diện</label>
+                        <div class="d-flex align-items-center gap-4">
+                            <div style="width: 120px; height: 120px;">
+                                {% if user.profile.image %}
+                                <img src="{{ user.profile.image.url }}" alt="Avatar" class="img-thumbnail"
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                <img src="{% static 'images/default-avatar.png' %}" alt="Avatar" class="img-thumbnail"
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                {{ profile_form.image|add_class:"form-control" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning">Lưu thay đổi</button>
+                </form>
+            </div>
+
+            <!-- Password Change -->
+            <div class="tab-content {% if active_tab == 'password' %}active{% endif %}" id="password">
+                <h4 class="mb-4 section-title">Đổi mật khẩu</h4>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="password-submit" value="1">
+
+                    <div class="mb-3">
+                        <label class="form-label">Mật khẩu hiện tại</label>
+                        {{ password_form.old_password|add_class:"form-control" }}
+                        {% if password_form.old_password.errors %}
+                        <div class="text-danger small">{{ password_form.old_password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mật khẩu mới</label>
+                        {{ password_form.new_password1|add_class:"form-control" }}
+                        {% if password_form.new_password1.errors %}
+                        <div class="text-danger small">{{ password_form.new_password1.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Xác nhận mật khẩu mới</label>
+                        {{ password_form.new_password2|add_class:"form-control" }}
+                        {% if password_form.new_password2.errors %}
+                        <div class="text-danger small">{{ password_form.new_password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-warning">Đổi mật khẩu</button>
+                </form>
+            </div>
+
+            <!-- Email Update -->
+            <div class="tab-content {% if active_tab == 'email' %}active{% endif %}" id="email">
+                <h4 class="mb-4 section-title">Thay đổi email</h4>
+
+
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Email hiện tại</label>
+                        <input type="email" value="{{ user.email }}" class="form-control" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email mới</label>
+                        {{ email_form.email|add_class:"form-control" }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_verification_code" class="form-label">Mã xác nhận</label>
+                        {{ email_form.verification_code|add_class:"form-control" }}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" name="email-submit" class="btn btn-outline-primary">Gửi mã</button>
+                        <button type="submit" name="verify-email-submit" class="btn btn-warning">Xác nhận</button>
+                    </div>
+                </form>
+            </div>
+
+
+            <!-- Enrolled Classes -->
+            <!-- Enrolled Classes -->
+            <div class="tab-content {% if active_tab == 'classes' %}active{% endif %}" id="classes">
+                <h4 class="mb-4 section-title">Lớp học đã đăng ký</h4>
+                {% if class_exercises %}
+                <div class="row">
+                    {% for item in class_exercises %}
+                    <div class="col-md-6 mb-4">
+                        <div class="border rounded p-3 shadow-sm h-100">
+                            <h5 class="text-danger">{{ item.class.class_name }}</h5>
+                            {% if item.lessons %}
+                            <table class="table table-sm table-bordered mt-2 mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="w-75">Buổi học</th>
+                                        <th class="w-25">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lesson in item.lessons %}
+                                    <tr>
+                                        <td>{{ lesson.lesson_name }}</td>
+                                        <td>
+                                            {% if lesson.status == "Đã nộp" %}
+                                            <span class="badge bg-success">{{ lesson.status }}</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">{{ lesson.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <p class="text-muted">Không có bài tập nào.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Bạn chưa đăng ký lớp nào.</p>
+                {% endif %}
+            </div>
+
+
+        </div>
     </div>
-
-    <div class="col-md-9 content-fixed">
-      <!-- Personal Info -->
-      <div class="tab-content {% if active_tab == 'personal-info' %}active{% endif %}" id="personal-info">
-        <h4>Thông tin cá nhân</h4>
-        <form method="POST" enctype="multipart/form-data">
-          {% csrf_token %}
-          <input type="hidden" name="personal-info-submit" value="1">
-
-          <div class="row mb-3">
-            <div class="col">
-              <label class="form-label">Họ và tên đệm</label>
-              <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
-            </div>
-            <div class="col">
-              <label class="form-label">Tên</label>
-              <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <div class="col">
-              <label class="form-label">Ngày sinh</label>
-              {{ profile_form.dob|add_class:"form-control" }}
-            </div>
-            <div class="col">
-              <label class="form-label">Giới tính</label>
-              {{ profile_form.sex|add_class:"form-select" }}
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Mô tả</label>
-            {{ profile_form.description|add_class:"form-control" }}
-          </div>
-
-          <div class="mb-3">
-  <label class="form-label">Ảnh đại diện</label>
-  <div class="d-flex align-items-center gap-4">
-    <div style="width: 120px; height: 120px;">
-      {% if user.profile.image %}
-        <img src="{{ user.profile.image.url }}" alt="Avatar" class="img-thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
-      {% else %}
-        <img src="{% static 'images/default-avatar.png' %}" alt="Avatar" class="img-thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
-      {% endif %}
-    </div>
-    <div class="flex-grow-1">
-      {{ profile_form.image|add_class:"form-control" }}
-    </div>
-  </div>
 </div>
-
-          <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-        </form>
-      </div>
-
-      <!-- Password Change -->
-      <div class="tab-content {% if active_tab == 'password' %}active{% endif %}" id="password" style="display: none;">
-        <h4>Đổi mật khẩu</h4>
-        <form method="POST">
-          {% csrf_token %}
-          <input type="hidden" name="password-submit" value="1">
-
-          <div class="mb-3">
-            <label class="form-label">Mật khẩu hiện tại</label>
-            {{ password_form.old_password|add_class:"form-control" }}
-            {% if password_form.old_password.errors %}
-              <div class="text-danger small">{{ password_form.old_password.errors.0 }}</div>
-            {% endif %}
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Mật khẩu mới</label>
-            {{ password_form.new_password1|add_class:"form-control" }}
-            {% if password_form.new_password1.errors %}
-              <div class="text-danger small">{{ password_form.new_password1.errors.0 }}</div>
-            {% endif %}
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Xác nhận mật khẩu mới</label>
-            {{ password_form.new_password2|add_class:"form-control" }}
-            {% if password_form.new_password2.errors %}
-              <div class="text-danger small">{{ password_form.new_password2.errors.0 }}</div>
-            {% endif %}
-          </div>
-
-          <button type="submit" class="btn btn-warning">Đổi mật khẩu</button>
-        </form>
-      </div>
-
-      <!-- Email Update -->
-      <div class="tab-content {% if active_tab == 'email' %}active{% endif %}" id="email" style="display: none;">
-        <h4>Thay đổi email</h4>
-        <form method="POST">
-          {% csrf_token %}
-          <input type="hidden" name="email-submit" value="1">
-
-          <div class="mb-3">
-            <label class="form-label">Email hiện tại</label>
-            <input type="email" value="{{ user.email }}" class="form-control" disabled>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Email mới</label>
-            {{ email_form.email|add_class:"form-control" }}
-            {% if email_form.email.errors %}
-              <div class="text-danger small">{{ email_form.email.errors.0 }}</div>
-            {% endif %}
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Mã xác nhận</label>
-            {{ email_form.verification_code|add_class:"form-control" }}
-            {% if email_form.verification_code.errors %}
-              <div class="text-danger small">{{ email_form.verification_code.errors.0 }}</div>
-            {% endif %}
-          </div>
-
-          <button type="submit" class="btn btn-success">Cập nhật email</button>
-        </form>
-      </div>
-
-      <!-- Enrolled Classes -->
-      <div class="tab-content {% if active_tab == 'classes' %}active{% endif %}" id="classes" style="display: none;">
-        <h4>Lớp học đã đăng ký</h4>
-        {% if enrolled_classes %}
-          <ul class="list-group">
-            {% for c in enrolled_classes %}
-              <li class="list-group-item">{{ c.class_name }}</li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p>Bạn chưa đăng ký lớp nào.</p>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const navItems = document.querySelectorAll(".list-group-item");
-  const tabContents = document.querySelectorAll(".tab-content");
+    document.addEventListener("DOMContentLoaded", function () {
+        const navItems = document.querySelectorAll(".list-group-item");
+        const tabContents = document.querySelectorAll(".tab-content");
 
-  navItems.forEach((item) => {
-    item.addEventListener("click", function () {
-      const tabId = this.getAttribute("data-tab");
-      localStorage.setItem("activeTab", tabId);
+        // Chỉ đọc localStorage nếu không có active_tab trong URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryTab = urlParams.get("active_tab");
 
-      tabContents.forEach((tab) => {
-        tab.classList.remove("active");
-        tab.style.display = "none";
-      });
-      navItems.forEach((btn) => btn.classList.remove("active"));
+        let selectedTab = queryTab || localStorage.getItem("activeTab");
 
-      this.classList.add("active");
-      const activeTab = document.getElementById(tabId);
-      if (activeTab) {
-        activeTab.classList.add("active");
-        activeTab.style.display = "block";
-      }
+        if (selectedTab) {
+            const trigger = document.querySelector(`.list-group-item[data-tab="${selectedTab}"]`);
+            if (trigger) trigger.click();
+        }
+
+        navItems.forEach((item) => {
+            item.addEventListener("click", function () {
+                const tabId = this.getAttribute("data-tab");
+                localStorage.setItem("activeTab", tabId);
+
+                tabContents.forEach((tab) => {
+                    tab.classList.remove("active");
+                    tab.style.display = "none";
+                });
+                navItems.forEach((btn) => btn.classList.remove("active"));
+
+                this.classList.add("active");
+                const activeTab = document.getElementById(tabId);
+                if (activeTab) {
+                    activeTab.classList.add("active");
+                    activeTab.style.display = "block";
+                }
+            });
+        });
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () {
+      document.querySelectorAll('.auto-dismiss').forEach(function (el) {
+        el.classList.add('fade');
+        setTimeout(() => el.remove(), 500); // thêm delay nhỏ để biến mất mượt hơn
+      });
+    }, 3000); // 3 giây
   });
 
-  const savedTab = localStorage.getItem("activeTab");
-  if (savedTab) {
-    const trigger = document.querySelector(`.list-group-item[data-tab="${savedTab}"]`);
-    if (trigger) trigger.click();
-  }
-});
 </script>
+
 {% endblock %}
 {% block footer %}
 

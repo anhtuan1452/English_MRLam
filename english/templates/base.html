@@ -7,6 +7,8 @@
     <title>{% block title %}Mr Lam English{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% block bootstrap %}
+    {% endblock %}
     {% block styles %}{% endblock %}
 
 </head>
@@ -23,15 +25,15 @@
                 <a href="{% url 'course' %}">Khóa học</a>
                 <a href="{% url 'materials_list' %}">Tài liệu</a>
                 <a href="{% url 'home_test' test_id=1%}">Bài test</a>
-                {% if True %}
-                    <a href="{% url 'student_homework' %}">Lớp học</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'student_class' %}">Lớp học</a>
                 {% endif %}
             </nav>
         </div>
 
         <div class="header-right">
     <div class="search-container">
-        {% block serch %}
+        {% block search %}
             {% include 'search_dropdown.html' %}
         {% endblock %}
     </div>
@@ -41,8 +43,12 @@
         <div class="profile-dropdown-container" style="position: relative; margin-right: 16px;">
             <!-- Trigger button -->
             <a href="javascript:void(0)" class="profile-link" id="profileToggle" style="display: flex; align-items: center;">
-                <img class="user-avatar" src="{% static 'images/facebook-icon.png' %}" alt="User Avatar"
-                     style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                {% if user.profile.image %}
+                    <img src="{{ user.profile.image.url }}" alt="Avatar" class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                    {% else %}
+                    <img src="{% static 'images/avt.jpg' %}" alt="Avatar"
+                        class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
+                    {% endif %}
                 <p class="user-name" style="margin-right: 8px;">{{ user.username }}</p>
                 <i class="fas fa-chevron-down"></i>
             </a>
@@ -61,23 +67,27 @@
                   z-index: 1000;
                   padding: 10px 0;
                 ">
-                <a href="{%url 'Profile_User' %}" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                <a href="{%url 'Profile_User'%}?active_tab=personal-info" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
                     <i class="fas fa-id-card" style="color: #26a69a; margin-right: 10px;"></i> Edit profile
                 </a>
-                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                <a href="{%url 'Profile_User'%}?active_tab=password" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
                     <i class="fas fa-key" style="color: #26a69a; margin-right: 10px;"></i> Password
                 </a>
-                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                <a href="{%url 'Profile_User'%}?active_tab=email" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
                     <i class="fas fa-envelope" style="color: #26a69a; margin-right: 10px;"></i> Email
                 </a>
-                <a href="#" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                <a href="{%url 'Profile_User'%}?active_tab=classes" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
                     <i class="fas fa-users" style="color: #26a69a; margin-right: 10px;"></i> My class
                 </a>
             </div>
         </div>
-        <a href="{% url 'logout' %}" class="login-btn">
-            Log out <i class="fas fa-sign-out-alt"></i>
-        </a>
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="login-btn">Log out <i class="fas fa-sign-out-alt"></i></button>
+            </form>
+
+
+
     {% else %}
         <div class="auth-buttons">
             <a href="{% url 'login' %}" class="login-btn">

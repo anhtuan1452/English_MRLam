@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block title %}Đăng Ký{% endblock %}
 
@@ -15,7 +16,7 @@
         {% if messages %}
             <div class="error-messages">
                 {% for message in messages %}
-                    <p style="color: red;">{{ message }}</p>
+                    <p class="error">{{ message }}</p>
                 {% endfor %}
             </div>
         {% endif %}
@@ -23,24 +24,52 @@
         <form method="POST" action="{% url 'register' %}">
             {% csrf_token %}
             <div class="form-group">
-                <label class="form-label">Tên đăng nhập</label>
-                <input type="text" class="form-input" name="username" placeholder="Tên đăng nhập" required>
+                <label class="form-label" for="{{ form.username.id_for_label }}">Tên đăng nhập</label>
+                {{ form.username|add_class:"form-input" }}
+                {% if form.username.errors %}
+                    <div class="error">{{ form.username.errors.as_text }}</div>
+                {% endif %}
             </div>
 
             <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-input" name="email" placeholder="Email của bạn" required>
+                <label class="form-label" for="{{ form.first_name.id_for_label }}">Tên</label>
+                {{ form.first_name|add_class:"form-input" }}
+                {% if form.first_name.errors %}
+                    <div class="error">{{ form.first_name.errors.as_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="{{ form.last_name.id_for_label }}">Họ</label>
+                {{ form.last_name|add_class:"form-input" }}
+                {% if form.last_name.errors %}
+                    <div class="error">{{ form.last_name.errors.as_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email|add_class:"form-input" }}
+                {% if form.email.errors %}
+                    <div class="error">{{ form.email.errors.as_text }}</div>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <div class="password-fields">
                     <div class="password-field">
-                        <label class="form-label">Mật khẩu</label>
-                        <input type="password" class="form-input" name="password" placeholder="Nhập mật khẩu" required>
+                        <label class="form-label" for="{{ form.password1.id_for_label }}">Mật khẩu</label>
+                        {{ form.password1|add_class:"form-input" }}
+                        {% if form.password1.errors %}
+                            <div class="error">{{ form.password1.errors.as_text }}</div>
+                        {% endif %}
                     </div>
                     <div class="password-field">
-                        <label class="form-label">Nhập lại mật khẩu</label>
-                        <input type="password" class="form-input" name="password_confirm" placeholder="Nhập lại mật khẩu" required>
+                        <label class="form-label" for="{{ form.password2.id_for_label }}">Nhập lại mật khẩu</label>
+                        {{ form.password2|add_class:"form-input" }}
+                        {% if form.password2.errors %}
+                            <div class="error">{{ form.password2.errors.as_text }}</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -49,7 +78,6 @@
         </form>
     </section>
 </main>
-
 <style>
     * {
         margin: 0;

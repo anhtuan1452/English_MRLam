@@ -1,7 +1,63 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-  <h2>Thanh toán thành công!</h2>
-  <p>Bạn đã đăng ký thành công khóa học: {{ course.course_name }}</p>
-  <a href="/">Quay lại trang chủ</a>
+<div class="success-wrapper">
+  <h2 class="success-title">THANH TOÁN THÀNH CÔNG</h2>
+  <img src="{% static 'images/course.png' %}" alt="Khoá học" class="course-image" />
+  <div class="btn-wrapper">
+    <a href="/" class="btn-home">Quay lại trang chủ <i class="fas fa-arrow-circle-right"></i></a>
+  </div>
+</div>
+{% endblock %}
+
+
+
+{% block styles %}
+<style>
+.success-wrapper {
+  text-align: center;
+  padding-top: 90px;
+  padding-bottom: 100px;
+}
+
+.success-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem;
+  padding: 8px 0;
+  color: #5c6bc0;
+}
+
+.course-image {
+  width: 600px;
+  max-width: 90%;
+  height: auto;
+  margin-bottom: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-wrapper {
+  text-align: center;
+}
+
+.btn-home {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #c40000;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.btn-home:hover {
+  background-color: #a10000;
+}
+</style>
 {% endblock %}

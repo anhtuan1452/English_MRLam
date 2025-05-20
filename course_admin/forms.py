@@ -41,76 +41,41 @@ class CourseForm(forms.ModelForm):
             course.save()
         return course
 
-class LessonAndDetailForm(forms.Form):
+class LessonForm(forms.ModelForm):
     lesson_name = forms.CharField(
         max_length=100,
         label='Chủ đề',
-        widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Ví dụ: Ngữ pháp cơ bản'})
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        required=True
     )
+
     description = forms.CharField(
-        required=False,
         label='Mô tả',
-        widget=forms.Textarea(attrs={'class':'form-control', 'rows':4, 'placeholder':'Mô tả ngắn'})
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        required=True
     )
+
     session_number = forms.CharField(
-        max_length=100,
-        label='Buổi',
-        widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Ví dụ: Buổi 1'})
+        label='Buổi học',
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        required=True
     )
 
-    def __init__(self, *args, **kwargs):
-        course = kwargs.pop('course', None)
-        super().__init__(*args, **kwargs)
-        if course:
-            # Chỉ hiển thị các lớp thuộc khóa học
-            self.fields['classes'].queryset = CLASS.objects.filter(course=course)
-
-
+    class Meta:
+        model = LESSON
+        fields = ['lesson_name', 'description', 'session_number']  # các trường chính của LESSON
+from django.forms import modelformset_factory
 class LessonDetailForm(forms.ModelForm):
     class Meta:
         model = LESSON_DETAIL
-        fields = ['lesson_name', 'description', 'session_number']  # Cập nhật các trường dữ liệu bạn muốn
+        fields = ['date']  # Chỉ giữ trường date, vì session_number thuộc về LESSON
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        }
 
-    lesson_name = forms.CharField(
-        max_length=100,
-        label='Chủ đề',
-        widget=forms.TextInput(attrs={'class': 'form-control'})
-    )
-
-    description = forms.CharField(
-        required=False,
-        label='Mô tả',
-        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
-    )
-
-    session_number = forms.CharField(
-        label='Buổi',
-        widget=forms.TextInput(attrs={'class': 'form-control'})
-    )
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance.pk:  # Kiểm tra nếu object LESSON_DETAIL đã được tạo
-            self.fields['lesson_name'] = forms.CharField(
-                initial=self.instance.lesson.lesson_name if self.instance.lesson else '',
-                label='Chủ đề',
-                widget=forms.TextInput(attrs={'class': 'form-control'}),
-                required=False
-            )
-            self.fields['description'] = forms.CharField(
-                initial=self.instance.lesson.description if self.instance.lesson else '',
-                required=False,
-                label='Mô tả',
-                widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
-            )
-        else:
-            # Nếu chưa lưu, bạn có thể để các giá trị mặc định
-            self.fields['lesson_name'] = forms.CharField(
-                required=False,
-                label='Chủ đề',
-                widget=forms.TextInput(attrs={'class': 'form-control'})
-            )
-            self.fields['description'] = forms.CharField(
-                required=False,
-                label='Mô tả',
-                widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
-            )
+LessonDetailFormSet = modelformset_factory(
+    LESSON_DETAIL,
+    form=LessonDetailForm,
+    fields=['date'],
+    extra=1
+)
