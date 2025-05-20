@@ -32,8 +32,24 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="id_email">Email</label>
-                <input type="email" class="form-input" name="email" id="id_email" placeholder="Email của bạn" required>
+                <label class="form-label" for="{{ form.first_name.id_for_label }}">Tên</label>
+                {{ form.first_name|add_class:"form-input" }}
+                {% if form.first_name.errors %}
+                    <div class="error">{{ form.first_name.errors.as_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="{{ form.last_name.id_for_label }}">Họ</label>
+                {{ form.last_name|add_class:"form-input" }}
+                {% if form.last_name.errors %}
+                    <div class="error">{{ form.last_name.errors.as_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email|add_class:"form-input" }}
                 {% if form.email.errors %}
                     <div class="error">{{ form.email.errors.as_text }}</div>
                 {% endif %}
