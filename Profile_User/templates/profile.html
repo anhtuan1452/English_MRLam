@@ -245,8 +245,6 @@
                 </form>
             </div>
 
-
-            <!-- Enrolled Classes -->
             <!-- Enrolled Classes -->
             <div class="tab-content {% if active_tab == 'classes' %}active{% endif %}" id="classes">
                 <h4 class="mb-4 section-title">Lớp học đã đăng ký</h4>
@@ -269,10 +267,12 @@
                                     <tr>
                                         <td>{{ lesson.lesson_name }}</td>
                                         <td>
-                                            {% if lesson.status == "Đã nộp" %}
-                                            <span class="badge bg-success">{{ lesson.status }}</span>
+                                            {% if "nộp" in lesson.status|lower %}
+                                                <span class="badge bg-success">{{ lesson.status }}</span>
+                                            {% elif "quá hạn" in lesson.status|lower %}
+                                                <span class="badge bg-danger">{{ lesson.status }}</span>
                                             {% else %}
-                                            <span class="badge bg-secondary">{{ lesson.status }}</span>
+                                                <span class="badge bg-secondary">{{ lesson.status }}</span>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -338,7 +338,7 @@
         el.classList.add('fade');
         setTimeout(() => el.remove(), 500); // thêm delay nhỏ để biến mất mượt hơn
       });
-    }, 3000); // 3 giây
+    }, 2000); // 3 giây
   });
 
 </script>
