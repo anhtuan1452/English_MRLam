@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* Base styles - Sử dụng biến CSS để dễ dàng thay đổi */
+  :root {
+    --primary-color: #3498db;
+    --primary-dark: #2980b9;
+    --accent-color: #e74c3c;
+    --accent-dark: #c0392b;
+    --text-color: #333;
+    --text-light: #7f8c8d;
+    --border-color: #ecf0f1;
+    --border-dark: #bdc3c7;
+    --bg-color: #f5f5f5;
+    --card-bg: white;
+    --shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 25px;
+    --spacing-xl: 30px;
+  }
+
+  /* Reset và font chữ */
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+  }
+
+  /* Container chính */
+  .container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 5% auto;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+  }
+
+  /* Tiêu đề chung */
+  .page-title {
+    text-align: center;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-color);
+  }
+
+  .page-subtitle {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    color: var(--text-light);
+  }
+
+  /* Mỗi buổi học */
+  .lesson-section {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 2px solid var(--border-dark);
+  }
+
+  .lesson-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  /* Tiêu đề buổi học */
+  .lesson-header {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-color);
+  }
+
+  /* Danh sách các mục */
+  .task-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .task-item {
+    margin-bottom: var(--spacing-sm);
+    padding: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .task-content {
+    display: flex;
+    align-items: center;
+  }
+
+  .material-icon {
+    margin-right: var(--spacing-sm);
+  }
+
+  /* Link tài liệu */
+  .material-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .material-link:hover {
+    text-decoration: underline;
+  }
+
+  .material-link.disabled {
+    color: var(--text-light);
+    cursor: not-allowed;
+    text-decoration: none;
+  }
+
+  /* Nút action */
+  .task-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+
+  .action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .request-btn {
+    background-color: var(--accent-color);
+    color: white;
+  }
+
+  .request-btn:hover {
+    background-color: var(--accent-dark);
+  }
+
+  .reschedule-btn {
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  .reschedule-btn:hover {
+    background-color: var(--primary-dark);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .task-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .task-actions {
+      margin-top: var(--spacing-sm);
+      align-self: flex-end;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      width: 95%;
+      padding: 15px;
+    }
+
+    .task-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .action-btn {
+      flex: 1;
+      text-align: center;
+    }
+  }
+</style>
+
+<div class="container">
+  <h1 class="page-title">Bài tập về nhà</h1>
+  <p class="page-subtitle">Học viên làm bài tập sau khi kết thúc mỗi buổi học</p>
+
+  {% for lesson in lessons %}
+  <div class="lesson-section">
+    <h2 class="lesson-header">Buổi {{ lesson.session_number }} - {{ lesson.description }}</h2>
+
+    <ul class="task-list">
+      <li class="task-item">
+        <div class="task-content">
+          <span class="material-icon">📕</span>
+          <a href="{{ lesson.lesson_file }}"
+             class="material-link {% if lesson.lesson_file == '#' %}disabled{% endif %}" target="_blank">
+            Tài liệu học buổi {{ lesson.session_number }}
+          </a>
+        </div>
+        <div class="task-actions">
+          <button class="action-btn request-btn">Xin nghỉ</button>
+          <button class="action-btn reschedule-btn">Học bù</button>
+        </div>
+      </li>
+
+      <li class="task-item">
+        <div class="task-content">
+          <span class="material-icon">📕</span>
+          <a href="{{ lesson.exercise_file }}"
+             class="material-link {% if lesson.exercise_file == '#' %}disabled{% endif %}" target="_blank">
+            Bài tập buổi {{ lesson.session_number }}
+          </a>
+        </div>
+      </li>
+
+      <li class="task-item">
+        <div class="task-content">
+          <a href="{% url 'student_submission' class_id lesson.lesson_id %}" class="material-link"><span class="material-icon">📁</span>
+            Nộp bài tập buổi {{ lesson.session_number }}
+          </a>
+        </div>
+      </li>
+    </ul>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
