@@ -78,6 +78,7 @@ class RESULT(models.Model):
     test = models.ForeignKey(TEST, on_delete=models.CASCADE)
     acc = models.ForeignKey(User, on_delete=models.CASCADE)
     create_at = models.DateTimeField(default=datetime.datetime.now)
+    user_answer = models.JSONField(null=True, blank=True)  # Lưu câu trả lời của người dùng
     class Meta:
         db_table = 'RESULT'
 
@@ -188,7 +189,7 @@ class SUBMISSION(models.Model):
     submission_id = models.AutoField(primary_key=True)
     userclass = models.ForeignKey(USER_CLASS, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
-    submit_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    submit_date = models.DateTimeField(default=datetime.datetime.now)
     review = models.TextField(null=True, blank=True)
     exercise = models.ForeignKey(EXERCISE, on_delete=models.CASCADE)
     submission_file_content = models.FileField(

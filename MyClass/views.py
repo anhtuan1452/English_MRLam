@@ -1,22 +1,6 @@
 import os
-
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse
-from django.contrib import messages
-from scripts.regsetup import description
 
-from english.models import COURSE, LESSON, EXERCISE, LESSON_DETAIL, SUBMISSION, USER_CLASS, CLASS
-
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse
-from django.contrib import messages
-from english.models import COURSE, LESSON, EXERCISE, LESSON_DETAIL, SUBMISSION, USER_CLASS, CLASS
 
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone

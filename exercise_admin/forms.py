@@ -1,11 +1,14 @@
 from django import forms
-from english.models import EXERCISE, COURSE, LESSON
+from english.models import COURSE, LESSON
 
 
 class KhoaHocForm(forms.ModelForm):
     class Meta:
         model = COURSE
         fields = ['course_name']
+        labels = {
+            'course_name': 'Tên khóa học',
+        }
         widgets = {
             'course_name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -16,6 +19,12 @@ class BuoiHocForm(forms.ModelForm):
     class Meta:
         model = LESSON
         fields = ['lesson_name', 'description', 'lesson_file', 'exercise_file']
+        labels = {
+            'lesson_name': 'Tên bài học',
+            'description': 'Mô tả',
+            'lesson_file': 'File bài học',
+            'exercise_file': 'File bài tập',
+        }
         widgets = {
             'lesson_name': forms.TextInput(attrs={
                 'class': 'form-control',

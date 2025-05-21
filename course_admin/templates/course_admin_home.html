@@ -10,7 +10,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
     }
 
     .header h1 {
@@ -26,7 +25,7 @@
 
     .search-bar input {
       width: 100%;
-      max-width: 300px;
+      max-width: 500px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -62,6 +61,7 @@
         border-bottom: 2px solid;
         margin: 1.5rem 0 1rem;
         padding: 8px 0;
+        width: 100%;
     }
 </style>
 <div class="container">
@@ -108,7 +108,7 @@
         <input
           type="text"
           name="q"
-          placeholder="Search courses"
+          placeholder="Tìm kiếm khóa học"
           value="{{ q }}"
           style="width:100%; padding:0.5rem 1rem 0.5rem 2.5rem; border:1px solid #e2e8f0; border-radius:0.375rem;"
         />
@@ -124,8 +124,8 @@
       <!-- Nút thêm khóa học -->
       <a href="{% url 'admin_themkhoahoc' %}">
         <button type="button"
-                style="background-color:#dc2626; color:white; padding:0.5rem 1.5rem; border:none; border-radius:0.375rem; cursor:pointer;">
-          Thêm khóa học
+                style="background-color:#0d6efd; color:white; padding:0.5rem 1.5rem; border:none; border-radius:0.375rem; cursor:pointer;">
+          <b>Thêm khóa học</b>
         </button>
       </a>
     </form>
@@ -137,7 +137,7 @@
                     <div class="course-description">{{ course.description|default:"Không có mô tả" }}</div>
                     <div>Giá: {{ course.price|default:"Miễn phí" }} VND</div>
                     <div class="teacher-info">
-                        {{ course.teacher_name }} - {{ course.des_teacher|default:"Chưa có mô tả" }}
+                        {{ course.teacher_name }} - {{ teacher_id.description|default:"Chưa có mô tả" }}
                     </div>
                 </div>
             </a>

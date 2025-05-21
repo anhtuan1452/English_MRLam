@@ -92,7 +92,7 @@
 </style>
 
 <div class="courses-container">
-    <h2 class="section-title" style="color: #5c6bc0">MY CLASS</h2>
+    <h2 class="section-title" style="color: #5c6bc0">LỚP HỌC CỦA TÔI</h2>
 
     {% if user.is_authenticated %}
         {% if classes %}
@@ -112,15 +112,17 @@
         <a href="">Để xem lớp học, bạn cần đăng nhập.</a>
     {% endif %}
 
-    <h2 class="section-title">ENGLISH COURSE</h2>
+    <h2 class="section-title">KHOÁ HỌC</h2>
     {% for course in courses %}
+    <a href="{% url 'course_detail' course_id=course.course_id %}" style="text-decoration: none; color: inherit;">
     <div class="course-card">
         <img src="{% static 'images/course.png' %}" alt="English Course" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
         <h3 class="course-title">{{ course.course_name }}</h3>
         <p class="course-teacher">{{ course.teacher_name }}</p>
         <p class="course-price">{{ course.price }}</p>
-        <a href="{% url 'course_detail' course_id=course.course_id %}" class="register-btn">Đăng ký ngay</a>
+        <a href="{% url 'start_payment' course.course_id %}" class="register-btn">Đăng ký ngay</a>
     </div>
+    </a>
     {% endfor %}
 </div>
 {% endblock %}
