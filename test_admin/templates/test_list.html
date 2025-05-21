@@ -30,7 +30,7 @@
         font-weight: 700;
         color: #5c6bc0;
         border-bottom: 2px solid;
-        margin: 1.5rem 0 1rem;
+        margin: 0.5rem 0 1rem;
         padding: 8px 0;
     }
 /* Tab styling */
@@ -76,22 +76,15 @@
       color: #6c757d;
     }
 
-    /* Add new button */
-    .btn-danger {
-      background-color: #dc2626;/*#dc3545;*/
-      color:white;
-      padding:0.5rem 1.5rem;
-      border:none;
-      border-radius:0.375rem;
-      cursor:pointer;
-    }
-
     /* Table styling */
 .table {
   table-layout: fixed;
   width: 100%;
 }
-
+/* Make sure the action buttons stay centered */
+.table tbody td:last-child {
+  text-align: center;
+}
 /* Table column widths */
 .table th:nth-child(1),
 .table td:nth-child(1) {
@@ -101,6 +94,9 @@
 .table th:nth-child(2),
 .table td:nth-child(2) {
   width: 50%;  /* Tên bài kiểm tra column - make this wider */
+}
+.table td:nth-child(2){
+    text-align: left;
 }
 
 .table th:nth-child(3),
@@ -112,19 +108,9 @@
 .table td:nth-child(4) {
   width: 10%;  /* Thời gian column */
 }
-/* Center align table header */
-.table thead th {
-  text-align: center;
-  background-color: #e0f2fe
-}
 /* Center align all table content */
 .table thead th,
 .table tbody td {
-  text-align: center;
-}
-
-/* Make sure the action buttons stay centered */
-.table tbody td:last-child {
   text-align: center;
 }
 
@@ -134,7 +120,7 @@ td .btn-danger:last-child {
 }
 
     /* Action buttons */
-    .btn-primary, .btn-warning, .btn-danger {
+    td .btn-primary, .btn-warning, .btn-danger {
       padding: 0.25rem 0.75rem;
       font-size: 0.75rem;
       border-radius: 3px;
@@ -142,7 +128,7 @@ td .btn-danger:last-child {
       display: inline-block;
     }
 
-    .btn-primary {
+    td .btn-primary {
       background-color: #e0f2fe;
       border: none;
       color: #1d4ed8;
@@ -165,7 +151,7 @@ td .btn-danger:last-child {
 </style>
 
   <div class="container">
-    <h2 class="custom-title">Bài kiểm tra</h2>
+    <h2 class="custom-title mb-0">Bài kiểm tra</h2>
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a href="{% url 'admin_test_list' %}" class="nav-link active" role="tab">Bài kiểm tra</a>
@@ -177,24 +163,29 @@ td .btn-danger:last-child {
     <!-- Navbar with search and button -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <!-- Search Bar -->
-      <div class="input-group" style="max-width: 400px;">
-        <form method="GET" class="input-group" style="max-width: 400px;">
-          <input type="text" name="q" class="form-control" placeholder="Nhập tên bài kiểm tra" value="{{ query }}">
-          <button class="btn btn-outline-secondary" type="submit">
-            <i data-lucide="search"></i>
-          </button>
-        </form>
-      </div>
+      <form method="GET" style="position: relative; max-width: 500px; width: 100%;">
+        <input type="text" name="q" placeholder="Nhập tên bài kiểm tra"
+               value="{{ query }}"
+               style="width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border: 1px solid #e2e8f0; border-radius: 0.375rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"
+             style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </form>
+
       <!-- Add New Button -->
-      <a href="{% url 'admin_test_add' %}" class="btn btn-danger">
-        + Thêm mới
+      <a href="{% url 'admin_test_add' %}" class="btn btn-primary" style="padding: 0.5rem 1rem; border-radius:0.375rem; font-size:1rem; font-weight: bold;">
+        Thêm mới
       </a>
     </div>
     <hr>
     <table class="table table-bordered table-hover">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>STT</th>
           <th>Tên bài kiểm tra</th>
           <th>Số câu hỏi</th>
           <th>Thời gian</th>
@@ -204,7 +195,7 @@ td .btn-danger:last-child {
       <tbody>
         {% for test in tests %}
           <tr>
-            <td>{{ test.test_id }}</td>
+            <td>{{ forloop.counter }}</td>
             <td>{{ test.test_name }}</td>
             <td>{{ test.question_set.count }}</td>
             <td>{{ test.duration }}</td>

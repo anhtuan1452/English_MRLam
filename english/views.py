@@ -1,4 +1,9 @@
+from django.contrib import messages
+from django.contrib.auth import logout
+from django.contrib.auth.views import LogoutView
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse_lazy
 
 from english.models import COURSE, DOCUMENT
 

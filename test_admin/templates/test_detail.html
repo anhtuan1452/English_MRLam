@@ -16,19 +16,19 @@ body {
   margin-right: 0.5;
   margin-left: 0;
 }
-h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
 .custom-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #5c6bc0;
-  border-bottom: 2px solid;
-  margin: 1.5rem 0 1rem;
-  padding: 8px 0;
-}
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 0.5rem 0 1rem;
+        padding: 8px 0;
+    }
 .nav-tabs {
   border-bottom: 2px solid #e9ecef;
   margin-bottom: 1.5rem;
@@ -62,6 +62,7 @@ h2 {
 .test-header {
   text-align: center;
   margin-bottom: 20px;
+  word-break: break-word;
 }
 .test-header h1 {
   font-size: 2em;
@@ -140,7 +141,7 @@ input[type="radio"] {
 </style>
 
 <div class="container">
-  <h2 class="custom-title">Bài kiểm tra</h2>
+  <h2 class="custom-title mb-0">Bài kiểm tra</h2>
 
   <ul class="nav nav-tabs mb-3">
     <li class="nav-item">
@@ -152,10 +153,12 @@ input[type="radio"] {
   </ul>
 
   <div class="button-group">
-    <a href="{% url 'test_edit' test_id=test.test_id %}" class="btn btn-warning">Sửa</a>
+    <a href="{% url 'test_edit' test_id=test.test_id %}" class="btn btn-warning"
+       style="color: white; font-weight: 500;">Sửa</a>
     <form method="post" action="{% url 'test_delete' test.test_id %}" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài kiểm tra này?');" style="display:inline;">
       {% csrf_token %}
-      <button type="submit" class="btn btn-danger">Xóa</button>
+      <button type="submit" class="btn btn-danger"
+      style="color: white; font-weight: 500;">Xóa</button>
     </form>
   </div>
 

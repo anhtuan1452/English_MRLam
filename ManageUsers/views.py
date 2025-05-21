@@ -118,41 +118,45 @@ def user_create(request):
     # For GET requests, just show the empty form
     return render(request, 'user_create.html')
 def user_edit(request, id):
-    # Lấy đối tượng từ auth_user
     user = get_object_or_404(User, id=id)
-    # Lấy đối tượng từ USER_PROFILE (liên kết với user qua trường account)
-    user_profile = get_object_or_404(USER_PROFILE, userprofile_id=user)
+    user_profile = get_object_or_404(USER_PROFILE, userprofile=user)
 
     if request.method == 'POST':
-        # Cập nhật thông tin cho auth_user
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
         user.email = request.POST.get('email')
+
+        # Cập nhật vai trò
+        role = request.POST.get('role')
+        if role == 'admin':
+            user.is_superuser = True
+            user.is_staff = True
+        elif role == 'teacher':
+            user.is_superuser = False
+            user.is_staff = True
+        else:  # student
+            user.is_superuser = False
+            user.is_staff = False
         user.save()
 
-        # Cập nhật thông tin cho USER_PROFILE
         user_profile.dob = request.POST.get('dob')
         user_profile.sex = request.POST.get('sex')
+        user_profile.description = request.POST.get('description')
         user_profile.save()
 
-        # Cập nhật thông tin tài khoản (username, password, role)
         new_password = request.POST.get('password')
         if new_password:
-            user.set_password(new_password)  # Mã hóa mật khẩu
+            user.set_password(new_password)
         user.username = request.POST.get('username')
-
-        # Cập nhật role (nếu role là trường tùy chỉnh trong USER_PROFILE)
-        user_profile.role = request.POST.get('role')
-        user_profile.save()
+        user.save()
 
         return redirect('user_detail', id=user.id)
 
     context = {
         'user': user,
-        'user_profile': user_profile,  # Truyền cả user_profile vào template
+        'user_profile': user_profile,
     }
     return render(request, 'user_edit.html', context)
-
 def user_delete(request, id):
     user = get_object_or_404(User, id=id)
 

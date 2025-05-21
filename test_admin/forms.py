@@ -37,17 +37,26 @@ class CustomQuestionForm(forms.ModelForm):
     answer_b = forms.CharField(label='Đáp án B', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     answer_c = forms.CharField(label='Đáp án C', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     answer_d = forms.CharField(label='Đáp án D', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    correct_answer = forms.ChoiceField(
+        label='Đáp án đúng',
+        choices=[
+            ('', '-- Chọn đáp án đúng --'),
+            ('A', 'A'),
+            ('B', 'B'),
+            ('C', 'C'),
+            ('D', 'D')
+        ],
+        widget=forms.Select(attrs={'class': 'form-select mb-3', 'required': True})
+    )
 
     class Meta:
         model = QUESTION
         fields = ['question_text', 'correct_answer']
         labels = {
             'question_text': 'Câu hỏi',
-            'correct_answer': 'Đáp án đúng (A/B/C/D)',
         }
         widgets = {
             'question_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'correct_answer': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
