@@ -9,7 +9,7 @@
     grid-template-columns: repeat(3, 1fr);
     column-gap: 20px;
     row-gap: 16px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
 
   /* Nhóm Tên khóa học và Mô tả chiếm cả 3 cột */
@@ -77,7 +77,7 @@
   .tab.active { border-bottom: 2px solid #007bff; color: #007bff; }
   .sessions-section h2 { margin-bottom: 10px; font-size: 18px; font-weight: 600; }
   .sessions-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-  .wrapper_table { max-height: 210px; overflow-y: auto; margin-bottom: 20px; }
+  .wrapper_table { max-height: 280px; overflow-y: auto; }
   .sessions-table thead { background: #f1f1f1; }
   .sessions-table thead th { position: sticky; top: 0; background-color: #f1f1f1; z-index: 2; }
   .sessions-table thead th:nth-child(2) {width: 63px;}
@@ -133,7 +133,7 @@
       <!-- Mô tả -->
       <div class="form-group" id="courseDescriptionGroup">
         <label for="course_description">Mô tả</label>
-        <textarea id="course_description" name="course_description" rows="4">{{ course.description }}</textarea>
+        <textarea id="course_description" name="course_description" style="height: fit-content;" rows="4">{{ course.description }}</textarea>
       </div>
 
       <!-- Giáo viên -->
@@ -163,7 +163,11 @@
                value="{{ course.price }}">
       </div>
     </div>
-
+    <a href="{% url 'add_lesson' course.course_id %}"
+       class="btn add-session-btn"
+       style="display:inline-block; text-align:center; margin-bottom:20px;">
+      Thêm bài học
+    </a>
   <!-- Danh sách buổi học -->
   <div class="sessions-section">
     <h2>Các bài học</h2>
@@ -196,11 +200,6 @@
     </div>
 
     <!-- Nút thêm -->
-    <a href="{% url 'add_lesson' course.course_id %}"
-       class="btn add-session-btn"
-       style="display:inline-block; text-align:center;">
-      Thêm buổi học
-    </a>
   </div>
 </div>
 <script>

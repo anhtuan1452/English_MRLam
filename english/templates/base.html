@@ -7,8 +7,7 @@
     <title>{% block title %}Mr Lam English{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    {% block bootstrap %}
-    {% endblock %}
+    {% block bootstrap %} {%endblock %}
     {% block styles %}{% endblock %}
 
 </head>
@@ -26,7 +25,7 @@
                 <a href="{% url 'materials_list' %}">Tài liệu</a>
                 <a href="{% url 'home_test' test_id=1%}">Bài test</a>
                 {% if user.is_authenticated %}
-                    <a href="{% url 'student_class' %}">Lớp học</a>
+                    <a href="{% url 'student_homework' %}">Lớp học</a>
                 {% endif %}
             </nav>
         </div>
@@ -39,16 +38,12 @@
     </div>
 
     {% if user.is_authenticated %}
-        <!-- Đã đăng nhập -->
+        <!-- Đã đăng nhậpp -->
         <div class="profile-dropdown-container" style="position: relative; margin-right: 16px;">
             <!-- Trigger button -->
             <a href="javascript:void(0)" class="profile-link" id="profileToggle" style="display: flex; align-items: center;">
-                {% if user.profile.image %}
-                    <img src="{{ user.profile.image.url }}" alt="Avatar" class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
-                    {% else %}
-                    <img src="{% static 'images/avt.jpg' %}" alt="Avatar"
-                        class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
-                    {% endif %}
+                <img class="user-avatar" src="{% static 'images/facebook-icon.png' %}" alt="User Avatar"
+                     style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
                 <p class="user-name" style="margin-right: 8px;">{{ user.username }}</p>
                 <i class="fas fa-chevron-down"></i>
             </a>
