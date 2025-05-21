@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Trang Không Tìm Thấy{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <section class="image-section">
+        <img src="{% static '404-img.png' %}" alt="Hình ảnh lỗi 404">
+    </section>
+
+    <section class="error-section">
+        <h1 class="error-title">404 - Trang Không Tìm Thấy</h1>
+        <p class="error-message">{{ message }}</p>
+        <a href="{% url 'course' %}" class="back-btn">Quay lại trang khóa học</a>
+        <p class="contact-info">Nếu bạn cần hỗ trợ, vui lòng liên hệ quản trị viên.</p>
+    </section>
+</main>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .main-content {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 100vh;
+        min-height: 600px;
+        align-items: center;
+        background-color: #FFFFFF;
+    }
+
+    .image-section {
+        width: 50%;
+        height: 500px;
+        position: relative;
+    }
+
+    .image-section img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .error-section {
+        width: 50%;
+        padding: 40px 5%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .error-title {
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #dc0000;
+    }
+
+    .error-message {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 30px;
+    }
+
+    .back-btn {
+        display: inline-block;
+        padding: 12px 30px;
+        background-color: #dc0000;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .contact-info {
+        font-size: 14px;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .main-content {
+            flex-direction: column;
+        }
+
+        .image-section, .error-section {
+            width: 100%;
+        }
+
+        .image-section {
+            height: 300px;
+        }
+
+        .error-section {
+            padding: 30px 20px;
+        }
+    }
+</style>
+{% endblock %}

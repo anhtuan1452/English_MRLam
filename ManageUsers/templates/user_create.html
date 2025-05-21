@@ -1,216 +1,157 @@
 {% extends 'base-admin.html' %}
 {% load static %}
 {% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-    /* Reset và thiết lập chung */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f7fa;
-    color: #333;
-    line-height: 1.6;
-}
-
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* Header */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.page-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: #333;
-}
-
-.title-underline {
-    display: none;
-}
-
-/* Card */
-.card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.card-header {
-    padding: 15px 20px;
-    border-bottom: 1px solid #eee;
-}
-
-.card-title {
-    font-size: 18px;
-    font-weight: 500;
-    color: #333;
-}
-
-.card-content {
-    padding: 20px;
-}
-
-/* Form */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 20px;
-}
-
-@media (min-width: 768px) {
-    .form-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
     }
-}
 
-.form-group {
-    margin-bottom: 5px;
-}
+    .btn {
+        padding: 6px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+        transition: background-color 0.2s;
+    }
 
-.form-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #333;
-}
+    .btn-success {
+        background-color: #4CAF50;
+        color: white;
+    }
 
-.form-input,
-.form-select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    color: #333;
-    background-color: #fff;
-    transition: border-color 0.2s;
-}
+    .btn-success:hover {
+        background-color: #45a049;
+    }
 
-.form-input:focus,
-.form-select:focus {
-    border-color: #4CAF50;
-    outline: none;
-}
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        justify-content: flex-end;
+    }
 
-.form-input::placeholder {
-    color: #aaa;
-}
+    .card {
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
 
-/* Select */
-.select-wrapper {
-    position: relative;
-}
+    .card-body {
+        padding: 15px;
+    }
 
-.select-arrow {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    border-style: solid;
-    border-width: 6px 6px 0 6px;
-    border-color: #666 transparent transparent transparent;
-}
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 20px;
+    }
 
-/* Buttons */
-.action-buttons {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
+    @media (min-width: 768px) {
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
 
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
+    .form-group {
+        margin-bottom: 5px;
+    }
 
-.btn-success {
-    background-color: #4CAF50;
-    color: white;
-}
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+    }
 
-.btn-success:hover {
-    background-color: #45a049;
-}
+    .form-input,
+    .form-select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        color: #333;
+        background-color: #fff;
+        transition: border-color 0.2s;
+    }
 
-/* Tab navigation */
-.tab-nav {
-    display: flex;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ddd;
-}
+    .form-input:focus,
+    .form-select:focus {
+        border-color: #4CAF50;
+        outline: none;
+    }
 
-.tab-item {
-    padding: 10px 20px;
-    cursor: pointer;
-    color: #666;
-    font-weight: 500;
-}
+    .form-input::placeholder {
+        color: #aaa;
+    }
 
-.tab-item.active {
-    color: #4285f4;
-    border-bottom: 2px solid #4285f4;
-}
+    .back-arrow {
+        font-size: 1.5rem;
+        color: #5c6bc0;
+        text-decoration: none;
+        margin-right: 10px;
+        vertical-align: middle;
+        margin-bottom: -25px;
+    }
+
+    .back-arrow:hover {
+        color: #3f51b5;
+    }
 </style>
 {% endblock %}
 {% block title %}Thêm người dùng{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="page-header">
-        <h1 class="page-title">Thêm người dùng mới</h1>
-        <div class="title-underline"></div>
+<div class="container-fluid">
+    <div style="display: flex; align-items: center;">
+        <a href="{% url 'user_list' %}" class="back-arrow"><i class="fas fa-arrow-left"></i></a>
+        <h2 class="custom-title mb-0">Thêm người dùng mới</h2>
     </div>
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                {{ message }}
-            </div>
-            {% endfor %}
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
         </div>
-        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="action-buttons">
+        <button type="submit" form="userForm" class="btn btn-success">Lưu</button>
+    </div>
+
     <form id="userForm" method="POST" action="{% url 'user_create' %}">
         {% csrf_token %}
         <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Thông tin người dùng</h2>
-            </div>
-            <div class="card-content">
+            <div class="card-body">
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="first_name" class="form-label">Họ</label>
                         <input type="text" id="first_name" name="first_name" class="form-input" placeholder="Nhập họ" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="last_name" class="form-label">Tên</label>
                         <input type="text" id="last_name" name="last_name" class="form-input" placeholder="Nhập tên" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="dob" class="form-label">Ngày sinh</label>
                         <input type="date" id="dob" name="dob" class="form-input" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="sex" class="form-label">Giới tính</label>
                         <div class="select-wrapper">
@@ -226,22 +167,22 @@ body {
                         <label for="email" class="form-label">Email</label>
                         <input type="email" id="email" name="email" class="form-input" placeholder="Nhập địa chỉ email" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="username" class="form-label">Tên tài khoản</label>
                         <input type="text" id="username" name="username" class="form-input" placeholder="Nhập tên tài khoản" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="password" class="form-label">Mật khẩu</label>
                         <input type="password" id="password" name="password" class="form-input" placeholder="Nhập mật khẩu" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Nhập lại mật khẩu" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="role" class="form-label">Vai trò</label>
                         <div class="select-wrapper">
@@ -257,15 +198,10 @@ body {
                 </div>
             </div>
         </div>
-
-        <div class="action-buttons">
-            <button type="submit" class="btn btn-success">Lưu</button>
-        </div>
     </form>
 </div>
 
 <script>
-    // Form validation
     document.getElementById('userForm').addEventListener('submit', function(e) {
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
