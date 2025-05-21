@@ -1,242 +1,224 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
+
 {% block title %}Mr Lam English - Bài test{% endblock %}
 
 {% block content %}
 <style>
-    body {
-        background-color: #f8fafc;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }
+  body {
+    background-color: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  .container {
+    max-width: 960px;
+    margin: 80px auto 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  .custom-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0f172a;
+    border-bottom: 2px solid #0ea5e9;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+  }
+  .test-header {
+    font-size: 22px;
+    color: #0369a1;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .timer {
+    font-size: 16px;
+    color: #475569;
+    margin-bottom: 30px;
+  }
 
-    .main-content-container {
-        width: 100%;
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 20px;
-    }
+  /* Nhóm media chứa audio hoặc đoạn văn */
+  .question-media-group {
+    background-color: #f9fafb;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+     flex-basis: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box;  /* để padding ko làm tràn */
+  }
+  .question-media-group p {
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #0c4a6e;
+  }
+  .question-media-group audio {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    outline: none;
+  }
+  .question-media-group div {
+    background-color: #f1f5f9;
+    padding: 12px 16px;
+    border-left: 4px solid #0284c7;
+    border-radius: 4px;
+    color: #1e293b;
+    white-space: pre-wrap; /* giữ xuống dòng */
+  }
 
-    .test-header-container {
-        margin-bottom: 20px;
-    }
+  /* Câu hỏi */
+  .question-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: space-between;
+  }
 
-    .test-header {
-        background-color: #f0f9ff;
-        padding: 16px 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        border: 1px solid #e0f2fe;
-        margin-top: 80px;
-    }
+  .question {
+    flex: 1 1 48%;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+  }
 
-    .test-title {
-        font-size: 20px;
-        font-weight: 600;
-        margin: 0;
-        color: #0369a1;
-    }
+  .question p {
+    margin-bottom: 12px;
+    color: #1e293b;
+    font-size: 16px;
+    text-align: justify;
+  }
 
-    .test-info {
-        font-size: 14px;
-        color: #64748b;
-        margin: 6px 0 0 0;
-    }
+  .choices label {
+    display: block;
+    font-size: 14px;
+    color: #334155;
+    margin-bottom: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
 
-    .timer {
-        background-color: #fee2e2;
-        color: #b91c1c;
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 15px;
-        font-weight: 500;
-        display: inline-block;
-        margin-bottom: 25px;
-    }
+  /* Các đáp án */
+  .choices input[type="radio"] {
+    margin-right: 8px;
+    vertical-align: middle;
+    cursor: pointer;
+  }
 
-    .questions-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
+  /* Nút nộp bài */
+  .button-group {
+    text-align: center;
+    margin-top: 30px;
+  }
+  .btn-primary {
+    background-color: #dc2626;
+    color: white;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color 0.3s ease;
+  }
+  .btn-primary:hover {
+    background-color: #b91c1c;
+  }
 
-    .question-container {
-        background-color: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container {
+      margin: 40px 16px;
+      padding: 16px;
     }
-
-    .question-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
+    .custom-title {
+      font-size: 24px;
     }
-
-    .question-number {
-        font-size: 14px;
-        font-weight: 500;
-        color: #0369a1;
+    .question {
+      flex: 1 1 100%;
     }
-
-    .question-text {
-        font-size: 15px;
-        margin-bottom: 16px;
-        line-height: 1.5;
-        color: #1e293b;
-        font-weight: 500;
-        text-align: left;
-    }
-
-    .answer-options {
-        margin-top: 12px;
-    }
-
-    .answer-option {
-        display: flex;
-        margin-bottom: 12px;
-        text-align: left;
-        align-items: flex-start;
-    }
-
-    .answer-option input[type="radio"] {
-        margin-top: 3px;
-        margin-right: 12px;
-    }
-
-    .answer-option label {
-        font-size: 14px;
-        cursor: pointer;
-        line-height: 1.5;
-        color: #334155;
-    }
-
-    .question-image {
-        max-width: 100%;
-        margin: 10px auto;
-        display: block;
-        border: 1px solid #e2e8f0;
-        border-radius: 4px;
-    }
-
-    .submit-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 40px;
-        margin-bottom: 60px;
-    }
-
-    .submit-button {
-        background-color: #dc2626;
-        color: white;
-        padding: 12px 30px;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .submit-button:hover {
-        background-color: #b91c1c;
-    }
-
-    .part-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 16px;
-        border-bottom: 1px solid #e2e8f0;
-        padding-bottom: 8px;
-    }
-
-    .part-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #0369a1;
-        margin: 0;
-    }
-
-    @media (max-width: 768px) {
-        .questions-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+  }
 </style>
 
-<div class="main-content-container">
-    <div class="test-header-container">
-        <!-- Test Header -->
-        <div class="test-header">
-            <h1 class="test-title">{{ test.test_name }}</h1>
-        </div>
-
-        <!-- Timer -->
-        <div class="timer">
-            Thời gian còn lại: <span id="time-remaining">{{ test.time|time:"H:i" }}</span>
-        </div>
+<div class="container">
+  <form method="POST" action="{% url 'submit_test' test.test_id %}">
+    {% csrf_token %}
+    <div class="test-header">
+      <h1>{{ test.test_name }}</h1>
+      <div class="timer">Thời gian còn lại: <span id="time-remaining">--:--</span></div>
     </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="questions-grid">
-            {% for question in questions %}
-            <div class="question-container">
-                <div class="question-text">{{ question.question_text }}</div>
-                {% with question.answer|split:";" as choices %}
-                {% with "A,B,C,D"|split:"," as letters %}
-                <div class="answer-options">
-                    {% for letter, choice in letters|zip_lists:choices %}
-                    <div class="answer-option">
-                        <input type="radio" id="q{{ question.question_id }}-{{ letter }}" name="answer_{{ question.question_id }}" value="{{ letter }}">
-                        <label for="q{{ question.question_id }}-{{ letter }}">{{ letter }}. {{ choice }}</label>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endwith %}
-                {% endwith %}
-            </div>
-            {% empty %}
-            <div class="question-container">
-                <p style="text-align: center; color: #6b7280;">Không có câu hỏi nào</p>
-            </div>
-            {% endfor %}
-        </div>
+    <div class="question-container">
+      {% for media_id, questions, start_index in grouped_questions %}
+      {% with media=questions.0.question_media %}
+      {% if media %}
+      <div class="question-media-group">
+        {% if media.audio_file and media.audio_file.url %}
+          <p>🎧 Nghe đoạn hội thoại:</p>
+          <audio controls>
+            <source src="{{ media.audio_file.url }}" type="audio/mpeg">
+            Trình duyệt không hỗ trợ audio.
+          </audio>
+        {% endif %}
+        {% if media.paragraph and media.paragraph != 'none' and media.paragraph|length > 0 %}
+          <p>📖 Đọc đoạn văn:</p>
+          <div>{{ media.paragraph|linebreaks }}</div>
+        {% endif %}
+      </div>
+      {% endif %}
 
-        <div class="submit-container">
-            <button type="submit" class="submit-button">Nộp bài</button>
+      {% for q in questions %}
+      <div class="question">
+        <p><strong>Câu {{ forloop.counter0|add:start_index }}.</strong> {{ q.question_text }}</p>
+        <div class="choices">
+          {% for key, val in q.answer.items %}
+          <label>
+            <input type="radio" name="answer_{{ q.question_id }}" value="{{ key }}">
+            {{ key }}. {{ val }}
+          </label>
+          {% endfor %}
         </div>
-    </form>
+      </div>
+      {% endfor %}
+      {% endwith %}
+      {% endfor %}
+    </div>
+
+    <div class="button-group">
+      <button type="submit" class="btn-primary">Nộp bài</button>
+    </div>
+  </form>
 </div>
 
 <script>
-    // Timer functionality
-    function startTimer(duration, display) {
-        var timer = duration, minutes, seconds;
-        setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
+  function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    var interval = setInterval(function () {
+      minutes = parseInt(timer / 60, 10);
+      seconds = parseInt(timer % 60, 10);
 
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
 
-            display.textContent = minutes + ":" + seconds;
+      display.textContent = minutes + ":" + seconds;
 
-            if (--timer < 0) {
-                timer = 0;
-                // Auto-submit form when time is up
-                document.querySelector('form').submit();
-            }
-        }, 1000);
+      if (--timer < 0) {
+        clearInterval(interval);
+        document.querySelector('form').submit();
+      }
+    }, 1000);
+  }
+
+  window.onload = function () {
+    var duration = parseInt("{{ test_duration|default:50 }}") * 60;
+    var display = document.querySelector('#time-remaining');
+    if (!isNaN(duration) && display) {
+      startTimer(duration, display);
     }
-
-    window.onload = function () {
-        var timeString = "{{ test.time|time:'H:i' }}";
-        var parts = timeString.split(':');
-        var minutes = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        var display = document.querySelector('#time-remaining');
-        startTimer(minutes, display);
-    };
+  };
 </script>
 {% endblock %}

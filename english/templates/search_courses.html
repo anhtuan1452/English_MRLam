@@ -11,7 +11,10 @@
         justify-content: center;
         gap: 24px;
         padding: 30px 40px;
-        margin-top: 100px;
+        margin-bottom: 122px;
+    }
+    .search{
+      margin-top: 100px;
     }
 
     .course-card {
@@ -91,38 +94,18 @@
     }
 </style>
 
-<div class="courses-container">
-    <h2 class="section-title" style="color: #5c6bc0">LỚP HỌC CỦA TÔI</h2>
-
-    {% if user.is_authenticated %}
-        {% if classes %}
-            {% for class in classes %}
-            <div class="course-card">
-                <h3 class="course-title">{{ class.class_name }}</h3>
-                <p class="course-teacher">Ms. {{ class.teacher_name }}</p>
-                <p class="course-teacher">Thời gian: {{ class.begin_time }} - {{ class.end_time }}</p>
-                <p class="course-teacher">Trạng thái: {{ class.status }}</p>
-                <a href="#" class="register-btn">Tiếp tục học</a>
-            </div>
-            {% endfor %}
-        {% else %}
-            <p>Bạn chưa đăng ký lớp học nào.</p>
-        {% endif %}
-    {% else %}
-        <a href="">Để xem lớp học, bạn cần đăng nhập.</a>
-    {% endif %}
-
-    <h2 class="section-title">KHOÁ HỌC</h2>
+<div class="search">
+    <h2 class="section-title">ENGLISH COURSE</h2>
+  <div class="courses-container">
     {% for course in courses %}
-    <a href="{% url 'course_detail' course_id=course.course_id %}" style="text-decoration: none; color: inherit;">
     <div class="course-card">
         <img src="{% static 'images/course.png' %}" alt="English Course" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
         <h3 class="course-title">{{ course.course_name }}</h3>
         <p class="course-teacher">{{ course.teacher_name }}</p>
         <p class="course-price">{{ course.price }}</p>
-        <a href="{% url 'start_payment' course.course_id %}" class="register-btn">Đăng ký ngay</a>
+        <a href="{% url 'course_detail' course_id=course.course_id %}" class="register-btn">Đăng ký ngay</a>
     </div>
-    </a>
     {% endfor %}
+  </div>
 </div>
 {% endblock %}

@@ -78,6 +78,7 @@ class RESULT(models.Model):
     test = models.ForeignKey(TEST, on_delete=models.CASCADE)
     acc = models.ForeignKey(User, on_delete=models.CASCADE)
     create_at = models.DateTimeField(default=datetime.datetime.now)
+    user_answer = models.JSONField(null=True, blank=True)  # Lưu câu trả lời của người dùng
     class Meta:
         db_table = 'RESULT'
 

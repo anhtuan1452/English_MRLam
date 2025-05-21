@@ -25,38 +25,38 @@
      </div>
 
      <nav class="mt-2">
-       <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_khoahoc' %}active{% endif %}">
+       <div class="sidebar-item {% if request.resolver_match.url_name in 'admin_ql_khoahoc admin_xemkhoahoc add_lesson_detail admin_themkhoahoc view_lesson_detail' %}active{% endif %}">
          <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'admin_ql_khoahoc' %}">Khóa học</a>
        </div>
 
-        <div class="sidebar-item {% if request.resolver_match.url_name == 'ManageClass' %}active{% endif %}">
+        <div class="sidebar-item {% if request.resolver_match.url_name in 'class_list add_class update_rollcall class_detail class_exercise class_rollcall exercise_detail' %}active{% endif %}">
             <i data-lucide="layers" style="width: 18px; height: 18px;"></i>
             <a href="{% url 'class_list' %}">Lớp học</a>
         </div>
 
 
-       <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_baitap' %}active{% endif %}">
+       <div class="sidebar-item {% if request.resolver_match.url_name in 'admin_ql_baitap them_baitap xem_baitap sua_baitap sua_baitap_xem' %}active{% endif %}">
          <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
            <a href="{% url 'admin_ql_baitap' %}">Bài Tập</a>
        </div>
 
-       <div class="sidebar-item {% if request.resolver_match.url_name == 'qr_payment' %}active{% endif %}">
+       <div class="sidebar-item {% if request.resolver_match.url_name in 'payment_detail payment_list add_payment' %}active{% endif %}">
          <i data-lucide="credit-card" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'payment_list' %}">Thanh toán</a>
        </div>
 
-       <div class="sidebar-item {% if request.resolver_match.url_name == 'document_list' %}active{% endif %}">
+       <div class="sidebar-item {% if request.resolver_match.url_name in 'document_list add_document document_detail_edit' %}active{% endif %}">
          <i data-lucide="file-spreadsheet" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'document_list' %}">Tài liệu</a>
        </div>
 
-       <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_test_list' %}active{% endif %}">
+       <div class="sidebar-item {% if request.resolver_match.url_name in 'admin_test_list admin_test_add results admin_test_details result_delete test_delete test_edit' %}active{% endif %}">
          <i data-lucide="check-square" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'admin_test_list' %}">Bài kiểm tra</a>
        </div>
 
-       <div class="sidebar-item {% if request.resolver_match.url_name == 'admin_ql_nguoidung' %}active{% endif %}">
+       <div class="sidebar-item {% if request.resolver_match.url_name in 'user_list user_edit user_detail user_create user_delete' %}active{% endif %}">
          <i data-lucide="users" style="width: 18px; height: 18px;"></i>
          <a href="{% url 'user_list' %}">Người dùng</a>
        </div>

@@ -1,21 +1,39 @@
 import os
 
 from django.conf import settings
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from english.models import COURSE, LESSON
 from exercise_admin.forms import KhoaHocForm, BuoiHocForm
 
-# Quản lý bài tập
+# Quản lý bài tập + tìm kiếm
 def admin_ql_baitap(request):
-    courses = COURSE.objects.all()  # Lấy tất cả các khóa học
-    lessons = LESSON.objects.select_related('course').all()  # Lấy tất cả các bài học với thông tin khóa học
-                                                            # SELECT * FROM lesson JOIN course ON lesson.course_id = course.id;(ví dụ)
+    q = request.GET.get('q', '').strip()
+    lessons = LESSON.objects.all()
+    if q:
+        filters = (
+            Q(course__course_name__icontains=q) |
+            Q(lesson_name__icontains=q) |
+            Q(description__icontains=q)
+        )
+        if q.isdigit():
+            filters |= Q(lesson_id=q)
+        lessons = lessons.filter(filters)
     context = {
-        'courses': courses,
         'lessons': lessons,
+        'query': q,
     }
     return render(request, 'ql_baitap.html', context)
+# def admin_ql_baitap(request):
+#     courses = COURSE.objects.all()  # Lấy tất cả các khóa học
+#     lessons = LESSON.objects.select_related('course').all()  # Lấy tất cả các bài học với thông tin khóa học
+#                                                             # SELECT * FROM lesson JOIN course ON lesson.course_id = course.id;(ví dụ)
+#     context = {
+#         'courses': courses,
+#         'lessons': lessons,
+#     }
+#     return render(request, 'ql_baitap.html', context)
 
 # Thêm bài tập
 def them_baitap(request):
@@ -36,6 +54,7 @@ def them_baitap(request):
             lesson = form2.save(commit=False)
             lesson.course = course  # Gán khóa học cho buổi học
             lesson.save() # Thêm thông báo thành công
+            messages.success(request, 'Thêm bài tập thành công!')
             return redirect('admin_ql_baitap')
     else:
         form1 = KhoaHocForm()
