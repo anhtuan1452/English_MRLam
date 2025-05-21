@@ -9,17 +9,24 @@
         padding: 40px 30px;
         margin-top: 50px;
     }
-    .custom-title  {
-    width: 93%;
-    font-size: 26px;
-    font-weight: bold;
-    text-decoration: none;
-    color: #5c6bc0;
-    margin-left: 40px;
-    border-bottom: 2px solid #5c6bc0; /* Thêm đường kẻ dưới tiêu đề */
-    padding-bottom: 10px; /* Khoảng cách giữa chữ và đường kẻ */
-    margin-bottom: 30px;  /* Khoảng cách giữa tiêu đề và phần nội dung dưới */
-    margin-top: 30px; }
+
+    .custom-title {
+        width: 96%;
+        font-size: 26px;
+        font-weight: bold;
+        text-decoration: none;
+        color: #5c6bc0;
+        margin-left: 40px;
+        border-bottom: 2px solid #5c6bc0;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+        margin-top: 30px;
+    }
+
+    .content-row-wrapper {
+        width: 100%;
+        margin-left: 40px;
+    }
 
     .row {
         display: flex;
@@ -27,6 +34,7 @@
         gap: 20px;
         justify-content: flex-start;
     }
+
     .card {
         position: relative;
         background-color: #fff;
@@ -37,6 +45,7 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease;
     }
+
     .card:hover {
         transform: translateY(-5px);
     }
@@ -111,19 +120,21 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="custom-title">Tài liệu FREE</h2>
-    <div class="row">
-        {% for doc in documents %}
-        <div class="card">
-            <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" alt="{{ doc.doc_name }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ doc.doc_name }}</h5>
-                <a href="{{ doc.doc_file.url }}" class="stretched-link" target="_blank"></a>
+    <h2 class="custom-title">TÀI LIỆU FREE </h2>
+    <div class="content-row-wrapper">
+        <div class="row">
+            {% for doc in documents %}
+            <div class="card">
+                <img src="https://sununi.edu.vn/wp-content/uploads/2021/12/english-course-930x620-1.jpg" alt="{{ doc.doc_name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ doc.doc_name }}</h5>
+                    <a href="{{ doc.doc_file.url }}" class="stretched-link" target="_blank"></a>
+                </div>
             </div>
+            {% empty %}
+            <p>Không có tài liệu nào.</p>
+            {% endfor %}
         </div>
-        {% empty %}
-        <p>Không có tài liệu nào.</p>
-        {% endfor %}
     </div>
 </div>
 {% endblock %}
