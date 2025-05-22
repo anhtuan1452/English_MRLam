@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, redirect,get_object_or_404
 from english.models import  RESULT, TEST, QUESTION, QUESTION_MEDIA
 from .forms import TestForm, QuestionForm, CustomQuestionForm, QuestionMediaForm
@@ -6,6 +7,7 @@ from collections import OrderedDict, defaultdict
 
 
 # Create your views here.
+@user_passes_test(lambda u: u.is_superuser)
 def test_list(request):
     query = request.GET.get('q', '')  # Lấy từ khóa tìm kiếm từ query string
     if query:
@@ -14,7 +16,7 @@ def test_list(request):
         tests = TEST.objects.all()
     return render(request, 'test_list.html', {'tests': tests, 'query': query})
 
-
+@user_passes_test(lambda u: u.is_superuser)
 def test_delete(request, test_id):
     test = get_object_or_404(TEST, pk=test_id)
 
@@ -23,6 +25,7 @@ def test_delete(request, test_id):
         # return redirect('results')
     return redirect('admin_test_list')
 
+@user_passes_test(lambda u: u.is_superuser)
 def test_detail_view(request, test_id):
     test = get_object_or_404(TEST, pk=test_id)
     questions = QUESTION.objects.filter(test=test).select_related('question_media')
@@ -43,6 +46,7 @@ def test_detail_view(request, test_id):
         'media_groups': media_groups.items(),  # Trả về list of tuples (media, [questions])
     })
 
+@user_passes_test(lambda u: u.is_superuser)
 def test_edit_view(request, test_id):
     test = get_object_or_404(TEST, pk=test_id)
     questions = QUESTION.objects.filter(test=test).select_related('question_media')
@@ -171,6 +175,7 @@ from django.forms import formset_factory
 #         'question_total': len(question_formset)
 #     })
 
+@user_passes_test(lambda u: u.is_superuser)
 def list_result_view(request):
     query = request.GET.get('q', '').strip()
     results = RESULT.objects.select_related('test', 'acc')

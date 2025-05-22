@@ -84,4 +84,4 @@ def payment_success(request, paymentinfo_id):
         USER_CLASS.objects.get_or_create(user=user, classes=class_obj)
 
     # Render trang thành công
-    return render(request, 'payment_success.html', {'course': payment_info.payment.course_id})
+    return render(request, 'payment_success.html', {'course': payment_info.payment.course_id.course})
