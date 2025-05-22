@@ -314,6 +314,34 @@
         box-shadow: 0 6px 12px rgba(58, 71, 204, 0.6);
         color: white;
     }
+    .course-suggestions {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .suggestion-item {
+        border: 1px solid #e5e7eb;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        background-color: #f9fafb;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease;
+        cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+
+    .suggestion-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+
 
     @media (max-width: 768px) {
         .question-list {
@@ -357,7 +385,7 @@
                             <i class="fas fa-lightbulb"></i>
                         </div>
                         <div>
-                            <strong>Lời khuyên:</strong> Cố gắng hơn lần sau nhé! Hãy xem lại những câu sai để cải thiện kết quả.
+                            <strong>Lời khuyên:</strong> Bạn đã rất cố gắng, hãy xem các khóa học phù hợp ở dưới nhé!
                         </div>
                     </div>
                     {% else %}
@@ -416,5 +444,35 @@
             </div>
         {% endfor %}
     </div>
+    <!-- Gợi ý khóa học phù hợp -->
+    <div class="result-card mt-5">
+        <div class="card-header">
+            <h2 class="page-title">Khóa học phù hợp với bạn</h2>
+        </div>
+        <div class="card-body">
+        <div class="course-suggestions">
+            {% for course in suggested_courses %}
+            <div class="suggestion-item" data-href="{% url 'course_detail' course.course_id %}" onclick="goToDetail(this)">
+                <div class="suggestion-title">{{ course.course_name }}</div>
+                <div class="suggestion-description">{{ course.description|truncatechars:120 }}</div>
+            </div>
+            {% empty %}
+            <p>Không tìm thấy khóa học phù hợp. Vui lòng liên hệ tư vấn viên để được hỗ trợ.</p>
+            {% endfor %}
+        </div>
+    </div>
+    </div>
+
 </div>
+<script>
+    function goToDetail(element) {
+    if (event.target.closest('.register-btn')) return;
+    const url = element.getAttribute('data-href');
+    if (url) {
+        window.location.href = url;
+    }
+}
+
+</script>
+
 {% endblock %}

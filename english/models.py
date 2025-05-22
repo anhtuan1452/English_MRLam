@@ -163,6 +163,9 @@ class LESSON(models.Model):
     class Meta:
         db_table = 'LESSON'
 
+    def __str__(self):
+        return self.lesson_name
+
 
 class LESSON_DETAIL(models.Model):
     lessondetail_id = models.AutoField(primary_key=True)
