@@ -148,12 +148,15 @@
 #     return redirect('result_page', result_id=result.result_id)
 import json
 from collections import defaultdict
+
+from Tools.demo.sortvisu import distinct
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from english.models import TEST, QUESTION, RESULT
+from english.models import TEST, QUESTION, RESULT, COURSE
 
 
 def home_test(request, test_id):
@@ -278,6 +281,29 @@ def result_page(request, result_id):
     total_questions = questions.count()
     full_circle = 471.24
     calculated_value = full_circle * (1 - score / total_questions) if total_questions > 0 else full_circle
+    if total_questions > 0:
+        percentage = score / total_questions
+        if percentage < 0.5:
+            # Gợi ý khóa luyện cơ bản, sơ cấp
+            suggested_courses = COURSE.objects.filter(
+                Q(course_name__icontains="cơ bản") |
+                Q(course_name__icontains="sơ cấp") |
+                Q(description__icontains="cơ bản")
+            ).distinct()[:3]
+        elif percentage < 0.8:
+            # Gợi ý khóa trung cấp
+            suggested_courses = COURSE.objects.filter(
+                Q(course_name__icontains="trung cấp") |
+                Q(description__icontains="trung cấp")
+            ).distinct()[:3]
+        else:
+            # Gợi ý khóa nâng cao
+            suggested_courses = COURSE.objects.filter(
+                Q(course_name__icontains="nâng cao") |
+                Q(description__icontains="nâng cao")
+            ).distinct()[:3]
+    else:
+        suggested_courses = COURSE.objects.none()
 
     context = {
         'result': result,
@@ -285,5 +311,6 @@ def result_page(request, result_id):
         'total_questions': total_questions,
         'detailed_result': detailed_result,
         'calculated_value': calculated_value,
+        'suggested_courses': suggested_courses,
     }
     return render(request, "result.html", context)

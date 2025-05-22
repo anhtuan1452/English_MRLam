@@ -5,30 +5,45 @@
 
 {% block content %}
 <style>
+    body {
+        overflow-x: hidden;
+    }
+
     .courses-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 24px;
-        padding: 30px 40px;
+        padding: 30px 20px;
         margin-top: 100px;
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .course-card {
-        flex: 1 1 280px;
-        max-width: 320px;
+       flex: 0 1 calc(25% - 30px);
+       background-color: #fff;
+       border-radius: 12px;
+       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+       padding: 20px;
+       display: flex;
+       flex-direction: column;
+       transition: transform 0.2s ease;
+       min-height: 280px;
+       text-decoration: none;
+       align-items: flex-start;
+    }
+    .my-class-card {
+        display: flex;
+        flex-direction: column;
         background-color: #fff;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         padding: 20px;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.2s ease;
-        min-height: 280px;
         align-items: flex-start;
+        transition: transform 0.2s ease;
+        min-width: 280px;
+        max-width: 100%;
+        flex: 0 1 280px;
     }
-
-    .course-card:hover {
+    .course-card:hover, .my-class-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
     }
@@ -38,21 +53,12 @@
         font-weight: bold;
         margin-bottom: 6px;
         color: #333;
-        justify-content: flex-start;
     }
 
     .course-teacher {
         font-size: 14px;
         color: #666;
-        margin-bottom: 12px;
-    }
-
-    .course-info {
-        display: flex;
-        justify-content: space-between;
-        font-size: 13px;
-        color: #555;
-        margin-bottom: 16px;
+        margin-bottom: 8px;
     }
 
     .course-price {
@@ -72,7 +78,7 @@
         text-decoration: none;
         font-weight: 500;
         transition: background-color 0.3s;
-        width: 100%
+        width: 100%;
     }
 
     .register-btn:hover {
@@ -80,49 +86,96 @@
     }
 
     .section-title {
+       font-size: 26px;
+       font-weight: bold;
+       color: #5c6bc0;
+       border-bottom: 2px solid #5c6bc0;
+       padding-bottom: 10px;
+       margin-bottom: 20px;
+       margin-left: 0;
+
+    }
+
+    .courses-wrapper,
+    .my-classes-wrapper {
+       display: flex;
+       flex-wrap: wrap;
+       gap: 30px;
+       margin-bottom: 30px;
+       justify-content: flex-start;
+       width: 100%;
+       margin-left:20px;
+   }
+
+    img.course-image {
         width: 100%;
-        font-size: 26px;
-        font-weight: bold;
-        text-decoration: none;
-        color: #5c6bc0;
-        margin-left: 40px;
-        border-bottom: 2px solid #5c6bc0; /* Thêm đường kẻ dưới tiêu đề */
-        padding-bottom: 10px; /* Khoảng cách giữa chữ và đường kẻ */
+        height: 160px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 992px) {
+        .course-card, .my-class-card {
+            flex: 0 1 calc(50% - 30px);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .course-card, .my-class-card {
+            flex: 0 1 100%;
+        }
     }
 </style>
 
 <div class="courses-container">
-    <h2 class="section-title" style="color: #5c6bc0">LỚP HỌC CỦA TÔI</h2>
-
-    {% if user.is_authenticated %}
-        {% if classes %}
-            {% for class in classes %}
-            <div class="course-card">
-                <h3 class="course-title">{{ class.class_name }}</h3>
-                <p class="course-teacher">Ms. {{ class.teacher_name }}</p>
-                <p class="course-teacher">Thời gian: {{ class.begin_time }} - {{ class.end_time }}</p>
-                <p class="course-teacher">Trạng thái: {{ class.status }}</p>
-                <a href="#" class="register-btn">Tiếp tục học</a>
-            </div>
+    {% if user.is_authenticated and classes %}
+        <h2 class="section-title">LỚP HỌC CỦA TÔI</h2>
+        <div class="my-classes-wrapper">
+            {% for myclass in classes %}
+                <div class="my-class-card">
+                    <h3 class="course-title">{{ myclass.class_name }}</h3>
+                    <p class="course-teacher">Giáo viên: {{ myclass.course.teacher_name }}</p>
+                    <p class="course-teacher">
+                        Thời gian: {{ myclass.begin_time|date:"d/m/Y" }} - {{ myclass.end_time|date:"d/m/Y" }}
+                    </p>
+                    <p class="course-teacher">Trạng thái: {{ myclass.status }}</p>
+                    <a href="{% url 'student_homework' myclass.class_id %}" class="register-btn">Tiếp tục học</a>
+                </div>
             {% endfor %}
-        {% else %}
-            <p>Bạn chưa đăng ký lớp học nào.</p>
-        {% endif %}
-    {% else %}
-        <a href="">Để xem lớp học, bạn cần đăng nhập.</a>
+        </div>
     {% endif %}
 
     <h2 class="section-title">KHOÁ HỌC</h2>
-    {% for course in courses %}
-    <a href="{% url 'course_detail' course_id=course.course_id %}" style="text-decoration: none; color: inherit;">
-    <div class="course-card">
-        <img src="{% static 'images/course.png' %}" alt="English Course" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
-        <h3 class="course-title">{{ course.course_name }}</h3>
-        <p class="course-teacher">{{ course.teacher_name }}</p>
-        <p class="course-price">{{ course.price }}</p>
-        <a href="{% url 'start_payment' course.course_id %}" class="register-btn">Đăng ký ngay</a>
+    <div class="courses-wrapper">
+        {% for course in courses %}
+            <div class="course-card" data-href="{% url 'course_detail' course.course_id %}" onclick="goToDetail(this)">
+                {% if course.image %}
+                    <img src="{{ course.image.url }}" alt="{{ course.course_name }}" class="course-image">
+                {% else %}
+                    <img src="{% static 'images/course.png' %}" alt="{{ course.course_name }}" class="course-image">
+                {% endif %}
+
+                <h3 class="course-title">{{ course.course_name }}</h3>
+                <p class="course-teacher">Giáo viên: {{ course.teacher_name }}</p>
+                <p class="course-price">{{ course.price }}</p>
+                <a href="{% url 'start_payment' course.course_id %}" class="register-btn">Đăng ký ngay</a>
+            </div>
+        {% endfor %}
     </div>
-    </a>
-    {% endfor %}
 </div>
+
+<script>
+function goToDetail(element) {
+    if (event.target.closest('.register-btn')) return;
+    const url = element.getAttribute('data-href');
+    if (url) {
+        window.location.href = url;
+    }
+}
+</script>
 {% endblock %}
+
+
+
+

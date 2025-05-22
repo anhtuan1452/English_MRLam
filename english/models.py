@@ -14,9 +14,9 @@ def submission_upload_path(instance, filename):
 class USER_PROFILE(models.Model):
     userprofile = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     SEX_CHOICES = [
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
+        ('M', 'Nam'),
+        ('F', 'Nữ'),
+        ('O', 'Khác'),
     ]
     dob = models.DateField(default="")  # ngày sinh
     sex = models.CharField(max_length=1, choices=SEX_CHOICES,null=True)  # giới tính (có choices)
@@ -43,13 +43,6 @@ class QUESTION_MEDIA(models.Model):
     questionmedia_id = models.AutoField(primary_key=True)
     audio_file = models.FileField(upload_to='media/audio', null=True, blank=True)
     paragraph = models.TextField(null=True, blank=True)
-    # def __str__(self):
-    #     parts = []
-    #     if self.audio_file:
-    #         parts.append("🎧 Audio")
-    #     if self.paragraph:
-    #         parts.append("📖 Paragraph")
-    #     return " + ".join(parts) or "❓ Chưa có nội dung"
     class Meta:
         db_table = 'QUESTION_MEDIA'
 
@@ -101,6 +94,7 @@ class COURSE(models.Model):
     image = models.ImageField(upload_to="media/course",null=True, blank=True)
     def __str__(self):
         return self.course_name
+
     class Meta:
         db_table = 'COURSE'
 
@@ -161,6 +155,9 @@ class LESSON(models.Model):
     session_number = models.CharField(max_length=100, null=True)
     class Meta:
         db_table = 'LESSON'
+
+    def __str__(self):
+        return self.lesson_name
 
 
 class LESSON_DETAIL(models.Model):

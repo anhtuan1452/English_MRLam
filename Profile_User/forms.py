@@ -40,6 +40,7 @@ class UserProfileForm(forms.ModelForm):
         }
 
 
+
 class PasswordChangeCustomForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super(PasswordChangeCustomForm, self).__init__(*args, **kwargs)

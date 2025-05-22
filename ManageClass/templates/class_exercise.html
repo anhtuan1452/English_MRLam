@@ -1,0 +1,247 @@
+{% extends "base-admin.html" %}
+
+{% block title %}Bài tập{% endblock %}
+
+{% block content %}
+<style>
+    .custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .stats-box {
+        background-color: #f1f3f5;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+
+    .btn-primary {
+        background-color: #2979ff;
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #2962ff;
+    }
+
+    .text-warning {
+        color: #FFC107;
+    }
+
+    .text-danger {
+        color: #f44336;
+    }
+
+    .text-success {
+        color: #4CAF50;
+    }
+
+    .text-muted {
+        color: #6c757d;
+    }
+
+    .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .bg-warning {
+        background-color: #FFC107;
+        color: #333;
+    }
+</style>
+
+<div class="container-fluid tab-section">
+    <h2 class="custom-title">
+        <a href="{% url 'class_list' %}" class="text-decoration-none text-primary">Danh sách lớp học</a> &gt; Lớp {{ class_instance.class_name }}
+    </h2>
+
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'class_detail' class_id=class_instance.pk %}">Mô tả lớp học</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{% url 'class_exercise' class_id=class_instance.pk %}">Bài tập</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'class_rollcall' class_id=class_instance.pk %}">Điểm danh</a>
+        </li>
+    </ul>
+
+    <div class="d-flex justify-content-between mb-3">
+        <input type="text" class="form-control w-25" placeholder="Tìm kiếm học viên" id="searchInput">
+        <div class="d-flex gap-2">
+            <select class="form-select" id="lessonFilter">
+                <option value="">Tất cả buổi học</option>
+                {% for data in lesson_data %}
+                    <option value="{{ data.lesson_detail.lesson.lesson_name }}">{{ data.lesson_detail.lesson.lesson_name }} (Buổi {{ data.lesson_detail.lesson.session_number }})</option>
+                {% endfor %}
+            </select>
+            <select class="form-select" id="statusFilter">
+                <option value="">Tất cả trạng thái</option>
+                <option value="done">Đã chấm</option>
+                <option value="check">Chưa chấm</option>
+                <option value="none">Chưa nộp</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="accordion" id="lessonAccordion">
+        {% for data in lesson_data %}
+        <div class="accordion-item" data-lesson="{{ data.lesson_detail.lesson.lesson_name }}">
+            <h2 class="accordion-header" id="heading{{ data.lesson_detail.lesson.lesson_id }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ data.lesson_detail.lesson.lesson_id }}" aria-expanded="false" aria-controls="collapse{{ data.lesson_detail.lesson.lesson_id }}">
+                    Buổi {{ data.lesson_detail.lesson.session_number }}: {{ data.lesson_detail.lesson.lesson_name }}
+                    {% if data.lesson_detail.date %} ({{ data.lesson_detail.date|date:"d M Y" }}){% endif %}
+                    {% if not data.exercise %}
+                        <span class="badge bg-warning text-dark ms-2">Chưa có bài tập</span>
+                    {% endif %}
+                </button>
+            </h2>
+            <div id="collapse{{ data.lesson_detail.lesson.lesson_id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ data.lesson_detail.lesson.lesson_id }}" data-bs-parent="#lessonAccordion">
+                <div class="accordion-body">
+                    {% if data.exercise %}
+                    <!-- Hiển thị thống kê -->
+                    <div class="stats-box">
+                        <h6>Thống kê bài tập:</h6>
+                        <ul>
+                            <li><strong>Đã nộp:</strong> {{ data.submission_stats.submitted_count }}</li>
+                            <li><strong>Chưa nộp:</strong> {{ data.submission_stats.not_submitted_count }}</li>
+                            <li><strong>Đã chấm:</strong> {{ data.submission_stats.checked_count }}</li>
+                            <li><strong>Chưa chấm:</strong> {{ data.submission_stats.unchecked_count }}</li>
+                        </ul>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th>ID</th>
+                                <th>Họ và tên</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày nộp</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            {% for student_submission in data.student_submissions %}
+                            <tr class="student-row" data-lesson="{{ data.lesson_detail.lesson.lesson_name }}" data-status="{% if student_submission.submission %}{{ student_submission.submission.status }}{% else %}none{% endif %}">
+                                <td>{{ student_submission.student.user.id }}</td>
+                                <td>{{ student_submission.student.user.get_full_name }}</td>
+                                <td>
+                                    {% if student_submission.submission %}
+                                        {% if student_submission.submission.status == 'Checking' %}
+                                            <span class="text-warning">Chưa chấm</span>
+                                        {% elif student_submission.submission.status == 'Check' %}
+                                            <span class="text-danger">Yêu cầu làm lại</span>
+                                        {% else %}
+                                            <span class="text-success">Đã chấm</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-danger">Chưa nộp</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student_submission.submission %}
+                                        {{ student_submission.submission.submit_date|date:"d M Y H:i" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student_submission.submission %}
+                                        <a href="{% url 'exercise_detail' class_id=class_instance.pk submission_id=student_submission.submission.submission_id %}" class="btn btn-sm btn-primary">Xem chi tiết</a>
+                                    {% else %}
+                                        <span class="text-muted">Không có bài nộp</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-center text-muted">Chưa có bài tập được giao cho buổi học này.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">Chưa có buổi học nào cho lớp này.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.getElementById('searchInput').addEventListener('input', filterLessonsAndRows);
+document.getElementById('lessonFilter').addEventListener('change', filterLessonsAndRows);
+document.getElementById('statusFilter').addEventListener('change', filterLessonsAndRows);
+
+function filterLessonsAndRows() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const lessonFilter = document.getElementById('lessonFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const accordionItems = document.querySelectorAll('.accordion-item');
+
+    accordionItems.forEach(item => {
+        const lessonName = item.dataset.lesson;
+        const matchesLesson = !lessonFilter || lessonName === lessonFilter;
+
+        // Show or hide the entire accordion item based on lesson filter
+        item.style.display = matchesLesson ? '' : 'none';
+
+        // If the accordion item is visible, filter its rows
+        if (matchesLesson) {
+            const rows = item.querySelectorAll('.student-row');
+            let hasVisibleRows = false;
+
+            rows.forEach(row => {
+                const studentName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const status = row.dataset.status;
+
+                const matchesSearch = studentName.includes(searchText);
+                const matchesStatus = !statusFilter || status === statusFilter;
+
+                row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+                if (matchesSearch && matchesStatus) {
+                    hasVisibleRows = true;
+                }
+            });
+
+            // Update visibility of the accordion item based on visible rows
+            const collapseElement = item.querySelector('.accordion-collapse');
+            const headerButton = item.querySelector('.accordion-button');
+            if (hasVisibleRows) {
+                item.style.display = '';
+                // Optionally expand if there are visible rows
+                collapseElement.classList.add('show');
+                headerButton.classList.remove('collapsed');
+                headerButton.setAttribute('aria-expanded', 'true');
+            } else {
+                // Hide the accordion item if no rows are visible
+                collapseElement.classList.remove('show');
+                headerButton.classList.add('collapsed');
+                headerButton.setAttribute('aria-expanded', 'false');
+            }
+        } else {
+            // Ensure the accordion is collapsed when filtered out
+            const collapseElement = item.querySelector('.accordion-collapse');
+            const headerButton = item.querySelector('.accordion-button');
+            collapseElement.classList.remove('show');
+            headerButton.classList.add('collapsed');
+            headerButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+}
+</script>
+{% endblock %}

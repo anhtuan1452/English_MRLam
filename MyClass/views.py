@@ -1,17 +1,21 @@
 import os
-from django.http import HttpResponseRedirect, HttpResponse
-
 
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from english.models import LESSON, USER_CLASS, LESSON_DETAIL, EXERCISE, SUBMISSION, COURSE
-
+def is_student(user):
+    return user.groups.filter(name='Student').exists()
 
 @login_required
+@user_passes_test(is_student)
 def student_submission(request, class_id, lesson_id):
     # Get the lesson and class
     lesson = get_object_or_404(LESSON, pk=lesson_id)
@@ -162,6 +166,7 @@ def student_homework(request, class_id):
         'class_id': class_id  # Add class_id to context
     })
 @login_required
+@user_passes_test(is_student)
 def download_submission(request, submission_id):
     submission = get_object_or_404(SUBMISSION, pk=submission_id)
 

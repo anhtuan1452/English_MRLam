@@ -29,6 +29,8 @@ class CustomLoginView(LoginView):
     def form_valid(self, form):
         messages.success(self.request, 'Đăng nhập thành công!')
         return super().form_valid(form)
+from django.contrib.auth.models import Group  # Thêm import này
+
 def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -47,8 +49,14 @@ def register_view(request):
                         description=None,
                         image=None
                     )
+                    # Gán người dùng vào nhóm Student
+                    student_group = Group.objects.get(name='Student')
+                    user.groups.add(student_group)
                 messages.success(request, 'Đăng ký thành công! Vui lòng đăng nhập.')
                 return redirect('login')
+            except Group.DoesNotExist:
+                messages.error(request, 'Nhóm "Student" không tồn tại. Vui lòng liên hệ quản trị viên.')
+                return render(request, 'resgister_content.html', {'form': form})
             except Exception as e:
                 messages.error(request, f'Đã có lỗi xảy ra: {str(e)}')
         else:

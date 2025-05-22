@@ -75,8 +75,8 @@
                             <th class="text-center">STT</th>
                             <th>Tên tài liệu</th>
                             <th>Người tạo</th>
-                            <th>Định dạng</th>
-                            <th></th>
+                            <th class="text-center">Định dạng</th>
+                            <th class="text-center"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,8 +85,8 @@
                             <td class="text-center">{{ forloop.counter }}</td>
                             <td>{{ document.doc_name|default:"(Không có tên)" }}</td>
                             <td>{{ document.auth_user_id.first_name }} {{ document.auth_user_id.last_name }}</td>
-                            <td>PDF</td>
-                            <td>
+                            <td class="text-center">PDF</td>
+                            <td class="text-center">
                                 <a href="{% url 'document_detail_edit' document.doc_id %}" class="btn btn-sm btn-common">Sửa</a>
                                 <form method="post" action="{% url 'document_detail_edit' document.doc_id %}" style="display:inline;">
                                     {% csrf_token %}

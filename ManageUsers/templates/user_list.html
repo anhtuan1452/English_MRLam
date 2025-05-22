@@ -2,175 +2,6 @@
 {% load static %}
 {% block styles %}
 <style>
-    /* Thiết lập chung */
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-
-    .page-title {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 24px;
-      color: #333;
-    }
-
-    /* Phần tìm kiếm và nút thêm */
-    .search-add-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .search-container {
-      position: relative;
-      width: 50%;
-    }
-
-    .search-input {
-        width: 100%;
-        padding: 0.5rem 1rem 0.5rem 2.5rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.375rem;
-    }
-
-    .search-button {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .search-icon {
-      color: #666;
-    }
-
-    .add-button {
-      background-color: #e53935;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .add-button:hover {
-      background-color: #c62828;
-    }
-
-    /* Bảng dữ liệu */
-    .table-container {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-
-    .user-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .user-table th {
-      background-color: #f0f5ff;
-      padding: 12px 16px;
-      text-align: left;
-      font-weight: 600;
-      color: #333;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .user-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .user-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .user-table tr:hover {
-      background-color: #f9f9f9;
-    }
-
-    /* Vai trò */
-    .role {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .role-student {
-      background-color: #e3f2fd;
-      color: #1976d2;
-    }
-
-    .role-teacher {
-      background-color: #e8f5e9;
-      color: #388e3c;
-    }
-
-    .role-user {
-      background-color: #fff3e0;
-      color: #f57c00;
-    }
-
-    /* Nút hành động */
-    .actions {
-      display: flex;
-      margin-right:-12vh;
-    }
-
-    .action-button {
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 13px;
-      font-weight: 500;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      display: inline-block;
-      text-align: center;
-    }
-
-    .view-button {
-      background-color: #e3f2fd;
-      color: #2196f3;
-    }
-
-    .view-button:hover {
-      background-color: #bbdefb;
-    }
-
-    .edit-button {
-      background-color: #fff8e1;
-      color: #ffc107;
-    }
-
-    .edit-button:hover {
-      background-color: #ffecb3;
-    }
-
-    .delete-button {
-      background-color: #ffebee;
-      color: #f44336;
-    }
-
-    .delete-button:hover {
-      background-color: #ffcdd2;
-    }
     .custom-title {
         font-size: 1.8rem;
         font-weight: 700;
@@ -180,103 +11,123 @@
         padding: 8px 0;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .search-add-container {
-        flex-direction: column;
-        gap: 10px;
-      }
+    .btn-common {
+        background-color: #fef9c3;
+        border: none;
+        color: #d97706;
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        border-radius: 3px;
+        margin-right: 5px;
+    }
+    .btn-view {
+        background-color: #e3f2fd;
+        color: #2196f3;
+        border: none;
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        border-radius: 3px;
+        margin-right: 5px;
+    }
 
-      .search-container {
-        width: 100%;
-      }
-
-      .user-table {
-        font-size: 14px;
-      }
-
-      .actions {
-        flex-direction: column;
-        gap: 5px;
-      }
+    .btn-delete {
+        background-color: #fee2e2;
+        border: none;
+        color: #b91c1c;
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        border-radius: 3px;
+        margin-right: 5px;
     }
 </style>
 {% endblock %}
 {% block title %}Danh sách người dùng{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2 class="custom-title">Danh sách người dùng</h2>
+<div class="container-fluid">
+    <h2 class="custom-title mb-0">Danh sách người dùng</h2>
 
-    <div class="search-add-container">
-        <div class="search-container">
-            <form method="GET" action="{% url 'user_list' %}">
-                <input type="text" name="search" placeholder="Nhập tên người dùng cần tìm kiếm" class="search-input" value="{{ search_query }}">
-                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </form>
+    <div class="d-flex justify-content-between mb-4 mt-2">
+        <div style="position: relative; max-width: 500px; width: 100%;">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Tìm kiếm người dùng"
+                style="width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border: 1px solid #e2e8f0; border-radius: 0.375rem;"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
         </div>
-        <a href="{% url 'user_create' %}" class="btn btn-primary" style="padding: 0.5rem 1rem; border-radius:0.375rem; font-size:1rem; font-weight: bold;">Thêm người dùng</a>
+
+        <a href="{% url 'user_create' %}" class="btn btn-primary" style="font-weight: bold;">Thêm người dùng</a>
     </div>
 
-    <div class="table-container">
-        <table class="table table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Họ và tên</th>
-                    <th>Vai trò</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ user.first_name }} {{ user.last_name }}</td>
-                    <td>
-                        {% if user.is_superuser %}
-                            <span class="role role-student">Admin</span>
-                        {% elif user.is_staff %}
-                            <span class="role role-teacher">Giáo viên</span>
-                        {% else %}
-                            <span class="role role-user">Học viên</span>
-                        {% endif %}
-                    </td>
-                    <td class="actions">
-                        <a href="{% url 'user_detail' user.id %}" class="action-button view-button">Xem</a>
-                        <a href="{% url 'user_edit' user.id %}" class="action-button edit-button">Sửa</a>
-                        <a href="{% url 'user_delete' user.id %}" class="action-button delete-button delete-action" data-user-id="{{ user.id }}">Xóa</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center">Không có người dùng nào</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th class="text-center">STT</th>
+                            <th>Họ và tên</th>
+                            <th>Vai trò</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>
+                            <td>
+                                {% if user.is_superuser %}
+                                    <span class="role role-student">Admin</span>
+                                {% elif user.is_staff %}
+                                    <span class="role role-teacher">Giáo viên</span>
+                                {% else %}
+                                    <span class="role role-user">Học viên</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'user_detail' user.id %}" class="btn btn-sm btn-view">Xem</a>
+                                <a href="{% url 'user_edit' user.id %}" class="btn btn-sm btn-common">Sửa</a>
+                                <form method="post" action="{% url 'user_delete' user.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">Không có người dùng nào.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Form ẩn để xóa người dùng -->
-<form id="delete-form" method="POST" style="display: none;">
-    {% csrf_token %}
-</form>
-
 <script>
-    // Delete action
-    document.querySelectorAll('.delete-action').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const id = this.getAttribute('data-user-id');
-            if (confirm('Bạn có chắc chắn muốn xóa người dùng này?')) {
-                const form = document.getElementById('delete-form');
-                form.action = `/listuser_admin/user_delete/${id}/`;
-                form.submit();
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keyup', function () {
+            const searchValue = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('tbody tr');
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
         });
     });
 </script>

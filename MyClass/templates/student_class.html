@@ -8,26 +8,27 @@
     <div class="main-content">
         <!-- Classes Section (3/4 screen width) -->
         <div class="student_class">
-            <h2 class="section-title" style="color: #5c6bc0">LỚP HỌC CỦA TÔI</h2>
+            <h2 class="section-title" style="border-bottom: 2px solid #5c6bc0;color:#5c6bc0;align-items:flex-start">LỚP HỌC CỦA TÔI</h2>
             <div class="listclass">
                 {% if user.is_authenticated %}
                     {% if class_data %}
                         {% for class in class_data %}
                         <div class="course-card">
                             <h3 class="course-title">{{ class.class_name }}</h3>
-                            <p class="course-teacher">Giáo viên: {{ class.teacher_name }}</p>
+                            <p class="course-teacher">Giáo viên: {{ class.teacher_name|default:"Chưa có giáo viên" }}</p>
                             <p class="course-teacher">Thời gian: {{ class.begin_time }} - {{ class.end_time }}</p>
                             <p class="course-teacher">Trạng thái: {{ class.status }}</p>
-                            <a href="{% url 'student_homework' class.class_id %}" class="btn btn-success">Tiếp tục học</a>
+                            <a href="{% url 'student_homework' class.class_id %}" class="btn btn-custom-success">Tiếp tục học</a>
                         </div>
                         {% endfor %}
                     {% else %}
-                        <p>Bạn chưa đăng ký lớp học nào.</p>
+                        <p class="course-teacher">Bạn chưa đăng ký lớp học nào.</p>
                     {% endif %}
                 {% else %}
-                    <a href="{% url 'login' %}">Để xem lớp học, bạn cần đăng nhập.</a>
+                    <a href="{% url 'login' %}" class="course-teacher">Để xem lớp học, bạn cần đăng nhập.</a>
                 {% endif %}
             </div>
+            <a href="{% url 'course' %}" style="color:blue;margin-top:1vh"> Đăng ký thêm lớp học >></a>
         </div>
         <!-- Upcoming Assignments Section (1/4 screen width) -->
         <div class="upcoming-assignments">
@@ -37,30 +38,37 @@
                     {% for assignment in upcoming_assignments %}
                     <div class="assignment-card">
                         <h3 class="assignment-title">{{ assignment.course_name }} - {{ assignment.lesson_name }}</h3>
-                        <p>Hạn nộp: {{ assignment.duedate|date:"d/m/Y" }}</p>
-                        <p>Thời gian còn lại: {{ assignment.time_remaining }}</p>
-                        <p>Trạng thái: {{ assignment.submission_status }}</p>
-                        <a href="{% url 'student_submission' assignment.class_id assignment.lesson_id %}" class="btn btn-primary btn-sm">Nộp bài</a>
+                        <p class="assignment-info">Hạn nộp: {{ assignment.duedate|date:"d/m/Y" }}</p>
+                        <p class="assignment-info">Thời gian còn lại: {{ assignment.time_remaining }}</p>
+                        <p class="assignment-info">Trạng thái: {{ assignment.submission_status }}</p>
+                        <a href="{% url 'student_submission' assignment.class_id assignment.lesson_id %}" style="color:blue;text-align:center">Nộp bài</a>
                     </div>
                     {% endfor %}
                 {% else %}
-                    <p>Bạn chưa có bài tập tới hạn nào trong 3 ngày tới.</p>
+                    <p class="assignment-info">Bạn chưa có bài tập tới hạn nào trong 3 ngày tới.</p>
                 {% endif %}
             </div>
         </div>
     </div>
 </main>
 <style>
-    /* Ensure the main container accounts for the sidebar */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
     .main-container {
-        width: calc(100% - 250px); /* Take remaining width after sidebar */
+        width: calc(100% - 250px);
         min-height: 100vh;
-        padding: 20px;
-        padding-top:5%;
+        /* padding: 20px; */
+        padding-top: 11vh;
         box-sizing: border-box;
         width: 100vw;
         max-width: 100%;
-        background: #f9f9f9;
+        background: white;
     }
 
     .main-content {
@@ -68,108 +76,125 @@
         flex-direction: row;
         justify-content: flex-start;
         min-height: 100vh;
-        padding: 0;
+        padding: 15px;
         align-items: flex-start;
         width: 100%;
+        gap: 12px; /* Thêm khoảng cách giữa hai cột */
+    }
+    a{
+    text-decoration: none;
+    color: black;}
+    p{
+        margin: 0;
+        padding: 0;
+    }
+    .student_class {
+        flex: 1 1 75%; /* 3/4 screen width */
+        max-width: 75%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px; /* Viền bo tròn hơn */
+        min-height: 100vh;
     }
 
     .upcoming-assignments {
         flex: 1 1 25%; /* 1/4 screen width */
         max-width: 25%;
         padding: 20px;
-        background-color: #f9f9f9;
-        border-right: 2px solid #ddd;
+        background-color: #fff;
+        border-radius: 15px;
         min-height: 100vh;
         box-sizing: border-box;
+    }
+
+    .section-title {
+        width: 100%;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid; /* Lấy màu từ inline style */
     }
 
     .assignment-list {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 20px; /* Tăng khoảng cách giữa các card */
     }
-
-    .assignment-card {
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        transition: transform 0.2s ease;
-    }
-
-    .assignment-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .assignment-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: #333;
-    }
-
-    .student_class {
-        flex: 1 1 75%; /* 3/4 screen width */
-        max-width: 75%;
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        gap: 2%;
-        padding: 20px;
-        box-sizing: border-box;
-        background-color: #f9f9f9;
-    }
-
     .listclass {
         display: flex;
         flex-wrap: wrap;
-        gap: 2%;
-        min-height: 30vh;
+        gap: 20px; /* Tăng khoảng cách giữa các card */
     }
 
-    p {
-        margin: 0;
-        padding: 0;
-    }
-
-    .btn.btn-success, .btn.btn-primary {
-        margin-top: 10px;
-    }
-
-    a {
-        text-decoration: none;
-        color: black;
-    }
-
-    .course-card {
-        flex: 1 1 280px;
-        max-width: 320px;
-        background-color: #fff;
+    .course-card{
+        background-color: #ffffff;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: 5px 4px 12px 5px rgba(0, 0, 0, 0.08);
         padding: 15px;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-in-out;
         display: flex;
         flex-direction: column;
         gap: 10px;
-        transition: transform 0.2s ease;
-        max-height: 35vh;
-        align-items: flex-start;
+        min-width: 45%;
+    }
+    .assignment-card{
+        background-color: #ffffff;
+        border-radius: 12px;
+        margin-top: 20px;
+        box-shadow: 5px 4px 12px 5px rgba(0, 0, 0, 0.08);
+        padding: 15px;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
-    .section-title {
-        width: 100%;
-        font-size: 26px;
-        font-weight: bold;
-        text-decoration: none;
-        margin-bottom: 20px;
-        border-bottom: 2px solid; /* Border color set in inline style */
-        padding-bottom: 10px;
-    }
-
-    .course-card:hover {
+    .course-card:hover, .assignment-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .course-title, .assignment-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .course-teacher, .assignment-info {
+        font-size: 14px;
+        color: #555;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .btn-custom-success, .btn-custom-primary {
+        background-color: #dc0000;
+        border: none;
+        padding: 8px 15px;
+        font-size: 14px;
+        color: #fff;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .btn-custom-success:hover, .btn-custom-primary:hover {
+        background-color: #a30000;
+        transform: translateY(-2px);
     }
 
     /* Responsive design for smaller screens */
@@ -177,17 +202,26 @@
         .main-container {
             margin-left: 0;
             width: 100%;
+            padding-top: 10%;
         }
         .main-content {
             flex-direction: column;
+            gap: 15px;
+        }
+        .student_class, .upcoming-assignments {
+            max-width: 100%;
+            flex: 100%;
         }
         .upcoming-assignments {
-            max-width: 100%;
-            border-right: none;
             border-bottom: 2px solid #ddd;
+            border-right: none;
+            min-height: auto;
         }
-        .student_class {
-            max-width: 100%;
+        .section-title {
+            font-size: 24px;
+        }
+        .course-card, .assignment-card {
+            padding: 12px;
         }
     }
 </style>

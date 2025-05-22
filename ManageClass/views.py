@@ -47,15 +47,19 @@ def add_class(request):
         form = ClassForm(request.POST)
         if form.is_valid():
             with transaction.atomic():
-                # Lưu CLASS
-                class_instance = form.save()
-                # Tự động tạo LESSON_DETAIL cho tất cả LESSON của COURSE
+                class_instance = form.save(commit=False)
+                # Gán status mặc định (ví dụ: 'active')
+                class_instance.status = 'active'
+                class_instance.save()
+
+                # Tạo LESSON_DETAIL cho tất cả LESSON của COURSE
                 lessons = LESSON.objects.filter(course=class_instance.course).order_by('session_number')
                 lesson_details = [
                     LESSON_DETAIL(lesson=lesson, classes=class_instance, date=None)
                     for lesson in lessons
                 ]
                 LESSON_DETAIL.objects.bulk_create(lesson_details)
+
                 messages.success(request, "Thêm lớp học thành công!")
                 return redirect('class_list')
         else:

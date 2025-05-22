@@ -2,20 +2,21 @@ from django import forms
 from english.models import COURSE, LESSON
 
 
-class KhoaHocForm(forms.ModelForm):
-    class Meta:
-        model = COURSE
-        fields = ['course_name']
-        labels = {
-            'course_name': 'Tên khóa học',
-        }
-        widgets = {
-            'course_name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Nhập tên khóa học'
-            }),
-        }
+class KhoaHocForm(forms.Form):
+    course = forms.ModelChoiceField(
+        queryset=COURSE.objects.all(),
+        label='Khóa học',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+
 class BuoiHocForm(forms.ModelForm):
+    lesson_name = forms.ModelChoiceField(
+        queryset=LESSON.objects.all(),
+        label='Tên bài học',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = LESSON
         fields = ['lesson_name', 'description', 'lesson_file', 'exercise_file']
@@ -26,21 +27,14 @@ class BuoiHocForm(forms.ModelForm):
             'exercise_file': 'File bài tập',
         }
         widgets = {
-            'lesson_name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Nhập tên bài học'
-            }),
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
                 'placeholder': 'Nhập mô tả bài học'
             }),
             'lesson_file': forms.ClearableFileInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Tải lên file bài học'
             }),
             'exercise_file': forms.ClearableFileInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Tải lên file bài tập'
             }),
         }
-

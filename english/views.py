@@ -80,3 +80,7 @@ def search_materials(request):
     }
     return render(request, 'search_materials.html', context)
 
+def page_not_found(request, exception):
+    return render(request, '404.html', {
+        'message': 'Trang bạn tìm kiếm không tồn tại. Vui lòng kiểm tra lại URL hoặc quay lại trang chính.'
+    }, status=404)

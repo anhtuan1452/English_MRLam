@@ -29,7 +29,16 @@ def start_payment(request, course_id):
                 'classes': classes,
                 'error_message': 'Bạn đã đăng ký lớp này rồi.'
             })
+        # Kiểm tra nếu lớp đã đủ 30 học viên
+        class_obj = CLASS.objects.get(class_id=class_id)
+        enrolled_count = USER_CLASS.objects.filter(classes=class_obj).count()
 
+        if enrolled_count >= 30:
+            return render(request, 'payment_form.html', {
+                'course': course,
+                'classes': classes,
+                'error_message': 'Lớp học đã đầy. Bạn vui lòng chọn lớp khác.'
+            })
         # Lấy thông tin thanh toán của khóa học
         payment = PAYMENT.objects.filter(course_id=course).first()
 
@@ -75,4 +84,4 @@ def payment_success(request, paymentinfo_id):
         USER_CLASS.objects.get_or_create(user=user, classes=class_obj)
 
     # Render trang thành công
-    return render(request, 'payment_success.html', {'course': payment_info.payment.course_id})
+    return render(request, 'payment_success.html', {'course': payment_info.payment.course_id.course})
