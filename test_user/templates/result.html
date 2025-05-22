@@ -416,7 +416,24 @@
             </div>
         </div>
     </div>
-
+    <!-- Gợi ý khóa học phù hợp -->
+    <div class="result-card mt-5">
+        <div class="card-header">
+            <h2 class="page-title">Khóa học phù hợp với bạn</h2>
+        </div>
+        <div class="card-body">
+        <div class="course-suggestions">
+            {% for course in suggested_courses %}
+            <div class="suggestion-item" data-href="{% url 'course_detail' course.course_id %}" onclick="goToDetail(this)">
+                <div class="suggestion-title">{{ course.course_name }}</div>
+                <div class="suggestion-description">{{ course.description|truncatechars:120 }}</div>
+            </div>
+            {% empty %}
+            <p>Không tìm thấy khóa học phù hợp. Vui lòng liên hệ tư vấn viên để được hỗ trợ.</p>
+            {% endfor %}
+        </div>
+        </div>
+    </div>
     <div class="question-list">
         {% for item in detailed_result %}
             <div class="question-item" style="background-color: {% if item.user_answer == item.correct_answer %}#ecfdf5{% else %}#fef2f2{% endif %};">
@@ -443,24 +460,6 @@
                 </div>
             </div>
         {% endfor %}
-    </div>
-    <!-- Gợi ý khóa học phù hợp -->
-    <div class="result-card mt-5">
-        <div class="card-header">
-            <h2 class="page-title">Khóa học phù hợp với bạn</h2>
-        </div>
-        <div class="card-body">
-        <div class="course-suggestions">
-            {% for course in suggested_courses %}
-            <div class="suggestion-item" data-href="{% url 'course_detail' course.course_id %}" onclick="goToDetail(this)">
-                <div class="suggestion-title">{{ course.course_name }}</div>
-                <div class="suggestion-description">{{ course.description|truncatechars:120 }}</div>
-            </div>
-            {% empty %}
-            <p>Không tìm thấy khóa học phù hợp. Vui lòng liên hệ tư vấn viên để được hỗ trợ.</p>
-            {% endfor %}
-        </div>
-    </div>
     </div>
 
 </div>

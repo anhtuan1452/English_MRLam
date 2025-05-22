@@ -144,6 +144,17 @@
         margin: 0;
         padding: 0;
     }
+    h2{
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
+    .main-content-container{
+        padding: 0 12px 0;
+    }
 </style>
 
 <div class="main-content-container">
@@ -155,12 +166,12 @@
         </ul>
     {% endif %}
 
-    <h2 style="color: #5c6bc0; border-bottom: 2px solid #5c6bc0; padding-bottom: 10px;">Danh sách bài tập</h2>
+    <h2 style="color: #5c6bc0; border-bottom: 2px solid #5c6bc0;">Danh sách bài tập</h2>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <form method="GET" action="">
             <div style="position: relative; width: 500px;">
-                <input type="text" name="q" placeholder="Search courses" value="{{ query }}" style="width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border: 1px solid #e2e8f0; border-radius: 0.375rem;">
+                <input type="text" name="q" placeholder="Tìm kiếm bài tập" value="{{ query }}" style="width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border: 1px solid #e2e8f0; border-radius: 0.375rem;">
                 <button type="submit" style="position: absolute; left: 0; top: 0; height: 100%; width: 2.5rem; border: none; background: transparent; cursor: pointer; color: #9ca3af;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>

@@ -91,7 +91,7 @@
   }
 </style>
 <div class="course-detail-container">
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <!-- Header với nút Lưu là submit -->
@@ -107,9 +107,6 @@
             border-bottom: 2px solid;
             margin: 1.5rem 0 1rem;
             padding: 8px 0;">{{ course.course_name }}</h2>
-        {% if lesson_details %}
-          <span class="course-date">{{ lesson_details.0.classes.begin_time|date:"d/m/Y" }}</span>
-        {% endif %}
       </div>
       <div class="action-buttons">
         <!-- Nút Lưu -->
@@ -129,6 +126,16 @@
         <input type="text" id="course_name" name="course_name"
                value="{{ course.course_name }}">
       </div>
+    <div class="form-group">
+      <label for="image">Ảnh khóa học</label>
+      <input type="file" name="image" id="image" />
+    </div>
+      {% if course.image %}
+        <img src="{{ course.image.url }}" alt="Ảnh khóa học" style="max-width: 200px;">
+      {% else %}
+        <p>Chưa có ảnh.</p>
+      {% endif %}
+
 
       <!-- Mô tả -->
       <div class="form-group" id="courseDescriptionGroup">

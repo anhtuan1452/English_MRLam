@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
@@ -8,6 +9,10 @@ from course_admin.forms import CourseForm, LessonForm
 from english.models import COURSE, LESSON_DETAIL, CLASS, LESSON, USER_PROFILE
 from django.contrib.auth.models import User
 
+from english.views import superuser_required
+
+
+# @superuser_required
 def admin_ql_khoahoc(request):
     # 1) Lấy q từ querystring (URL ?q=...)
     q = request.GET.get('q', '').strip()
@@ -32,7 +37,7 @@ def admin_ql_khoahoc(request):
 
 
 User = get_user_model()
-
+# @superuser_required
 def admin_xemkhoahoc(request, course_id):
     course = get_object_or_404(COURSE, pk=course_id)
     classes = CLASS.objects.filter(course=course)
@@ -43,27 +48,28 @@ def admin_xemkhoahoc(request, course_id):
         action = request.POST.get('action')
 
         if action == 'delete':
-            # Xóa khóa học
             course.delete()
             messages.success(request, "Khóa học đã được xóa thành công!")
             return redirect('admin_ql_khoahoc')
 
         elif action == 'save':
-            # Cập nhật khóa học
             course.course_name = request.POST.get('course_name', '').strip()
             course.description = request.POST.get('course_description', '').strip()
+            image_file = request.FILES.get('image')
+            if image_file:
+                course.image = image_file
+
             teacher_id = request.POST.get('instructor')
             if teacher_id:
                 teacher = User.objects.filter(pk=teacher_id, is_staff=True).first()
                 if teacher:
                     course.teacher_name = teacher.get_full_name()
 
-            # Xử lý giá
             price_text = request.POST.get('price', '').strip()
-            if price_text.isdigit():
+            try:
                 course.price = int(price_text)
-            else:
-                messages.error(request, "Giá phải là số và không để trống")
+            except ValueError:
+                messages.error(request, "Giá phải là số nguyên và không để trống")
                 return render(request, 'course_admin_detail.html', {
                     'course': course,
                     'lessons': lessons,
@@ -71,7 +77,7 @@ def admin_xemkhoahoc(request, course_id):
                 })
 
             course.save()
-            messages.success(request, "Cập nhật khóa học thành công!")  # Thông báo lưu thành công
+            messages.success(request, "Cập nhật khóa học thành công!")
             return redirect('admin_ql_khoahoc')
 
     return render(request, 'course_admin_detail.html', {
@@ -80,6 +86,9 @@ def admin_xemkhoahoc(request, course_id):
         'teachers': teachers,
     })
 
+
+
+# @superuser_required
 def admin_themkhoahoc(request):
     if request.method == 'POST':
         form = CourseForm(request.POST, request.FILES)
@@ -92,6 +101,7 @@ def admin_themkhoahoc(request):
     return render(request, 'course_admin_add.html', {
         'form': form,
     })
+# @superuser_required
 def add_lesson(request, course_id=None):
     if not course_id:
         messages.error(request, "Không có khóa học để thêm buổi học.")
@@ -100,19 +110,14 @@ def add_lesson(request, course_id=None):
     course = get_object_or_404(COURSE, pk=course_id)
 
     if request.method == 'POST':
-        form = LessonForm(request.POST)
+        form = LessonForm(request.POST, request.FILES)
         if form.is_valid():
-            # Tạo LESSON mới (không tạo LESSON_DETAIL)
-            LESSON.objects.create(
-                lesson_name=form.cleaned_data['lesson_name'],
-                description=form.cleaned_data['description'],
-                course=course,
-                session_number=form.cleaned_data['session_number']
-            )
+            lesson = form.save(commit=False)
+            lesson.course = course
+            lesson.save()
             messages.success(request, "Thêm buổi học thành công!")
             return redirect('admin_xemkhoahoc', course_id=course.pk)
         else:
-
             messages.error(request, form.errors.as_text())
     else:
         form = LessonForm()
@@ -122,9 +127,9 @@ def add_lesson(request, course_id=None):
         'form': form,
     })
 
+# @superuser_required
 def view_lesson(request, course_id=None, lesson_id=None):
     course = get_object_or_404(COURSE, pk=course_id)
-
     lesson = get_object_or_404(LESSON, pk=lesson_id) if lesson_id else None
 
     if request.method == 'POST':
@@ -133,7 +138,7 @@ def view_lesson(request, course_id=None, lesson_id=None):
             messages.success(request, "Xóa bài học thành công!")
             return redirect('admin_xemkhoahoc', course_id=course.pk)
 
-        form = LessonForm(request.POST, instance=lesson)
+        form = LessonForm(request.POST, request.FILES, instance=lesson)
         if form.is_valid():
             lesson = form.save(commit=False)
             lesson.course = course
