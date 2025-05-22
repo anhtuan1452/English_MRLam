@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load file_filters %}
+{% block content %}
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 4rem 0 0 0;
+    color: #333;
+    height: 120%;
+  }
+
+  .main-content {
+    margin: 4rem 0 4rem 0;
+  }
+
+  .container {
+    max-width: 40rem;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  /* Dynamic background color based on submission status */
+  .container.late {
+    background-color: white;
+    /* Light red for late submissions */
+  }
+
+  .container.on-time {
+    background-color: white; /* Loại bỏ màu xanh cho container, chỉ áp dụng cho ô thời gian */
+  }
+
+  .error-message {
+    background-color: #ffe6e6;
+    color: #e74c3c;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .success-message {
+    background-color: #e6f4e6;
+    color: #2ecc71;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .breadcrumb {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+  }
+
+  .breadcrumb-separator {
+    margin: 0 5px;
+  }
+
+  .breadcrumb-item.active {
+    color: #1a73e8;
+    font-weight: 500;
+  }
+
+  .course-title {
+    font-size: 20px;
+    color: #1a73e8;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  .submission-header {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  .instructions {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .instructions p {
+    margin: 0 0 5px 0;
+  }
+
+  .example {
+    color: #666;
+    font-style: italic;
+  }
+
+  .status-container {
+    margin-bottom: 25px;
+  }
+
+  .status-row {
+    display: flex;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .status-label {
+    width: 200px;
+    font-weight: 500;
+    color: #555;
+    padding-right: 30px;
+  }
+
+  .status-value {
+    flex: 1;
+    min-width: 250px;
+  }
+
+  /* Thêm style cho ô "Thời gian còn lại" */
+  .status-row.ontime-remaining {
+    background-color: #e6f4e6; /* Màu xanh cho ô thời gian còn lại */
+  }
+  .status-row.latetime-remaining {
+    background-color: #ffe6e6; /* Màu xanh cho ô thời gian còn lại */
+  }
+
+  .file-upload-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  .file-label {
+    background-color: #f1f3f4;
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    border: 1px solid #dadce0;
+  }
+
+  .file-label:hover {
+    background-color: #e8eaed;
+  }
+
+  .file-name {
+    font-size: 14px;
+    color: #666;
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .submit-button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .submit-button:hover {
+    background-color: #1765cc;
+  }
+
+  .submitted-file-container {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+  }
+
+  .submitted-file-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 5px;
+  }
+
+  .submitted-file-link {
+    font-size: 14px;
+    color: #1a73e8;
+    text-decoration: none;
+  }
+
+  .submitted-file-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .status-label {
+      width: 120px;
+      font-size: 14px;
+    }
+
+    .file-upload-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .submit-button {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="container {% if time_remaining == 'Đã hết hạn' %}late{% else %}on-time{% endif %}">
+  {% for message in messages %}
+  {% if message.tags == 'error' %}
+    <div class="error-message">{{ message }}</div>
+  {% elif message.tags == 'success' %}
+    <div class="success-message">{{ message }}</div>
+  {% endif %}
+    {% endfor %}
+
+  <div class="breadcrumb">
+    <span class="breadcrumb-item">Nhà của tôi</span>
+    <span class="breadcrumb-separator">/</span>
+    <a href="{% url 'student_homework' class_id %}" class="breadcrumb-item">Danh sách bài tập</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-item active">Nộp bài tập về nhà Buổi {{ lesson.lesson_id }}</span>
+  </div>
+
+  <h1 class="course-title">[Lv1.03] {{ course.course_name }}</h1>
+
+  {% if exercise %}
+    <div class="submission-container">
+      <h2 class="submission-header">Nộp bài tập về nhà Buổi {{ lesson.lesson_id }}</h2>
+
+      <div class="instructions">
+        <p>Học viên hoàn thành và nộp bài tập về nhà. Tập tin được đặt theo <strong>&lt;Họ và tên học viên&gt;</strong> - <strong>&lt;Mã lớp&gt;</strong>-<strong>&lt;Buổi&gt;</strong>.</p>
+        <p class="example">Ví dụ: NguyenThiTheoVi-Lv103-Bu{{ lesson.lesson_id|stringformat:"02d" }}.docx</p>
+      </div>
+
+      <div class="status-container">
+        <div class="status-row">
+          <span class="status-label">Trạng thái nộp bài</span>
+          <span class="status-value">{{ submission_status }}</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Trạng thái chấm điểm</span>
+          <span class="status-value">{{ grading_status }}</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Ngày hết hạn</span>
+          <span class="status-value">{{ due_date }}</span>
+        </div>
+        <div class="status-row {% if time_remaining == 'Đã hết hạn' %}latetime-remaining{% else %}ontime-remaining{% endif %}"> <!-- Thêm class time-remaining -->
+          <span class="status-label">Thời gian còn lại</span>
+          <span class="status-value">{{ time_remaining }}</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Sửa lần cuối</span>
+          <span class="status-value">{{ last_edit }}</span>
+        </div>
+      </div>
+      {% if time_remaining != 'Đã hết hạn' %}
+      <form method="post" enctype="multipart/form-data" class="file-upload-container">
+        {% csrf_token %}
+        <input type="file" id="file-upload" class="file-input" name="submission_file" accept=".docx,.pdf">
+        <label for="file-upload" class="file-label">Chọn tệp</label>
+        <span class="file-name">Chưa chọn tệp</span>
+        <button type="submit" class="submit-button">Nộp bài</button>
+      </form>
+      {% endif %}
+      {% if submission and submission.submission_file_content %}
+        <div class="submitted-file-container">
+          <div class="submitted-file-label">Tệp đã nộp:</div>
+          <a href="{% url 'download_submission' submission.submission_id %}" class="submitted-file-link" download>
+            {{ submission_file_name }}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  document.getElementById('file-upload').addEventListener('change', function(e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : 'Chưa chọn tệp';
+    document.querySelector('.file-name').textContent = fileName;
+  });
+</script>
+{% endblock %}

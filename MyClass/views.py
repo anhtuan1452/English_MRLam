@@ -14,6 +14,64 @@ from english.models import LESSON, USER_CLASS, LESSON_DETAIL, EXERCISE, SUBMISSI
 def is_student(user):
     return user.groups.filter(name='Student').exists()
 
+
+# views.py
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from english.models import LESSON, LESSON_DETAIL, CLASS
+from datetime import datetime, timedelta
+
+
+def get_lesson_details(request, lesson_id, class_id):
+    if request.method == "GET":
+        # Lấy lesson
+        lesson = get_object_or_404(LESSON, lesson_id=lesson_id)
+
+        # Lấy thông tin lớp
+        class_obj = get_object_or_404(CLASS, class_id=class_id)
+
+        # Xác định tuần hiện tại (dựa trên ngày hiện tại)
+        today = datetime.now().date()
+        start_of_week = today - timedelta(days=today.weekday())  # Thứ Hai
+        end_of_week = start_of_week + timedelta(days=6)  # Chủ Nhật
+
+        # Lấy tất cả các buổi học (LESSON_DETAIL) có cùng lesson_id trong tuần
+        lesson_details = LESSON_DETAIL.objects.filter(
+            lesson_id=lesson_id,
+            date__range=[start_of_week, end_of_week]
+        ).exclude(date__isnull=True).select_related('classes')
+
+        # Chuẩn bị dữ liệu trả về
+        lesson_details_data = [
+            {
+                'lessondetail_id': detail.lessondetail_id,
+                'class_name': detail.classes.class_name,
+                'date': detail.date.strftime('%Y-%m-%d') if detail.date else 'Chưa xác định',
+                'course_name': detail.classes.course.course_name
+            }
+            for detail in lesson_details
+        ]
+
+        # Thông tin lớp
+        class_data = {
+            'class_id': class_obj.class_id,
+            'class_name': class_obj.class_name,
+            'course_name': class_obj.course.course_name,
+            'begin_time': class_obj.begin_time.strftime('%Y-%m-%d'),
+            'end_time': class_obj.end_time.strftime('%Y-%m-%d'),
+            'status': class_obj.status
+        }
+
+        return JsonResponse({
+            'lesson': {
+                'lesson_id': lesson.lesson_id,
+                'lesson_name': lesson.lesson_name,
+                'description': lesson.description
+            },
+            'class': class_data,
+            'lesson_details': lesson_details_data
+        })
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 @login_required
 @user_passes_test(is_student)
 def student_submission(request, class_id, lesson_id):
