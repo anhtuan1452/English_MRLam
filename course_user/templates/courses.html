@@ -140,7 +140,7 @@
                         Thời gian: {{ myclass.begin_time|date:"d/m/Y" }} - {{ myclass.end_time|date:"d/m/Y" }}
                     </p>
                     <p class="course-teacher">Trạng thái: {{ myclass.status }}</p>
-                    <a href="#" class="register-btn">Tiếp tục học</a>
+                    <a href="{% url 'student_homework' myclass.class_id %}" class="register-btn">Tiếp tục học</a>
                 </div>
             {% endfor %}
         </div>
