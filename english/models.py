@@ -101,6 +101,7 @@ class COURSE(models.Model):
     image = models.ImageField(upload_to="media/course",null=True, blank=True)
     def __str__(self):
         return self.course_name
+
     class Meta:
         db_table = 'COURSE'
 

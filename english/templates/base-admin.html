@@ -19,14 +19,11 @@
     <div class="sidebar">
       <div class="d-flex align-items-center gap-2 p-3 border-bottom border-secondary">
         <div class="avatar">
-          {% if request.user.is_authenticated and request.user.userprofile.avatar %}
-            <img src="{{ request.user.userprofile.avatar.url }}" alt="Avatar"
-                 class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
-          {% else %}
-            <i data-lucide="user" style="width: 20px; height: 20px; color: #212529;"></i>
+          {% if request.user.is_authenticated %}
+            <i data-lucide="user" style="width: 20px; height: 20px; color: black;"></i>
           {% endif %}
         </div>
-        <span>Hi, {{ request.user.first_name|default:request.user.username }}</span>
+        <span>Hi, {{ request.user.first_name }}</span>
       </div>
 
       <nav class="mt-2">

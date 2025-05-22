@@ -5,29 +5,45 @@
 
 {% block content %}
 <style>
+    body {
+        overflow-x: hidden;
+    }
+
     .courses-container {
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        padding: 30px 40px;
+        padding: 30px 20px;
         margin-top: 100px;
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .course-card {
-        flex: 1 1 280px;
+       flex: 0 1 calc(25% - 30px);
+       background-color: #fff;
+       border-radius: 12px;
+       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+       padding: 20px;
+       display: flex;
+       flex-direction: column;
+       transition: transform 0.2s ease;
+       min-height: 280px;
+       text-decoration: none;
+       align-items: flex-start;
+    }
+    .my-class-card {
+        display: flex;
+        flex-direction: column;
         background-color: #fff;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         padding: 20px;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.2s ease;
-        min-height: 280px;
         align-items: flex-start;
-        text-decoration: none;
+        transition: transform 0.2s ease;
+        min-width: 280px;
+        max-width: 100%;
+        flex: 0 1 280px;
     }
-
-    .course-card:hover {
+    .course-card:hover, .my-class-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
     }
@@ -37,15 +53,6 @@
         font-weight: bold;
         margin-bottom: 6px;
         color: #333;
-    }
-
-    .course-title a {
-        text-decoration: none;
-        color: #333;
-    }
-
-    .course-title a:hover {
-        text-decoration: underline;
     }
 
     .course-teacher {
@@ -79,40 +86,46 @@
     }
 
     .section-title {
-        font-size: 26px;
-        font-weight: bold;
-        color: #5c6bc0;
-        border-bottom: 2px solid #5c6bc0;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
-        margin-left: 20px;
+       font-size: 26px;
+       font-weight: bold;
+       color: #5c6bc0;
+       border-bottom: 2px solid #5c6bc0;
+       padding-bottom: 10px;
+       margin-bottom: 20px;
+       margin-left: 0;
+
     }
 
     .courses-wrapper,
     .my-classes-wrapper {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 24px;
-        margin-bottom: 30px;
-        margin-left: 30px;
-    }
-    .my-class-card {
-        display: flex;
-        flex-direction: column;
-        background-color: #fff;
+       display: flex;
+       flex-wrap: wrap;
+       gap: 30px;
+       margin-bottom: 30px;
+       justify-content: flex-start;
+       width: 100%;
+       margin-left:20px;
+   }
+
+    img.course-image {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        padding: 20px;
-        align-items: flex-start;
-        transition: transform 0.2s ease;
-        min-width: 280px;
-        max-width: 100%;
+        margin-bottom: 20px;
     }
 
-    .my-class-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
+    @media (max-width: 992px) {
+        .course-card, .my-class-card {
+            flex: 0 1 calc(50% - 30px);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .course-card, .my-class-card {
+            flex: 0 1 100%;
+        }
+    }
 </style>
 
 <div class="courses-container">
@@ -134,7 +147,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p>Bạn chưa đăng ký lớp học nào.</p>
+            <p style="text-align: center">Bạn chưa đăng ký lớp học nào.</p>
         {% endif %}
     {% else %}
         <p style="text-align:center"><a href="{% url 'login' %}">Đăng nhập để xem lớp học của bạn.</a></p>
@@ -143,18 +156,14 @@
     <h2 class="section-title">KHOÁ HỌC</h2>
     <div class="courses-wrapper">
         {% for course in courses %}
-        <div class="course-card">
+        <div class="course-card" data-href="{% url 'course_detail' course.course_id %}" onclick="goToDetail(this)">
             {% if course.image %}
-                <img src="{{ course.image.url }}" alt="{{ course.course_name }}" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
+                <img src="{{ course.image.url }}" alt="{{ course.course_name }}" class="course-image">
             {% else %}
-                <img src="{% static 'images/course.png' %}" alt="{{ course.course_name }}" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
+                <img src="{% static 'images/course.png' %}" alt="{{ course.course_name }}" class="course-image">
             {% endif %}
 
-            <h3 class="course-title">
-                <a href="{% url 'course_detail' course_id=course.course_id %}">
-                    {{ course.course_name }}
-                </a>
-            </h3>
+            <h3 class="course-title">{{ course.course_name }}</h3>
             <p class="course-teacher">Giáo viên: {{ course.teacher_name }}</p>
             <p class="course-price">{{ course.price }}</p>
             <a href="{% url 'start_payment' course.course_id %}" class="register-btn">Đăng ký ngay</a>
@@ -162,4 +171,17 @@
         {% endfor %}
     </div>
 </div>
+<script>
+function goToDetail(element) {
+    if (event.target.closest('.register-btn')) return;
+    const url = element.getAttribute('data-href');
+    if (url) {
+        window.location.href = url;
+    }
+}
+</script>
 {% endblock %}
+
+
+
+
