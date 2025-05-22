@@ -25,7 +25,7 @@ def test_delete(request, test_id):
         # return redirect('results')
     return redirect('admin_test_list')
 
-@user_passes_test(lambda u: u.is_superuser)
+# @user_passes_test(lambda u: u.is_superuser)
 def test_detail_view(request, test_id):
     test = get_object_or_404(TEST, pk=test_id)
     questions = QUESTION.objects.filter(test=test).select_related('question_media')
@@ -46,7 +46,7 @@ def test_detail_view(request, test_id):
         'media_groups': media_groups.items(),  # Trả về list of tuples (media, [questions])
     })
 
-@user_passes_test(lambda u: u.is_superuser)
+# @user_passes_test(lambda u: u.is_superuser)
 def test_edit_view(request, test_id):
     test = get_object_or_404(TEST, pk=test_id)
     questions = QUESTION.objects.filter(test=test).select_related('question_media')
