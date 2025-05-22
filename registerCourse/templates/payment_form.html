@@ -44,7 +44,9 @@
     <!-- Bên phải: Thông tin khóa học -->
     <div class="payment-right">
       <div class="course-box">
-        <img src="{% static 'images/course.png' %}" alt="Khoá học" class="course-box-img" />
+        {% if course.image %}
+        <img src="{{ course.image.url }}" alt="Khoá học" class="course-box-img" />
+        {% endif %}
         <h3 class="course-title">{{ course.course_name }}</h3>
         <p class="course-price">{{ course.price|floatformat:0 }} vnđ</p>
 

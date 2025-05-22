@@ -68,14 +68,15 @@
         margin-bottom: 15px;
     }
 
-    .lesson-list li {
+    .lesson-list {
         margin-bottom: 6px;
+        list-style-type: none;
     }
-
-    .lesson-list li::marker {
-        color: red;
+    .lesson-list li p {
+        margin-left: 20px;
+        margin-top: 4px;
+        color: #555;
     }
-
     .course-scroll {
         display: flex;
         overflow-x: auto;
@@ -105,7 +106,6 @@
         background-color: white;
         text-align: center;
         flex-direction: column;
-
     }
 
     .label-new {
@@ -136,9 +136,9 @@
 
     .instructor-info {
         display: flex;
-        gap: 15px;
         align-items: center;
-        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 10px;
     }
 
     .instructor-info img {
@@ -146,7 +146,13 @@
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
-        max-width: 100%;
+        flex-shrink: 0;
+    }
+
+    .instructor-meta {
+        font-size: 14px;
+        color: #374151;
+        line-height: 1.4;
     }
 
     .instructor-details {
@@ -210,6 +216,12 @@
         background-color: #b91c1c;
     }
 
+    .price-box img {
+        width: 100%;
+        height: 100%;
+        margin-bottom: 16px;
+    }
+
     @media (max-width: 900px) {
         .main-grid {
             flex-direction: column;
@@ -234,7 +246,7 @@
 <div class="course-container">
     <div class="course-header">
         <h1>Giới thiệu về Khóa học {{ course.course_name }}</h1>
-        <p class="author-info">Created by {{ course.teacher_name }}</p>
+        <p class="author-info">Giảng viên {{ course.teacher_name }}</p>
     </div>
 
     <div class="main-grid">
@@ -250,8 +262,9 @@
                 <h3 style="font-weight: bold;">Nội dung các buổi học</h3> <br>
                 <ul class="lesson-list">
                     {% for lesson in lessons %}
-                        <li><strong>Bài {{ forloop.counter }}:</strong> {{ lesson.lesson_name }}</li>
-                        <li> {{ lesson.description }}</li>
+                    <li>
+                        <strong>Bài {{ forloop.counter }}:</strong> {{ lesson.lesson_name }}
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
@@ -261,12 +274,12 @@
                 <div class="course-scroll">
                     {% for other_course in courses %}
                         {% if other_course.course_id != course.course_id %}
-                            <div class="course-card">
+                            <div class="course-card" onclick="window.location.href='{% url 'course_detail' course_id=other_course.course_id %}'" style="cursor:pointer;">
                                 <div class="label-new">Người mới</div>
                                 <h3>{{ other_course.course_name }}</h3>
-                                <p>GV: {{ other_course.teacher_name }}</p>
-                                <p class="price">{{ course.price|floatformat:0 }} vnđ</p>
-                                <a href="{% url 'start_payment' course.course_id %}" class="btn-register">Đăng ký ngay</a>
+                                <p>Giảng viên: {{ other_course.teacher_name }}</p>
+                                <p class="price">{{ other_course.price }} VND</p>
+                                <a href="{% url 'start_payment' other_course.course_id %}" class="btn-register" onclick="event.stopPropagation();">Đăng ký ngay</a>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -277,9 +290,13 @@
         <!-- Right column -->
         <div class="right-column">
             <div class="price-box">
-                <img src="{% static 'images/course.png' %}" alt="Course">
+                {% if course.image %}
+                    <img src="{{ course.image.url }}" alt="{{ course.course_name }}">
+                {% else %}
+                    <img src="{% static 'images/course.png' %}" alt="Course">
+                {% endif %}
                 <h2>Học phí</h2>
-                <span class="price-main">{{ course.price|floatformat:0 }}</span>
+                <span class="price-main">{{ course.price }} VND</span>
                 <a href="{% url 'start_payment' course.course_id %}" class="btn-register">ĐĂNG KÝ</a>
             </div>
 
@@ -287,11 +304,13 @@
                 <h2>Người hướng dẫn</h2>
                 <div class="instructor-info">
                     <img src="{% static 'images/teacher_avatar.png' %}" alt="Instructor">
-                    <div class="instructor-details">
+                    <div class="instructor-meta">
                         <strong>{{ course.teacher_name }}</strong><br>
-                        <span>Giảng viên</span><br>
-                        {{ course.des_teacher|format_text|safe }}
+                        <span>Giảng viên</span>
                     </div>
+                </div>
+                <div class="instructor-details">
+                    {{ course.des_teacher|format_teacher_description|safe }}
                 </div>
             </div>
         </div>

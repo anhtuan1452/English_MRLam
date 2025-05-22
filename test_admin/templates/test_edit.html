@@ -1,5 +1,6 @@
 {% extends 'base-admin.html' %}
 {% load static %}
+{% load form_filters %}
 
 {% block title %}
   Chỉnh sửa Bài Kiểm Tra {{ test.test_id }}
@@ -85,31 +86,30 @@
   <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
     {% csrf_token %}
 
-    <!-- Test info -->
-    <div class="card mb-4">
-      <div class="card-header bg-primary text-white">
-        Thông tin bài kiểm tra
+  <!-- Thông tin bài kiểm tra -->
+  <div class="card mb-4 shadow-sm border-0">
+    <div class="card-header bg-primary text-white fw-bold">
+      <i class="fas fa-info-circle me-2"></i>Thông tin bài kiểm tra
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary">Tên bài kiểm tra</label>
+        {{ test_form.test_name|add_class:"form-control" }}
       </div>
-      <div class="card-body">
-        <div class="mb-3">
-          {{ test_form.test_name.label_tag }}
-          {{ test_form.test_name }}
-        </div>
-        <div class="mb-3">
-          {{ test_form.test_description.label_tag }}
-          {{ test_form.test_description }}
-        </div>
-        <div class="mb-3">
-          {{ test_form.duration.label_tag }}
-          {{ test_form.duration }}
-        </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary">Mô tả chi tiết</label>
+        {{ test_form.test_description|add_class:"form-control" }}
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary">Thời gian làm bài (phút)</label>
+        {{ test_form.duration|add_class:"form-control" }}
       </div>
     </div>
+  </div>
 
     <!-- List of media groups and questions -->
     {% for group in question_groups %}
       <div class="question">
-        <h5>🎧 Nhóm Media {{ forloop.counter }}</h5>
 
         <!-- Media block -->
         <div class="media-block">
@@ -126,17 +126,28 @@
         <!-- Questions in group -->
         {% for question_form in group.question_forms %}
           <div class="border-top pt-3 mt-3">
-            <h6 class="text-secondary">Câu hỏi</h6>
+            <h6 class="text-secondary">Câu hỏi {{ question_form.display_number }}</h6>
             <div class="mb-3">
-              {{ question_form.question_text.label_tag }}
               {{ question_form.question_text }}
             </div>
 
             <div class="row">
-              <div class="col-md-6 mb-3">{{ question_form.answer_a.label_tag }} {{ question_form.answer_a }}</div>
-              <div class="col-md-6 mb-3">{{ question_form.answer_b.label_tag }} {{ question_form.answer_b }}</div>
-              <div class="col-md-6 mb-3">{{ question_form.answer_c.label_tag }} {{ question_form.answer_c }}</div>
-              <div class="col-md-6 mb-3">{{ question_form.answer_d.label_tag }} {{ question_form.answer_d }}</div>
+              <div class="col-md-6 mb-3 d-flex align-items-center">
+                <strong class="me-2">A.</strong>
+                {{ question_form.answer_a|add_class:"form-control" }}
+              </div>
+              <div class="col-md-6 mb-3 d-flex align-items-center">
+                <strong class="me-2">B.</strong>
+                {{ question_form.answer_b|add_class:"form-control" }}
+              </div>
+              <div class="col-md-6 mb-3 d-flex align-items-center">
+                <strong class="me-2">C.</strong>
+                {{ question_form.answer_c|add_class:"form-control" }}
+              </div>
+              <div class="col-md-6 mb-3 d-flex align-items-center">
+                <strong class="me-2">D.</strong>
+                {{ question_form.answer_d|add_class:"form-control" }}
+              </div>
             </div>
 
             <div class="mb-3">

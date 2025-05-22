@@ -133,7 +133,7 @@
 
 .table th:nth-child(6),
 .table td:nth-child(6) {
-  width: 5%;  /* Thời gian làm bài */
+  width: 12%;
 }
 
 
@@ -237,6 +237,7 @@
                     <td>{{ result.score }}</td>
                     <td>{{ result.create_at|date:"d-m-Y H:i:s" }}</td>
                     <td class="actions">
+                        <a href="{% url 'result_detail' result.id %}" class="btn btn-primary">Xem</a>
                       <form method="post"
                           action="{% url 'result_delete' result.id %}"
                           style="display:inline;"

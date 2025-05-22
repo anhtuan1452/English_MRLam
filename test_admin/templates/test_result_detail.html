@@ -1,0 +1,101 @@
+{% extends 'base-admin.html' %}
+{% block content %}
+<style>
+    /* Main layout */
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      max-width: 100%;
+      margin-right: 0.5;
+      margin-left: 0;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+.custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 0.5rem 0 1rem;
+        padding: 8px 0;
+    }
+/* Tab styling */
+.nav-tabs {
+  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 1.5rem;
+}
+
+/* Tab không active (màu xám) */
+.nav-tabs .nav-link {
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6c757d; /* Màu xám */
+  background-color: transparent;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent; /* Ẩn gạch chân */
+}
+
+/* Tab active (màu xanh) */
+.nav-tabs .nav-link.active {
+  color: #0d6efd !important; /* Màu xanh */
+  font-weight: 600;
+  border-bottom: 3px solid #0d6efd; /* Gạch chân xanh */
+}
+
+/* Hiệu ứng hover */
+.nav-tabs .nav-link:hover {
+  color: #0a58ca; /* Màu xanh đậm hơn */
+}
+</style>
+<div class="container">
+    <h2 class="custom-title mb-0">Chi tiết kết quả bài làm</h2>
+    <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a href="{% url 'admin_test_list' %}" class="nav-link" role="tab">Bài kiểm tra</a>
+    </li>
+    <li class="nav-item">
+        <a href="{% url 'results' %}" class="nav-link active" role="tab">Kết quả</a>
+    </li>
+    </ul>
+  <p><strong>Bài kiểm tra:</strong> {{ test.test_name }}</p>
+  <p><strong>Điểm:</strong> {{ result.score }}/{{ result.total_questions }}</p>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+  <p class="mb-0"><strong>Họ và tên:</strong> {{ result.acc.get_full_name }}</p>
+  <div>
+    <a href="{% url 'results' %}" class="btn btn-secondary me-2">Quay lại</a>
+    <form method="post" action="{% url 'result_delete' result.result_id %}" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa kết quả này không?');">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Xóa</button>
+    </form>
+  </div>
+</div>
+    <hr>
+
+  {% for q in questions %}
+    <div class="mb-4 p-3 border {% if q.is_correct %}border-success{% else %}border-danger{% endif %} rounded">
+      <p><strong>Câu {{ forloop.counter }}:</strong> {{ q.text }}</p>
+      <ul class="list-unstyled">
+        {% for key, val in q.answers.items %}
+          <li>
+            <strong>{{ key }}.</strong> {{ val }}
+            {% if key == q.correct %}<span class="badge bg-success ms-2">Đáp án đúng</span>{% endif %}
+            {% if key == q.selected %}<span class="badge bg-info text-dark ms-2">Đã chọn</span>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+
+  <a href="{% url 'results' %}" class="btn btn-secondary">Quay lại</a>
+</div>
+{% endblock %}

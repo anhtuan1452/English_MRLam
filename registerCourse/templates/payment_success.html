@@ -4,7 +4,7 @@
 {% block content %}
 <div class="success-wrapper">
   <h2 class="success-title">THANH TOÁN THÀNH CÔNG</h2>
-  <img src="{% static 'images/course.png' %}" alt="Khoá học" class="course-image" />
+  <img src="{{ course.image.url }}" alt="Khoá học" class="course-image" />
   <div class="btn-wrapper">
     <a href="/" class="btn-home">Quay lại trang chủ <i class="fas fa-arrow-circle-right"></i></a>
   </div>

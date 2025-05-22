@@ -14,9 +14,9 @@ def submission_upload_path(instance, filename):
 class USER_PROFILE(models.Model):
     userprofile = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     SEX_CHOICES = [
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
+        ('M', 'Nam'),
+        ('F', 'Nữ'),
+        ('O', 'Khác'),
     ]
     dob = models.DateField(default="")  # ngày sinh
     sex = models.CharField(max_length=1, choices=SEX_CHOICES,null=True)  # giới tính (có choices)
@@ -43,13 +43,6 @@ class QUESTION_MEDIA(models.Model):
     questionmedia_id = models.AutoField(primary_key=True)
     audio_file = models.FileField(upload_to='media/audio', null=True, blank=True)
     paragraph = models.TextField(null=True, blank=True)
-    # def __str__(self):
-    #     parts = []
-    #     if self.audio_file:
-    #         parts.append("🎧 Audio")
-    #     if self.paragraph:
-    #         parts.append("📖 Paragraph")
-    #     return " + ".join(parts) or "❓ Chưa có nội dung"
     class Meta:
         db_table = 'QUESTION_MEDIA'
 
@@ -78,6 +71,7 @@ class RESULT(models.Model):
     test = models.ForeignKey(TEST, on_delete=models.CASCADE)
     acc = models.ForeignKey(User, on_delete=models.CASCADE)
     create_at = models.DateTimeField(default=datetime.datetime.now)
+    user_answer = models.JSONField(null=True, blank=True)  # Lưu câu trả lời của người dùng
     class Meta:
         db_table = 'RESULT'
 
@@ -100,6 +94,7 @@ class COURSE(models.Model):
     image = models.ImageField(upload_to="media/course",null=True, blank=True)
     def __str__(self):
         return self.course_name
+
     class Meta:
         db_table = 'COURSE'
 
@@ -161,6 +156,9 @@ class LESSON(models.Model):
     class Meta:
         db_table = 'LESSON'
 
+    def __str__(self):
+        return self.lesson_name
+
 
 class LESSON_DETAIL(models.Model):
     lessondetail_id = models.AutoField(primary_key=True)
@@ -188,7 +186,7 @@ class SUBMISSION(models.Model):
     submission_id = models.AutoField(primary_key=True)
     userclass = models.ForeignKey(USER_CLASS, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
-    submit_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    submit_date = models.DateTimeField(default=datetime.datetime.now)
     review = models.TextField(null=True, blank=True)
     exercise = models.ForeignKey(EXERCISE, on_delete=models.CASCADE)
     submission_file_content = models.FileField(
