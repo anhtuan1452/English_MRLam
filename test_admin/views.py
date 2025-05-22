@@ -7,7 +7,7 @@ from collections import OrderedDict, defaultdict
 
 
 # Create your views here.
-@user_passes_test(lambda u: u.is_superuser)
+# @user_passes_test(lambda u: u.is_superuser)
 def test_list(request):
     query = request.GET.get('q', '')  # Lấy từ khóa tìm kiếm từ query string
     if query:
