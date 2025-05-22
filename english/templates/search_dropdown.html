@@ -119,7 +119,7 @@
   <!-- Icon tìm kiếm -->
     <li class="fas fa-search search-icon"></li>
   <!-- Ô input -->
-    {% if request.path|slice:":10" == "/materials" %}
+    {% if "materials" in request.path %}
         <form method="GET" action="{% url 'search_materials' %}" class="search-form">
             <input type="text" name="q" placeholder="Tìm kiếm tài liệu..." class="search-input" required>
         </form>

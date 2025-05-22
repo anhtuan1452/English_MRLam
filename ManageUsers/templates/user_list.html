@@ -7,14 +7,7 @@
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f5f7fa;
       color: #333;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
     }
 
     .page-title {
@@ -26,7 +19,6 @@
 
     /* Phần tìm kiếm và nút thêm */
     .search-add-container {
-      margin-top: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -39,12 +31,10 @@
     }
 
     .search-input {
-      width: 100%;
-      padding: 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-      outline: none;
+        width: 100%;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
     }
 
     .search-button {
@@ -216,7 +206,7 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="custom-title mb-0">Danh sách người dùng</h2>
+    <h2 class="custom-title">Danh sách người dùng</h2>
 
     <div class="search-add-container">
         <div class="search-container">
@@ -228,7 +218,7 @@
                 </svg>
             </form>
         </div>
-        <a href="{% url 'user_create' %}" class="btn btn-primary">Thêm</a>
+        <a href="{% url 'user_create' %}" class="btn btn-primary" style="padding: 0.5rem 1rem; border-radius:0.375rem; font-size:1rem; font-weight: bold;">Thêm người dùng</a>
     </div>
 
     <div class="table-container">

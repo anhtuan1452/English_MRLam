@@ -1,19 +1,20 @@
 import base64
 
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 
 from english.models import PAYMENT, PAYMENT_INFO
+from english.views import superuser_required
 from qrPayment.forms import PaymentForm
-
-
+@superuser_required
 def payment_list(request):
     # Lấy tất cả các đối tượng PAYMENT từ cơ sở dữ liệu
     payments = PAYMENT.objects.all()
 
     # Truyền payments vào context để hiển thị trong template
     return render(request, 'payment_list.html', {'payments': payments})
-
+@superuser_required
 def payment_detail(request, payment_id):
     payment = get_object_or_404(PAYMENT, pk=payment_id)  # Lấy thông tin thanh toán theo ID
     payment_infos = PAYMENT_INFO.objects.filter(payment_id=payment_id).order_by(
@@ -35,6 +36,7 @@ def payment_detail(request, payment_id):
 
     return render(request, 'payment_detail.html',
                   {'form': form, 'payment_detail': payment, 'payment_infos': payment_infos, 'page_obj': page_obj})  # Trả về form chỉnh sửa thanh toán
+@superuser_required
 def add_payment(request):
     if request.method == 'POST':
         form = PaymentForm(request.POST, request.FILES)  # Xử lý file upload

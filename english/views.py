@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.views import LogoutView
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -7,7 +8,16 @@ from django.urls import reverse_lazy
 
 from english.models import COURSE, DOCUMENT
 
-
+def superuser_required(view_func):
+    return user_passes_test(
+        lambda u: u.is_active and u.is_superuser,
+        login_url=''
+    )(view_func)
+def staff_required(view_func):
+    return user_passes_test(
+        lambda u: u.is_active and u.is_staff,
+        login_url=''
+    )(view_func)
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
