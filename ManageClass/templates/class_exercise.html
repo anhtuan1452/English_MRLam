@@ -12,28 +12,60 @@
         margin: 1.5rem 0 1rem;
         padding: 8px 0;
     }
-    .accordion-button {
-        font-weight: 600;
-        background-color: #f8f9fa;
-    }
-    .accordion-button:not(.collapsed) {
-        background-color: #e8eaf6;
-        color: #5c6bc0;
-    }
+
     .table th, .table td {
         vertical-align: middle;
     }
+
     .stats-box {
         background-color: #f1f3f5;
         padding: 15px;
         border-radius: 5px;
         margin-bottom: 15px;
     }
+
+    .btn-primary {
+        background-color: #2979ff;
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #2962ff;
+    }
+
+    .text-warning {
+        color: #FFC107;
+    }
+
+    .text-danger {
+        color: #f44336;
+    }
+
+    .text-success {
+        color: #4CAF50;
+    }
+
+    .text-muted {
+        color: #6c757d;
+    }
+
+    .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .bg-warning {
+        background-color: #FFC107;
+        color: #333;
+    }
 </style>
 
 <div class="container-fluid tab-section">
     <h2 class="custom-title">
-        <a href="{% url 'class_list' %}" class="text-decoration-none text-primary">Danh sách lớp học</a> > Lớp {{ class_instance.class_name }}
+        <a href="{% url 'class_list' %}" class="text-decoration-none text-primary">Danh sách lớp học</a> &gt; Lớp {{ class_instance.class_name }}
     </h2>
 
     <ul class="nav nav-tabs mb-3">
@@ -70,7 +102,7 @@
         {% for data in lesson_data %}
         <div class="accordion-item" data-lesson="{{ data.lesson_detail.lesson.lesson_name }}">
             <h2 class="accordion-header" id="heading{{ data.lesson_detail.lesson.lesson_id }}">
-                <button class="accordion-button {% if forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ data.lesson_detail.lesson.lesson_id }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ data.lesson_detail.lesson.lesson_id }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ data.lesson_detail.lesson.lesson_id }}" aria-expanded="false" aria-controls="collapse{{ data.lesson_detail.lesson.lesson_id }}">
                     Buổi {{ data.lesson_detail.lesson.session_number }}: {{ data.lesson_detail.lesson.lesson_name }}
                     {% if data.lesson_detail.date %} ({{ data.lesson_detail.date|date:"d M Y" }}){% endif %}
                     {% if not data.exercise %}
@@ -78,7 +110,7 @@
                     {% endif %}
                 </button>
             </h2>
-            <div id="collapse{{ data.lesson_detail.lesson.lesson_id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ data.lesson_detail.lesson.lesson_id }}" data-bs-parent="#lessonAccordion">
+            <div id="collapse{{ data.lesson_detail.lesson.lesson_id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ data.lesson_detail.lesson.lesson_id }}" data-bs-parent="#lessonAccordion">
                 <div class="accordion-body">
                     {% if data.exercise %}
                     <!-- Hiển thị thống kê -->
@@ -186,13 +218,28 @@ function filterLessonsAndRows() {
                 }
             });
 
-            // Automatically expand the accordion item if it has visible rows
+            // Update visibility of the accordion item based on visible rows
             const collapseElement = item.querySelector('.accordion-collapse');
+            const headerButton = item.querySelector('.accordion-button');
             if (hasVisibleRows) {
+                item.style.display = '';
+                // Optionally expand if there are visible rows
                 collapseElement.classList.add('show');
+                headerButton.classList.remove('collapsed');
+                headerButton.setAttribute('aria-expanded', 'true');
             } else {
+                // Hide the accordion item if no rows are visible
                 collapseElement.classList.remove('show');
+                headerButton.classList.add('collapsed');
+                headerButton.setAttribute('aria-expanded', 'false');
             }
+        } else {
+            // Ensure the accordion is collapsed when filtered out
+            const collapseElement = item.querySelector('.accordion-collapse');
+            const headerButton = item.querySelector('.accordion-button');
+            collapseElement.classList.remove('show');
+            headerButton.classList.add('collapsed');
+            headerButton.setAttribute('aria-expanded', 'false');
         }
     });
 }
