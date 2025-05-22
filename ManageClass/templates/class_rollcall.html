@@ -12,7 +12,7 @@
         margin: 1.5rem 0 1rem;
         padding: 8px 0;
     }
-     .btn-danger {
+    .btn-danger {
         background-color: #d32f2f;
         border: none;
     }
@@ -57,7 +57,6 @@
         </li>
     </ul>
 
-    <!-- Accordion hiển thị từng buổi học -->
     <div class="accordion" id="rollcallAccordion">
         {% for data in rollcall_data %}
             {% with ld=data.lesson_detail %}
@@ -86,7 +85,6 @@
                      data-bs-parent="#rollcallAccordion">
                     <div class="accordion-body">
 
-                        <!-- Form POST cho buổi này -->
                         <form method="post" action="{% url 'class_rollcall' class_id=class_instance.class_id %}">
                             {% csrf_token %}
                             <input type="hidden" name="lesson_detail_id" value="{{ ld.lessondetail_id }}">
@@ -94,18 +92,17 @@
                             <table class="table table-bordered text-center">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>ID</th>
+                                        <th>STT</th>
                                         <th>Họ và tên</th>
                                         <th>Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for ud in data.users_data %}
-                                        {# ud.userclass là instance USER_CLASS, ud.status là 'present'/'absent'/'' #}
                                         {% with uc=ud.userclass %}
                                         <tr>
-                                            <td>{{ uc.user.id }}</td>
-                                            <td>{{ uc.user.first_name }} {{ uc.user.last_name }}</td>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ uc.user.last_name }} {{ uc.user.first_name }}</td>
                                             <td>
                                                 <select
                                                     name="status_{{ ld.lessondetail_id }}_{{ uc.userclass_id }}"
