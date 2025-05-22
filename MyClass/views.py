@@ -51,7 +51,6 @@ def get_lesson_details(request, lesson_id, class_id):
             }
             for detail in lesson_details
         ]
-
         # Thông tin lớp
         class_data = {
             'class_id': class_obj.class_id,
@@ -75,116 +74,124 @@ def get_lesson_details(request, lesson_id, class_id):
 @login_required
 @user_passes_test(is_student)
 def student_submission(request, class_id, lesson_id):
-    # Get the lesson and class
-    lesson = get_object_or_404(LESSON, pk=lesson_id)
-    class_instance = get_object_or_404(CLASS, pk=class_id)
+    try:
+        # Get the lesson and class
+        lesson = get_object_or_404(LESSON, pk=lesson_id)
+        class_instance = get_object_or_404(CLASS, pk=class_id)
 
-    # Find the user's enrolled class for the specific class_id
-    user_class = USER_CLASS.objects.filter(
-        user=request.user,
-        classes=class_instance
-    ).select_related('classes').first()
+        # Find the user's enrolled class for the specific class_id
+        user_class = USER_CLASS.objects.filter(
+            user=request.user,
+            classes=class_instance
+        ).select_related('classes').first()
 
-    if not user_class:
-        return render(request, 'error.html', {
-            'message': 'Bạn chưa được đăng ký vào lớp học này. Vui lòng liên hệ giáo viên.'
-        })
+        if not user_class:
+            messages.error(request, 'Bạn chưa được đăng ký vào lớp học này. Vui lòng liên hệ giáo viên.')
+            return render(request, 'error.html', {
+                'message': 'Bạn chưa được đăng ký vào lớp học này. Vui lòng liên hệ giáo viên.'
+            })
+        # Get the lesson detail for the specific class and lesson
+        lesson_detail = LESSON_DETAIL.objects.filter(
+            lesson=lesson,
+            classes=class_instance
+        ).select_related('lesson', 'classes').first()
 
-    # Get the lesson detail for the specific class and lesson
-    lesson_detail = LESSON_DETAIL.objects.filter(
-        lesson=lesson,
-        classes=class_instance
-    ).select_related('lesson', 'classes').first()
+        if not lesson_detail:
+            messages.error(request, f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}.')
+            return render(request, 'error.html', {
+                'message': f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}. Vui lòng liên hệ giáo viên.'
+            })
+        # Get the exercise for the lesson detail
+        exercise = EXERCISE.objects.filter(lessondetail=lesson_detail).first()
+        if not exercise:
+            messages.error(request, f'Không tìm thấy bài tập cho buổi học {lesson.lesson_name}.')
+            return render(request, 'error.html', {
+                'message': f'Không tìm thấy bài tập cho buổi học {lesson.lesson_name}. Vui lòng liên hệ giáo viên.'
+            })
 
-    if not lesson_detail:
-        return render(request, 'error.html', {
-            'message': f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}. Vui lòng liên hệ giáo viên.'
-        })
+        course = lesson.course
+        submission = SUBMISSION.objects.filter(userclass=user_class, exercise=exercise).first()
 
-    # Get the exercise for the lesson detail
-    exercise = EXERCISE.objects.filter(lessondetail=lesson_detail).first()
-    if not exercise:
-        return render(request, 'error.html', {
-            'message': f'Không tìm thấy bài tập cho buổi học {lesson.lesson_name}. Vui lòng liên hệ giáo viên.'
-        })
+        due_date = exercise.duedate
+        now = timezone.now().date()
 
-    course = lesson.course
-    submission = SUBMISSION.objects.filter(userclass=user_class, exercise=exercise).first()
-
-    due_date = exercise.duedate
-    now = timezone.now().date()
-
-    time_remaining = None
-    if due_date:
-        time_remaining = due_date - now
-        time_remaining_days = time_remaining.days
-        if time_remaining_days > 0:
-            time_remaining = f"Còn {time_remaining_days} ngày"
-        elif time_remaining_days == 0:
-            time_remaining = "Hôm nay là hạn cuối"
+        time_remaining = None
+        if due_date:
+            time_remaining = due_date - now
+            time_remaining_days = time_remaining.days
+            if time_remaining_days > 0:
+                time_remaining = f"Còn {time_remaining_days} ngày"
+            elif time_remaining_days == 0:
+                time_remaining = "Hôm nay là hạn cuối"
+            else:
+                time_remaining = "Đã hết hạn"
         else:
-            time_remaining = "Đã hết hạn"
-    else:
-        time_remaining = "Không có hạn nộp"
+            time_remaining = "Không có hạn nộp"
 
-    submission_status = submission.status if submission else "Chưa nộp"
-    grading_status = submission.review if submission and submission.review else "Chưa chấm"
-    last_edit = submission.submit_date if submission else "Chưa nộp"
-    namefile = submission.submission_file_content.name.split('/')[
-        -1] if submission and submission.submission_file_content else None
+        submission_status = submission.status if submission else "Chưa nộp"
+        grading_status = submission.review if submission and submission.review else "Chưa chấm"
+        last_edit = submission.submit_date if submission else "Chưa nộp"
+        namefile = submission.submission_file_content.name.split('/')[-1] if submission and submission.submission_file_content else None
 
-    context = {
-        'lesson': lesson,
-        'course': course,
-        'exercise': exercise,
-        'due_date': due_date,
-        'time_remaining': time_remaining,
-        'submission_status': submission_status,
-        'grading_status': grading_status,
-        'last_edit': last_edit,
-        'submission': submission,
-        'submission_file_name': namefile,
-        'class_id': class_id,
-        'class_name': class_instance.class_name,
-    }
+        context = {
+            'lesson': lesson,
+            'course': course,
+            'exercise': exercise,
+            'due_date': due_date,
+            'time_remaining': time_remaining,
+            'submission_status': submission_status,
+            'grading_status': grading_status,
+            'last_edit': last_edit,
+            'submission': submission,
+            'submission_file_name': namefile,
+            'class_id': class_id,
+            'class_name': class_instance.class_name,
+        }
 
-    if request.method == 'POST':
-        if due_date and now > due_date:
-            messages.error(request, 'Đã hết hạn nộp bài!')
+        if request.method == 'POST':
+            if due_date and now > due_date:
+                messages.error(request, 'Đã hết hạn nộp bài!')
+                return render(request, 'student_submission.html', context)
+
+            submission_file = request.FILES.get('submission_file')
+            if not submission_file:
+                messages.error(request, 'Vui lòng chọn tệp để nộp!')
+                return render(request, 'student_submission.html', context)
+
+            allowed_types = ['.docx', '.pdf']
+            file_ext = submission_file.name.lower().split('.')[-1]
+            if f'.{file_ext}' not in allowed_types:
+                messages.error(request, 'Chỉ chấp nhận tệp .docx hoặc .pdf!')
+                return render(request, 'student_submission.html', context)
+
+            if submission:
+                submission.submission_file_content = submission_file
+                submission.submit_date = timezone.now()
+                submission.status = 'done'
+                submission.review = None
+                submission.save()
+            else:
+                submission = SUBMISSION.objects.create(
+                    userclass=user_class,
+                    exercise=exercise,
+                    status='done',
+                    submit_date=timezone.now(),
+                    submission_file_content=submission_file
+                )
+
+            messages.success(request, 'Nộp bài thành công!')
             return render(request, 'student_submission.html', context)
 
-        submission_file = request.FILES.get('submission_file')
-        if not submission_file:
-            messages.error(request, 'Vui lòng chọn tệp để nộp!')
-            return render(request, 'student_submission.html', context)
+        return render(request, 'student_submission.html', context)
 
-        allowed_types = ['.docx', '.pdf']
-        file_ext = submission_file.name.lower().split('.')[-1]
-        if f'.{file_ext}' not in allowed_types:
-            messages.error(request, 'Chỉ chấp nhận tệp .docx hoặc .pdf!')
-            return render(request, 'student_submission.html', context)
-
-        if submission:
-            submission.submission_file_content = submission_file
-            submission.submit_date = timezone.now()
-            submission.status = 'done'
-            submission.review = None
-            submission.save()
-        else:
-            submission = SUBMISSION.objects.create(
-                userclass=user_class,
-                exercise=exercise,
-                status='done',
-                submit_date=timezone.now(),
-                submission_file_content=submission_file
-            )
-
-        messages.success(request, 'Nộp bài thành công!')
-        return HttpResponseRedirect(reverse('student_submission', args=[class_id, lesson_id]))
-
-    return render(request, 'student_submission.html', context)
+    except Exception as e:
+        messages.error(request, f'Đã xảy ra lỗi: {str(e)}')
+        return render(request, 'error.html', {
+            'message': f'Đã xảy ra lỗi: {str(e)}. Vui lòng thử lại hoặc liên hệ giáo viên.'
+        })
 # Các hàm khác (student_homework, download_submission) giữ nguyên như trước
 @login_required
+@user_passes_test(is_student)
 def student_homework(request, class_id):
     # Get the specific class the user is enrolled in
     user_class = USER_CLASS.objects.filter(user=request.user, classes__class_id=class_id).first()
