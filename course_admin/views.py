@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from english.views import superuser_required
 
 
-# @superuser_required
+@superuser_required
 def admin_ql_khoahoc(request):
     # 1) Lấy q từ querystring (URL ?q=...)
     q = request.GET.get('q', '').strip()
@@ -37,7 +37,7 @@ def admin_ql_khoahoc(request):
 
 
 User = get_user_model()
-# @superuser_required
+@superuser_required
 def admin_xemkhoahoc(request, course_id):
     course = get_object_or_404(COURSE, pk=course_id)
     classes = CLASS.objects.filter(course=course)
@@ -88,7 +88,7 @@ def admin_xemkhoahoc(request, course_id):
 
 
 
-# @superuser_required
+@superuser_required
 def admin_themkhoahoc(request):
     if request.method == 'POST':
         form = CourseForm(request.POST, request.FILES)
@@ -101,7 +101,7 @@ def admin_themkhoahoc(request):
     return render(request, 'course_admin_add.html', {
         'form': form,
     })
-# @superuser_required
+@superuser_required
 def add_lesson(request, course_id=None):
     if not course_id:
         messages.error(request, "Không có khóa học để thêm buổi học.")
@@ -127,7 +127,7 @@ def add_lesson(request, course_id=None):
         'form': form,
     })
 
-# @superuser_required
+@superuser_required
 def view_lesson(request, course_id=None, lesson_id=None):
     course = get_object_or_404(COURSE, pk=course_id)
     lesson = get_object_or_404(LESSON, pk=lesson_id) if lesson_id else None

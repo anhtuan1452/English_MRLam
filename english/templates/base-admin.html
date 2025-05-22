@@ -23,15 +23,16 @@
             <i data-lucide="user" style="width: 20px; height: 20px; color: black;"></i>
           {% endif %}
         </div>
-        <span>Hi, {{ request.user.first_name }}</span>
+       <a style="cursor: pointer; text-decoration: none; color: white;" href="{% url 'course' %}"> <span>Hi, {{ request.user.first_name }}</span> </a>
       </div>
 
       <nav class="mt-2">
+        {% if user.is_superuser %}
         <div class="sidebar-item {% if request.resolver_match.url_name in 'admin_ql_khoahoc admin_xemkhoahoc add_lesson_detail admin_themkhoahoc view_lesson_detail' %}active{% endif %}">
           <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'admin_ql_khoahoc' %}">Khóa học</a>
         </div>
-
+        {% endif %}
         <div class="sidebar-item {% if request.resolver_match.url_name in 'class_list add_class update_rollcall class_detail class_exercise class_rollcall exercise_detail' %}active{% endif %}">
           <i data-lucide="layers" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'class_list' %}">Lớp học</a>
@@ -42,10 +43,12 @@
           <a href="{% url 'admin_ql_baitap' %}">Bài Tập</a>
         </div>
 
+        {% if user.is_superuser %}
         <div class="sidebar-item {% if request.resolver_match.url_name in 'payment_detail payment_list add_payment' %}active{% endif %}">
           <i data-lucide="credit-card" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'payment_list' %}">Thanh toán</a>
         </div>
+        {% endif %}
 
         <div class="sidebar-item {% if request.resolver_match.url_name in 'document_list add_document document_detail_edit' %}active{% endif %}">
           <i data-lucide="file-spreadsheet" style="width: 18px; height: 18px;"></i>
@@ -56,11 +59,13 @@
           <i data-lucide="check-square" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'admin_test_list' %}">Bài kiểm tra</a>
         </div>
-
+        {% if user.is_superuser %}
         <div class="sidebar-item {% if request.resolver_match.url_name in 'user_list user_edit user_detail user_create user_delete' %}active{% endif %}">
           <i data-lucide="users" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'user_list' %}">Người dùng</a>
         </div>
+        {% endif %}
+
       </nav>
 
       <form action="{% url 'logout' %}" method="post" style="display: inline;">
