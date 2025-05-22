@@ -72,11 +72,11 @@
     </div>
 
     <div id="media-group-container"></div>
-    <button type="button" class="btn btn-outline-primary mb-4" onclick="addMediaGroup()">+ Thêm nhóm media</button>
+    <button type="button" class="btn btn-outline-primary mb-4" onclick="addMediaGroup()">Thêm nhóm</button>
     <br>
     <div class="d-flex gap-3">
       <a href="{% url 'admin_test_list' %}" class="btn btn-secondary"style="color: white; font-weight: 500;">Hủy</a>
-      <button type="submit" class="btn btn-primary" style="color: white; font-weight: 500;">Lưu bài kiểm tra</button>
+      <button type="submit" class="btn btn-success" style="color: white; font-weight: 500;">Lưu</button>
     </div>
   </form>
 </div>
@@ -94,7 +94,7 @@
       <textarea name="media-__GROUP_INDEX__-paragraph" class="form-control" rows="2"></textarea>
     </div>
     <div class="question-list"></div>
-    <button type="button" class="btn btn-outline-primary" onclick="addQuestion(this)">+ Thêm câu hỏi</button>
+    <button type="button" class="btn btn-outline-primary" onclick="addQuestion(this)">Thêm câu hỏi</button>
   </div>
 </template>
 
@@ -106,19 +106,19 @@
     <textarea name="media-__GROUP_INDEX__-q-__Q_INDEX__-question_text" class="form-control mb-2" rows="2"></textarea>
     <div class="mb-2 row">
       <div class="col-md-6 d-flex align-items-center mb-2">
-        <label class="me-2"><strong>A</strong></label>
+        <label class="me-2"><strong>A.</strong></label>
         <input type="text" name="media-__GROUP_INDEX__-q-__Q_INDEX__-answer_a" class="form-control">
       </div>
       <div class="col-md-6 d-flex align-items-center mb-2">
-        <label class="me-2"><strong>B</strong></label>
+        <label class="me-2"><strong>B.</strong></label>
         <input type="text" name="media-__GROUP_INDEX__-q-__Q_INDEX__-answer_b" class="form-control">
       </div>
       <div class="col-md-6 d-flex align-items-center mb-2">
-        <label class="me-2"><strong>C</strong></label>
+        <label class="me-2"><strong>C.</strong></label>
         <input type="text" name="media-__GROUP_INDEX__-q-__Q_INDEX__-answer_c" class="form-control">
       </div>
       <div class="col-md-6 d-flex align-items-center mb-2">
-        <label class="me-2"><strong>D</strong></label>
+        <label class="me-2"><strong>D.</strong></label>
         <input type="text" name="media-__GROUP_INDEX__-q-__Q_INDEX__-answer_d" class="form-control">
       </div>
     </div>

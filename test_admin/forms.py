@@ -6,9 +6,14 @@ class TestForm(forms.ModelForm):
     class Meta:
         model = TEST
         fields = ['test_name', 'test_description', 'duration']
+        labels = {
+            'test_name': 'Tên bài kiểm tra',
+            'test_description': 'Mô tả chi tiết',
+            'duration': 'Thời gian làm bài (phút)'
+        }
         widgets = {
             'test_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'test_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'test_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'duration': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
@@ -33,10 +38,10 @@ class QuestionForm(forms.ModelForm):
 
 
 class CustomQuestionForm(forms.ModelForm):
-    answer_a = forms.CharField(label='Đáp án A', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    answer_b = forms.CharField(label='Đáp án B', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    answer_c = forms.CharField(label='Đáp án C', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    answer_d = forms.CharField(label='Đáp án D', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    answer_a = forms.CharField(label='A', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    answer_b = forms.CharField(label='B', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    answer_c = forms.CharField(label='C', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    answer_d = forms.CharField(label='D', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     correct_answer = forms.ChoiceField(
         label='Đáp án đúng',
         choices=[

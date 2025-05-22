@@ -82,7 +82,6 @@ def test_edit_view(request, test_id):
             else:
                 all_valid = False
                 valid_group = False
-                print(f"❌ Media form lỗi nhóm {group_index}: {media_form.errors}")
 
             for q_index, question in enumerate(group_questions):
                 prefix = f'q{question.question_id}'
@@ -103,7 +102,6 @@ def test_edit_view(request, test_id):
                     }
                     all_valid = False
                     valid_group = False
-                    print(f"❌ Câu hỏi lỗi: {question_form.errors}")
 
                 question_forms.append(question_form)
 
@@ -118,13 +116,20 @@ def test_edit_view(request, test_id):
 
     else:
         test_form = TestForm(instance=test)
+        question_groups = []
+        global_counter = 1
 
         for group_index, (media_id, group_questions) in enumerate(question_groups_dict.items()):
             media_instance = group_questions[0].question_media or QUESTION_MEDIA()
             media_form = QuestionMediaForm(instance=media_instance, prefix=f'media{group_index}')
-            question_forms = [
-                CustomQuestionForm(instance=q, prefix=f'q{q.question_id}') for q in group_questions
-            ]
+            question_forms = []
+
+            for q in group_questions:
+                q_form = CustomQuestionForm(instance=q, prefix=f'q{q.question_id}')
+                q_form.display_number = global_counter  # ✅ Gán thuộc tính cho form
+                question_forms.append(q_form)
+                global_counter += 1
+
             question_groups.append({
                 'media_form': media_form,
                 'question_forms': question_forms
@@ -135,45 +140,6 @@ def test_edit_view(request, test_id):
         'test_form': test_form,
         'question_groups': question_groups
     })
-
-from django.forms import formset_factory
-
-# def test_add_view(request):
-#     QuestionFormSet = formset_factory(CustomQuestionForm, extra=0)
-#     MediaFormSet = formset_factory(QuestionMediaForm, extra=0)
-#
-#     if request.method == 'POST':
-#         question_formset = QuestionFormSet(request.POST)
-#         media_formset = MediaFormSet(request.POST, request.FILES)
-#         test_form = TestForm(request.POST)
-#
-#         if test_form.is_valid() and question_formset.is_valid() and media_formset.is_valid():
-#             test = test_form.save()
-#
-#             for q_form, m_form in zip(question_formset, media_formset):
-#                 media = m_form.save(commit=False)
-#                 if m_form.cleaned_data.get('audio_file') or m_form.cleaned_data.get('paragraph'):
-#                     media.save()
-#                 else:
-#                     media = None
-#
-#                 question = q_form.save(commit=False)
-#                 question.test = test
-#                 question.question_media = media
-#                 question.save()
-#
-#             return redirect('admin_test_list')
-#
-#     else:
-#         test_form = TestForm()
-#         question_formset = QuestionFormSet()
-#         media_formset = MediaFormSet()
-#
-#     return render(request, 'test_add.html', {
-#         'test_form': test_form,
-#         'question_formset': zip(question_formset, media_formset),
-#         'question_total': len(question_formset)
-#     })
 
 @user_passes_test(lambda u: u.is_superuser)
 def list_result_view(request):
@@ -293,4 +259,32 @@ def test_add_view(request):
 
     return render(request, 'test_add.html', {
         'test_form': test_form
+    })
+
+@user_passes_test(lambda u: u.is_superuser)
+def result_detail_view(request, result_id):
+    import json
+    result = get_object_or_404(RESULT, pk=result_id)
+    test = result.test
+    user_answers_raw = result.user_answer or "{}"
+    user_answers = json.loads(user_answers_raw)
+
+    questions = QUESTION.objects.filter(test=test).select_related('question_media').order_by('question_id')
+
+    question_data = []
+    for q in questions:
+        selected = user_answers.get(str(q.question_id))  # user chọn
+        correct = q.correct_answer                      # đáp án đúng
+        question_data.append({
+            'text': q.question_text,
+            'answers': q.answer,
+            'selected': selected,
+            'correct': correct,
+            'is_correct': selected == correct
+        })
+
+    return render(request, 'test_result_detail.html', {
+        'result': result,
+        'test': test,
+        'questions': question_data
     })
