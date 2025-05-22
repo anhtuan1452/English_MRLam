@@ -12,11 +12,14 @@
         width: 100%;
     }
 
-    .lesson-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #1f2937;
-        margin-bottom: 1.5rem;
+.lesson-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+        width:100%;
     }
 
     .button-container {
@@ -121,6 +124,8 @@
     }
     .icontainer {
        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 </style>
 
@@ -128,7 +133,7 @@
      <div class = "icontainer">
         <!-- Thêm phần quay lại ở trên tiêu đề -->
         <a href="javascript:history.back()" class="back-link">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fa-solid fa-arrow-left" style="margin-top: 24px; color: #5c6bc0;"></i>
         </a>
         <h2 class="lesson-title">Sửa bài tập: {{ lesson.lesson_name }}</h2>
     </div>

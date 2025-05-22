@@ -13,10 +13,13 @@
     }
 
     .lesson-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #1f2937;
-        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+        width:100%;
     }
 
     .button-container {
@@ -121,6 +124,7 @@
     .icontainer {
         display: flex;
         align-items: center;
+        gap: 10px;
     }
 </style>
 
@@ -128,9 +132,14 @@
     <div class = "icontainer">
         <!-- Thêm phần quay lại ở trên tiêu đề -->
         <a href="{% url 'admin_ql_baitap' %}" class="back-link">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fa-solid fa-arrow-left" style="margin-top: 24px; color: #5c6bc0;"></i>
         </a>
-        <h2 style="color:#5c6bc0" class="lesson-title">Chi tiết bài tập {{ lesson.lesson_name }}</h2>
+        <h2 style="color:#5c6bc0" class="lesson-title">Chi tiết bài tập: {{ lesson.lesson_name }}</h2>
+        <div class="button-container">
+                <button type="button" id="editBtn" class="action-button edit-button">Sửa</button>
+                <button type="submit" id="saveBtn" class="action-button save-button" style="display:none;">Lưu</button>
+                <button type="button" id="cancelBtn" class="action-button cancel-button" style="display:none;">Hủy</button>
+            </div>
     </div>
     {% if messages %}
       {% for message in messages %}
@@ -141,11 +150,6 @@
     <form id="lessonForm" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="info-container">
-            <div class="button-container">
-                <button type="button" id="editBtn" class="action-button edit-button">Sửa</button>
-                <button type="submit" id="saveBtn" class="action-button save-button" style="display:none;">Lưu</button>
-                <button type="button" id="cancelBtn" class="action-button cancel-button" style="display:none;">Hủy</button>
-            </div>
 
             <div class="info-row">
                 <div class="info-content">

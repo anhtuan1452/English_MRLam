@@ -15,9 +15,10 @@
         font-weight: 700;
         color: #5c6bc0;
         position: relative;
-        margin: 0; /* bỏ margin để dễ căn chỉnh */
-        padding-bottom: 8px;
         flex-grow: 1;
+        border-bottom: 2px solid;
+        padding: 8px 0;
+    }
     }
     /* Dùng ::after tạo đường kẻ dài full chiều ngang form */
     .custom-title::after {
@@ -74,7 +75,7 @@
 
 <div class="container-fluid tab-section">
     <div class="header-row">
-        <a href="{% url 'document_list' %}" class="back-link" title="Quay lại">
+        <a href="{% url 'document_list' %}" class="back-link" title="Quay lại" style="color: #5c6bc0;">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
         <h2 class="custom-title">Chỉnh sửa tài liệu</h2>
