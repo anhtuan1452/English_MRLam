@@ -18,7 +18,7 @@ class CustomLoginView(LoginView):
         if user.is_superuser:
             return reverse_lazy('user_list')  # Trang cho admin
         elif user.is_staff:
-            return reverse_lazy('teacher_dashboard')  # Trang cho giáo viên
+            return reverse_lazy('class_list')  # Trang cho giáo viên
         else:
             return reverse_lazy('course')  # Trang cho học viên
 
