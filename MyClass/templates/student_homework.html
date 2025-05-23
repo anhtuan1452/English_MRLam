@@ -209,7 +209,7 @@
       <li class="task-item">
         <div class="task-content">
           <span class="material-icon">📕</span>
-          <a href="{{ lesson.exercise_file }}"
+          <a href="{{ lesson.exercise_file.url }}"
              class="material-link {% if lesson.exercise_file == '#' %}disabled{% endif %}" target="_blank">
             Bài tập buổi {{ lesson.session_number }}
           </a>

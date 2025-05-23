@@ -99,14 +99,16 @@ def student_submission(request, class_id, lesson_id):
         if not lesson_detail:
             messages.error(request, f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}.')
             return render(request, 'error.html', {
-                'message': f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}. Vui lòng liên hệ giáo viên.'
+                'message': f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}. Vui lòng liên hệ giáo viên.',
+                'class_id': class_id
             })
         # Get the exercise for the lesson detail
         exercise = EXERCISE.objects.filter(lessondetail=lesson_detail).first()
         if not exercise:
             messages.error(request, f'Không tìm thấy bài tập cho buổi học {lesson.lesson_name}.')
             return render(request, 'error.html', {
-                'message': f'Không tìm thấy bài tập cho buổi học {lesson.lesson_name}. Vui lòng liên hệ giáo viên.'
+                'message': f'Không tìm thấy bài tập cho buổi học {lesson.lesson_name}. Vui lòng liên hệ giáo viên.',
+                'class_id': class_id
             })
 
         course = lesson.course

@@ -53,6 +53,6 @@
 <div class="container">
   <h1 class="error-title">Lỗi</h1>
   <p class="error-message">{{ message }}</p>
-  <a href="" class="back-button">Quay lại danh sách buổi học</a>
+  <a href="{% url 'student_homework' class_id %}" class="back-button">Quay lại danh sách buổi học</a>
 </div>
 {% endblock %}
