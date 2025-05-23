@@ -4,6 +4,7 @@
 
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
 <style>
     .main-content-container {
         padding: 2rem;
@@ -12,278 +13,314 @@
         width: 100%;
     }
 
-    .lesson-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #5c6bc0;
-        border-bottom: 2px solid;
-        margin: 1.5rem 0 1rem;
-        padding: 8px 0;
-        width:100%;
-    }
-
     .button-container {
         display: flex;
         gap: 1rem;
-        margin-top: 1.5rem;
+        margin-top: 2rem;
         justify-content: flex-end;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     .action-button {
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1.2rem;
         border: none;
-        border-radius: 0.375rem;
+        border-radius: 0.5rem;
         cursor: pointer;
         font-weight: bold;
         transition: background-color 0.3s ease;
         color: white;
+        font-size: 1rem;
+        user-select: none;
     }
 
     .save-button {
-        background-color: #10b981; /* Màu xanh lá */
+        background-color: #10b981;
     }
 
     .save-button:hover {
         background-color: #059669;
     }
 
+    .cancel-button {
+        background-color: #ef4444;
+    }
+
+    .cancel-button:hover {
+        background-color: #dc2626;
+    }
+
     .edit-button {
-        background-color: #3b82f6; /* Màu xanh dương */
+        background-color: #ffc107;
+        color: black;
     }
 
     .edit-button:hover {
-        background-color: #2563eb;
+        background-color: #e0a800;
     }
 
-    /* Full-width styles */
     .info-container {
-        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
     }
 
     .info-row {
         background-color: white;
-        border-radius: 0.375rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
         margin-bottom: 0.5rem;
+        color: #374151;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select {
         width: 100%;
-    }
-
-    .info-content {
-        padding: 1rem;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .info-label {
-        font-size: 0.875rem;
-        color: #6b7280;
-        margin-bottom: 0.25rem;
-    }
-
-    .info-value {
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        background-color: white;
         font-size: 1rem;
-        color: #1f2937;
-        font-weight: 500;
+        color: #111827;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input:disabled,
+    textarea:disabled,
+    select:disabled {
+        background-color: #f3f4f6;
+        color: #6b7280;
+        cursor: default;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px #2563eb;
+        background-color: white;
+        color: #111827;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    input[type="file"] {
+        margin-top: 0.5rem;
+        display: none;
     }
 
     .file-link {
         color: #2563eb;
         text-decoration: none;
         font-weight: 500;
+        display: block;
+        margin-bottom: 0.5rem;
     }
 
     .file-link:hover {
         text-decoration: underline;
     }
-    .save-button { background-color: #10b981; }
-    .save-button:hover { background-color: #059669; }
-    .edit-button { background-color: #ffc107; }
-    .edit-button:hover { background-color: #ffc107; }
-    .cancel-button { background-color: #ef4444; }
-    .cancel-button:hover { background-color: #dc2626; }
-    .editable-field {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        font-size: 1rem;
-    }
-    .back-link {
-        display: inline-flex;
+    .header-top {
+        display: flex;
         align-items: center;
-        color: #2563eb;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .back-link {
+        white-space: nowrap;
         font-weight: 500;
+        color:#5c6bc0;
+        display: flex;
+        align-items: center;
         text-decoration: none;
-        margin-bottom: 1rem;
+        font-size: 1rem;
     }
 
     .back-link i {
-        margin-right: 0.5rem;
-        text-decoration: none;
+        margin-right: 0rem;
+        font-size: 1.2rem;
     }
-    .icontainer {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+
+    .title-with-icon {
+        flex-grow: 1; /* chiếm hết khoảng cách còn lại */
+        margin-left: 0.05rem; /* cách nút quay lại một chút */
+    }
+
+    .lesson-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0;
+    }
+    h2 {
+        color:#5c6bc0
+    }
+
+    #editBtn {
+        white-space: nowrap;
+        display: inline-block;
+    }
+
+
+    @media (min-width: 768px) {
+        .info-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .info-row.full {
+            grid-column: span 2;
+        }
     }
 </style>
 
 <div class="main-content-container">
-    <div class = "icontainer">
-        <!-- Thêm phần quay lại ở trên tiêu đề -->
+    <div class="header-top">
         <a href="{% url 'admin_ql_baitap' %}" class="back-link">
-            <i class="fa-solid fa-arrow-left" style="margin-top: 24px; color: #5c6bc0;"></i>
+            <i class="fa-solid fa-arrow-left" ></i>
         </a>
-        <h2 style="color:#5c6bc0" class="lesson-title">Chi tiết bài tập: {{ lesson.lesson_name }}</h2>
-        <div class="button-container">
-                <button type="button" id="editBtn" class="action-button edit-button">Sửa</button>
-                <button type="submit" id="saveBtn" class="action-button save-button" style="display:none;">Lưu</button>
-                <button type="button" id="cancelBtn" class="action-button cancel-button" style="display:none;">Hủy</button>
-            </div>
-    </div>
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-success">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
 
-    <form id="lessonForm" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="info-container">
-
-            <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">Khóa học</div>
-                    <div class="info-value" id="courseName">{{ course.course_name }}</div>
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">Buổi học</div>
-                    <div class="info-value" id="lessonName">{{ lesson.lesson_name }}</div>
-                </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">Nội dung bài tập</div>
-                    <div class="info-value" id="description">{{ lesson.description }}</div>
-                </div>
-            </div>
-
-            {% if lesson.lesson_file %}
-            <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">File Bài Học</div>
-                    <div class="info-value" id="lessonFileInput">
-                        <a href="{{ lesson.lesson_file.url }}" class="file-link" target="_blank">{{ lesson.lesson_file.name }}</a>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            {% if lesson.exercise_file %}
-            <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">File Bài Tập</div>
-                    <div class="info-value" id="exerciseFileInput">
-                        <a href="{{ lesson.exercise_file.url }}" class="file-link" target="_blank">{{ lesson.exercise_file.name }}</a>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+        <div class="title-with-icon">
+            <h2 class="lesson-title">Chi tiết bài tập: {{ lesson_detail.lesson.lesson_name }}</h2>
         </div>
-    </form>
+
+        <button type="button" id="editBtn" class="action-button edit-button">Sửa</button>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" id="lessonForm">
+    {% csrf_token %}
+    <div class="info-container">
+
+        <div class="info-row">
+            <label for="class_selected">Lớp học</label>
+            <select name="class_selected" id="class_selected" disabled required>
+                {% for cls in class_list %}
+                    <option value="{{ cls.pk }}" {% if lesson_detail.classes and lesson_detail.classes.pk == cls.pk %}selected{% endif %}>
+                        {{ cls.class_name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <!-- input hidden gửi data khi select bị disabled -->
+            <input type="hidden" name="class_selected" value="{{ lesson_detail.classes.pk }}">
+        </div>
+
+        <div class="info-row">
+            <label for="session_number">Số buổi học</label>
+            <input type="number" name="session_number" id="session_number" value="{{ lesson_detail.lesson.session_number }}" readonly min="1" required>
+        </div>
+
+        <div class="info-row">
+            <label for="lesson_name">Tên bài học</label>
+            <input type="text" name="lesson_name" id="lesson_name" value="{{ lesson_detail.lesson.lesson_name }}" readonly maxlength="255" required>
+        </div>
+
+        <div class="info-row">
+            <label for="date">Hạn nộp bài</label>
+            <input type="date" id="date" name="date" value="{{ lesson_detail.exercise.duedate|date:'Y-m-d' }}" readonly required>
+        </div>
+
+        <div class="info-row full">
+            <label for="description">Nội dung bài tập</label>
+            <textarea name="description" id="description" rows="5" readonly maxlength="2000" required>{{ lesson_detail.lesson.description }}</textarea>
+        </div>
+
+        <div class="info-row">
+            <label>File bài học</label>
+            {% if lesson_detail.lesson.lesson_file %}
+                <a href="{{ lesson_detail.lesson.lesson_file.url }}" class="file-link" target="_blank" title="{{ lesson_detail.lesson.lesson_file.name }}">
+                    {{ lesson_detail.lesson.lesson_file.name|slice:"12:" }}
+                </a>
+            {% else %}
+                <span>Chưa có file</span>
+            {% endif %}
+            <input type="file" name="lesson_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip" id="lesson_file_input" style="display:none;">
+        </div>
+
+        <div class="info-row">
+            <label>File bài tập</label>
+            {% if lesson_detail.lesson.exercise_file %}
+                <a href="{{ lesson_detail.lesson.exercise_file.url }}" class="file-link" target="_blank" title="{{ lesson_detail.lesson.exercise_file.name }}">
+                    {{ lesson_detail.lesson.exercise_file.name|slice:"12:" }}
+                </a>
+            {% else %}
+                <span>Chưa có file</span>
+            {% endif %}
+            <input type="file" name="exercise_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip" id="exercise_file_input" style="display:none;">
+        </div>
+
+    </div>
+
+    <div class="button-container">
+        <button type="submit" id="saveBtn" class="action-button save-button" style="display:none;">Lưu</button>
+        <button type="button" id="cancelBtn" class="action-button cancel-button" style="display:none;">Hủy</button>
+    </div>
+</form>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const editBtn = document.getElementById('editBtn');
     const saveBtn = document.getElementById('saveBtn');
     const cancelBtn = document.getElementById('cancelBtn');
 
-    const originalData = {
-        courseName: document.getElementById('courseName').innerHTML,
-        lessonName: document.getElementById('lessonName').innerHTML,
-        description: document.getElementById('description').innerHTML,
-        lessonFileInput: document.getElementById('lessonFileInput')?.innerHTML,
-        exerciseFileInput: document.getElementById('exerciseFileInput')?.innerHTML,
-    };
+    const inputs = Array.from(document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea'));
+    const selects = Array.from(document.querySelectorAll('select'));
+    const fileInputs = Array.from(document.querySelectorAll('input[type="file"]'));
 
-    // Khi nhấn vào nút Sửa
-    editBtn.addEventListener('click', function() {
-        switchToEditMode();
+    const originalValues = {};
+    inputs.forEach(input => {
+        originalValues[input.name] = input.value;
+        input.readOnly = true;
+    });
+    selects.forEach(select => {
+        originalValues[select.name] = select.value;
+        select.disabled = true;
+    });
+    fileInputs.forEach(input => {
+        input.style.display = 'none';
     });
 
-    // Khi nhấn vào nút Hủy
-    cancelBtn.addEventListener('click', function() {
-        cancelEditMode();
-    });
+    editBtn.addEventListener('click', () => {
+        inputs.forEach(input => input.readOnly = false);
+        selects.forEach(select => select.disabled = false);
+        fileInputs.forEach(input => input.style.display = 'block');
 
-    // Chuyển sang chế độ chỉnh sửa
-    function switchToEditMode() {
-        // Chuyển "Tên bài học" thành input
-        const lessonNameDiv = document.getElementById('lessonName');
-        const lessonNameText = lessonNameDiv.innerText.trim();
-        lessonNameDiv.innerHTML = `<input type="text" name="lesson_name" value="${lessonNameText}" class="editable-field">`;
-
-        // Chuyển "Nội dung bài tập" thành textarea
-        const descriptionDiv = document.getElementById('description');
-        const descriptionText = descriptionDiv.innerText.trim();
-        descriptionDiv.innerHTML = `<textarea name="description" rows="5" class="editable-field">${descriptionText}</textarea>`;
-
-        // Chuyển "Khóa học" thành input
-        const courseNameDiv = document.getElementById('courseName');
-        const courseNameText = courseNameDiv.innerText.trim();
-        courseNameDiv.innerHTML = `<input type="text" name="course_name" value="${courseNameText}" class="editable-field">`;
-
-        // Chuyển các file hiện có thành input[type="file"]
-        const lessonFileDiv = document.getElementById('lessonFileInput');
-        if (lessonFileDiv) {
-            const lessonFileLink = lessonFileDiv.querySelector('a');
-            if (lessonFileLink) {
-                lessonFileDiv.innerHTML = `<input type="file" name="lesson_file" class="editable-field"> <br> <span>File hiện có: <a href="${lessonFileLink.href}" target="_blank">${lessonFileLink.innerText}</a></span>`;
-            } else {
-                lessonFileDiv.innerHTML = `<input type="file" name="lesson_file" class="editable-field">`;
-            }
-        }
-
-        const exerciseFileDiv = document.getElementById('exerciseFileInput');
-        if (exerciseFileDiv) {
-            const exerciseFileLink = exerciseFileDiv.querySelector('a');
-            if (exerciseFileLink) {
-                exerciseFileDiv.innerHTML = `<input type="file" name="exercise_file" class="editable-field"> <br> <span>File hiện có: <a href="${exerciseFileLink.href}" target="_blank">${exerciseFileLink.innerText}</a></span>`;
-            } else {
-                exerciseFileDiv.innerHTML = `<input type="file" name="exercise_file" class="editable-field">`;
-            }
-        }
-
-        // Ẩn nút "Sửa" và hiển thị nút "Lưu" và "Hủy"
         editBtn.style.display = 'none';
         saveBtn.style.display = 'inline-block';
         cancelBtn.style.display = 'inline-block';
-    }
+    });
 
-    // Khi nhấn vào nút Hủy, quay lại chế độ ban đầu
-    function cancelEditMode() {
-        document.getElementById('lessonName').innerHTML = originalData.lessonName;
-        document.getElementById('description').innerHTML = originalData.description;
-        document.getElementById('courseName').innerHTML = originalData.courseName;
+    cancelBtn.addEventListener('click', () => {
+        inputs.forEach(input => {
+            input.value = originalValues[input.name];
+            input.readOnly = true;
+        });
+        selects.forEach(select => {
+            select.value = originalValues[select.name];
+            select.disabled = true;
+        });
+        fileInputs.forEach(input => {
+            input.value = null;
+            input.style.display = 'none';
+        });
 
-        if (originalData.lessonFileInput) {
-            document.getElementById('lessonFileInput').innerHTML = originalData.lessonFileInput;
-        }
-        if (originalData.exerciseFileInput) {
-            document.getElementById('exerciseFileInput').innerHTML = originalData.exerciseFileInput;
-        }
-
-        // Ẩn nút "Lưu" và "Hủy", hiển thị lại nút "Sửa"
         editBtn.style.display = 'inline-block';
         saveBtn.style.display = 'none';
         cancelBtn.style.display = 'none';
-    }
+    });
 });
-
 </script>
+
+
 {% endblock %}

@@ -5,210 +5,206 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 <style>
+    /* Giữ nguyên style bạn đã cung cấp */
     .main-content-container {
         padding: 2rem;
         background-color: #f9fafb;
         min-height: 100vh;
         width: 100%;
     }
-
-.lesson-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #5c6bc0;
-        border-bottom: 2px solid;
-        margin: 1.5rem 0 1rem;
-        padding: 8px 0;
-        width:100%;
-    }
-
     .button-container {
         display: flex;
         gap: 1rem;
-        margin-top: 1.5rem;
+        margin-top: 2rem;
         justify-content: flex-end;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
-
     .action-button {
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1.2rem;
         border: none;
-        border-radius: 0.375rem;
+        border-radius: 0.5rem;
         cursor: pointer;
         font-weight: bold;
         transition: background-color 0.3s ease;
         color: white;
+        font-size: 1rem;
     }
-
     .save-button {
-        background-color: #10b981; /* Màu xanh lá */
+        background-color: #10b981;
     }
-
     .save-button:hover {
         background-color: #059669;
     }
-
     .cancel-button {
-        background-color: #ef4444; /* Màu đỏ */
+        background-color: #ef4444;
     }
-
     .cancel-button:hover {
         background-color: #dc2626;
     }
-
-    /* Full-width styles */
     .info-container {
-        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
     }
-
     .info-row {
         background-color: white;
-        border-radius: 0.375rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        margin-bottom: 1rem;
-        width: 100%;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
-
-    .info-content {
-        padding: 1rem;
-        border-bottom: 1px solid #f3f4f6;
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #374151;
+        cursor: pointer; /* Chuột hiện pointer khi hover label */
     }
-
-    .info-label {
-        font-size: 0.875rem;
-        color: #6b7280;
-        margin-bottom: 0.25rem;
-    }
-
-    .info-value {
-        font-size: 1rem;
-        color: #1f2937;
-        font-weight: 500;
-    }
-
-    input[type="text"], textarea, input[type="file"] {
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select {
         width: 100%;
         padding: 0.75rem;
-        margin-top: 0.5rem;
-        border-radius: 0.375rem;
-        border: 1px solid #e5e7eb;
-        font-size: 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
         background-color: white;
+        font-size: 1rem;
+        color: #111827;
     }
-
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 1px #2563eb;
+    }
     textarea {
         resize: vertical;
     }
-
+    input[type="file"] {
+        margin-top: 0.5rem;
+    }
     .file-link {
         color: #2563eb;
         text-decoration: none;
         font-weight: 500;
+        display: block;
+        margin-bottom: 0.5rem;
     }
-
     .file-link:hover {
         text-decoration: underline;
     }
-    .back-link {
-        display: inline-flex;
+    .header-with-icon {
+        display: flex;
         align-items: center;
-        color: #2563eb;
-        font-weight: 500;
-        text-decoration: none;
-        margin-bottom: 1rem;
+        gap: 0.75rem; /* khoảng cách giữa icon và tiêu đề */
+        margin-bottom: 1.5rem;
     }
 
-    .back-link i {
-        margin-right: 0.5rem;
+    .back-link {
+        color:#5c6bc0;
+        font-weight: 500;
         text-decoration: none;
-    }
-    .icontainer {
-       display: flex;
+        display: flex;
         align-items: center;
-        gap: 10px;
+        margin-bottom: 0;
+    }
+    .back-link i {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+    h2 {
+        color:#5c6bc0;
+    }
+    .lesson-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    @media (min-width: 768px) {
+        .info-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .info-row.full {
+            grid-column: span 2;
+        }
     }
 </style>
 
 <div class="main-content-container">
-     <div class = "icontainer">
-        <!-- Thêm phần quay lại ở trên tiêu đề -->
-        <a href="javascript:history.back()" class="back-link">
-            <i class="fa-solid fa-arrow-left" style="margin-top: 24px; color: #5c6bc0;"></i>
-        </a>
-        <h2 class="lesson-title">Sửa bài tập: {{ lesson.lesson_name }}</h2>
+    <div class="header-with-icon">
+      <a href="javascript:history.back()" class="back-link">
+          <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <h2 class="lesson-title">Sửa bài tập: {{ lesson.lesson_name }}</h2>
     </div>
-    <div class="info-container">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
 
-            <!-- Khóa học -->
+    <form method="POST" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <div class="info-container">
+
             <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">Khóa học</div> {{ form.course }}
-                </div>
-            </div>
-
-            <!-- Buổi học -->
-            <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">Buổi học</div>  {{ form.lesson_name }}
-
-                </div>
+                {{ form.class_selected.label_tag }}
+                {{ form.class_selected.errors }}
+                {{ form.class_selected }}
             </div>
 
-            <!-- Nội dung bài tập -->
             <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">Nội dung bài tập</div>
-                    <textarea name="description" class="info-value">{{ lesson.description }}</textarea>
-                </div>
+                {{ form.session_number.label_tag }}
+                {{ form.session_number.errors }}
+                {{ form.session_number }}
             </div>
 
-            <!-- File bài học -->
-            {% if lesson.lesson_file %}
             <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">File Bài Học</div>
-                    <div class="info-value">
-                        <a href="#" class="file-link" target="_blank">{{ lesson.lesson_file }}</a>
-                        <input type="file" name="lesson_file">
-                    </div>
-                </div>
+                {{ form.lesson_name.label_tag }}
+                {{ form.lesson_name.errors }}
+                {{ form.lesson_name }}
             </div>
-            {% else %}
-            <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">File Bài Học</div>
-                    <input type="file" name="lesson_file">
-                </div>
-            </div>
-            {% endif %}
 
-            <!-- File bài tập -->
-            {% if lesson.exercise_file %}
             <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">File Bài Tập</div>
-                    <div class="info-value">
-                        <a href="#" class="file-link" target="_blank">{{ lesson.exercise_file }}</a>
-                        <input type="file" name="exercise_file">
-                    </div>
-                </div>
+                {{ form.date.label_tag }}
+                {{ form.date.errors }}
+                {{ form.date }}
             </div>
-            {% else %}
-            <div class="info-row">
-                <div class="info-content">
-                    <div class="info-label">File Bài Tập</div>
-                    <input type="file" name="exercise_file">
-                </div>
-            </div>
-            {% endif %}
 
-            <div class="button-container">
-                <button type="submit" class="action-button save-button">Cập nhật</button>
-                <button type="button" class="action-button cancel-button" onclick="window.history.back();">Hủy</button>
+            <div class="info-row full">
+                {{ form.description.label_tag }}
+                {{ form.description.errors }}
+                {{ form.description }}
             </div>
-        </form>
-    </div>
+
+            <div class="info-row">
+                <label for="id_lesson_file">File bài học</label>
+                {% if lesson.lesson_file %}
+                    <a href="{{ lesson.lesson_file.url }}" class="file-link" target="_blank">
+                        {{ lesson.lesson_file.name|cut:"media/" }}
+                    </a>
+                {% else %}
+                    <span>Chưa có file</span>
+                {% endif %}
+                <input type="file" name="lesson_file" id="id_lesson_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar,.txt,.jpg,.png,.mp3,.mp4">
+            </div>
+
+            <div class="info-row">
+                <label for="id_exercise_file">File bài tập</label>
+                {% if lesson.exercise_file %}
+                    <a href="{{ lesson.exercise_file.url }}" class="file-link" target="_blank">
+                        {{ lesson.exercise_file.name|cut:"media/" }}
+                    </a>
+                {% else %}
+                    <span>Chưa có file</span>
+                {% endif %}
+                <input type="file" name="exercise_file" id="id_exercise_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar,.txt,.jpg,.png,.mp3,.mp4">
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button type="submit" class="action-button save-button">Cập nhật</button>
+            <button type="button" class="action-button cancel-button" onclick="window.history.back();">Hủy</button>
+        </div>
+    </form>
 </div>
 {% endblock %}
