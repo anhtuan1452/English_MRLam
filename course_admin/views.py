@@ -36,13 +36,13 @@ def admin_ql_khoahoc(request):
     })
 
 
-User = get_user_model()
 @superuser_required
 def admin_xemkhoahoc(request, course_id):
     course = get_object_or_404(COURSE, pk=course_id)
     classes = CLASS.objects.filter(course=course)
     lessons = LESSON.objects.filter(course=course).order_by('session_number')
     teachers = User.objects.filter(is_staff=True, is_superuser=False)
+
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -59,6 +59,10 @@ def admin_xemkhoahoc(request, course_id):
             if image_file:
                 course.image = image_file
 
+            remove_image = request.POST.get('remove_image')
+            if remove_image and course.image:
+                course.image.delete(save=False)  # Xóa file vật lý
+                course.image = None
             teacher_id = request.POST.get('instructor')
             if teacher_id:
                 teacher = User.objects.filter(pk=teacher_id, is_staff=True).first()

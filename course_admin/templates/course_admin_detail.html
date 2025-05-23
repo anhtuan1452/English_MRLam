@@ -133,7 +133,10 @@
       <input type="file" name="image" id="image" />
     </div>
       {% if course.image %}
+      <div style="display: flex; align-items: center; gap: 12px;">
         <img src="{{ course.image.url }}" alt="Ảnh khóa học" style="max-width: 200px;">
+        <label><input type="checkbox" name="remove_image" value="1"> Xóa ảnh hiện tại</label>
+      </div>
       {% else %}
         <p>Chưa có ảnh.</p>
       {% endif %}

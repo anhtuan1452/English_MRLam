@@ -23,7 +23,7 @@ class CourseForm(forms.ModelForm):
         }
 
     image = forms.ImageField(required=False, label='Ảnh khóa học')
-
+    remove_image = forms.BooleanField(required=False, label='Xóa ảnh hiện tại')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # override label_from_instance để hiển thị full name

@@ -1,23 +1,13 @@
-import json
-from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.decorators.http import require_http_methods
-from django.contrib import messages
-from django.db import transaction
-from django.db.models import Count, ProtectedError
+
 from django.forms import modelformset_factory
-from django.utils.timezone import now
-from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 
-from ManageClass.forms import ClassUpdateForm, LessonDetailForm, ClassForm  # ,, LessonForm
 from ManageClass.forms import ClassUpdateForm, LessonDetailForm, ClassForm
 from english.models import (
     CLASS, USER_CLASS, USER_PROFILE, COURSE, ROLLCALL_USER, SUBMISSION, EXERCISE,
     LESSON, LESSON_DETAIL
 )
-from course_admin.forms import LessonDetailForm as CourseLessonDetailForm, LessonDetailFormSet as CourseLessonDetailFormSet
 
 # Create a formset for LessonDetailForm (for class_detail view, editing dates only)
 LessonDetailFormSet = modelformset_factory(
