@@ -7,7 +7,6 @@
 <style>
     /* Giữ nguyên style bạn đã cung cấp */
     .main-content-container {
-        padding: 2rem;
         background-color: #f9fafb;
         min-height: 100vh;
         width: 100%;
@@ -99,7 +98,7 @@
     .header-with-icon {
         display: flex;
         align-items: center;
-        gap: 0.75rem; /* khoảng cách giữa icon và tiêu đề */
+        gap: 1rem; /* khoảng cách giữa icon và tiêu đề */
         margin-bottom: 1.5rem;
     }
 
@@ -119,9 +118,14 @@
         color:#5c6bc0;
     }
     .lesson-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin: 0;
+        color: #5c6bc0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+        width:100%;
     }
 
     @media (min-width: 768px) {
@@ -137,7 +141,7 @@
 <div class="main-content-container">
     <div class="header-with-icon">
       <a href="javascript:history.back()" class="back-link">
-          <i class="fa-solid fa-arrow-left"></i>
+          <i class="fa-solid fa-arrow-left" style="padding-top: 12px;"></i>
       </a>
       <h2 class="lesson-title">Sửa bài tập: {{ lesson.lesson_name }}</h2>
     </div>
