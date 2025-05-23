@@ -64,12 +64,10 @@ class LessonForm(forms.ModelForm):
     )
     lesson_file = forms.FileField(
         label='File Bài học',
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control'}),
         required=True
     )
     exercise_file = forms.FileField(
         label='File Bài tập',
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control'}),
         required=True
     )
 

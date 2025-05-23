@@ -13,24 +13,37 @@
   border-bottom: 2px solid #e9ecef;
   margin-bottom: 1.5rem;
 }
+h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+.custom-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #5c6bc0;
+        border-bottom: 2px solid;
+        margin: 1.5rem 0 1rem;
+        padding: 8px 0;
+    }
+/* Tab styling */
+.nav-tabs {
+  border-bottom: 2px solid #e9ecef;
+}
 
 /* Tab không active (màu xám) */
 .nav-tabs .nav-link {
-  border: none;
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #6c757d; /* Màu xám */
-  background-color: transparent;
-  transition: all 0.2s ease;
-  border-bottom: 3px solid transparent; /* Ẩn gạch chân */
+  margin-bottom: calc(-1 * var(--bs-nav-tabs-border-width));
+  border: var(--bs-nav-tabs-border-width) solid transparent;
+  border-top-left-radius: var(--bs-nav-tabs-border-radius);
+  border-top-right-radius: var(--bs-nav-tabs-border-radius);
 }
 
 /* Tab active (màu xanh) */
 .nav-tabs .nav-link.active {
-  color: #0d6efd !important; /* Màu xanh */
-  font-weight: 600;
-  border-bottom: 3px solid #0d6efd; /* Gạch chân xanh */
+  color: var(--bs-nav-tabs-link-active-color);
+    background-color: var(--bs-nav-tabs-link-active-bg);
+    border-color: var(--bs-nav-tabs-link-active-border-color);
 }
 
 /* Hiệu ứng hover */
@@ -48,19 +61,6 @@
 .question h5 {
   margin-bottom: 15px;
 }
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
-.custom-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #5c6bc0;
-        border-bottom: 2px solid;
-        margin: 0.5rem 0 1rem;
-        padding: 8px 0;
-    }
 .media-block {
   background-color: #f1f5ff;
   padding: 15px;
@@ -71,7 +71,7 @@
 </style>
 
 <div class="container">
-  <h2 class="custom-title mb-0">Chỉnh sửa bài kiểm tra</h2>
+  <h2 class="custom-title">Chỉnh sửa bài kiểm tra</h2>
 
   <!-- Tabs -->
   <ul class="nav nav-tabs mb-4">

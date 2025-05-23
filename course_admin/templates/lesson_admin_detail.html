@@ -38,7 +38,7 @@
 
 <div class="container" style=" margin:20px auto;">
   <h2>Bài học: {{ course.course_name }}</h2>
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% if form.non_field_errors %}
       <div class="alert alert-danger">{{ form.non_field_errors }}</div>
