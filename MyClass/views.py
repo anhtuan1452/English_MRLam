@@ -168,14 +168,14 @@ def student_submission(request, class_id, lesson_id):
             if submission:
                 submission.submission_file_content = submission_file
                 submission.submit_date = timezone.now()
-                submission.status = 'done'
+                submission.status = 'Checking'
                 submission.review = None
                 submission.save()
             else:
                 submission = SUBMISSION.objects.create(
                     userclass=user_class,
                     exercise=exercise,
-                    status='done',
+                    status='Checking',
                     submit_date=timezone.now(),
                     submission_file_content=submission_file
                 )
