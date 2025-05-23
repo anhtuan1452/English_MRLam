@@ -55,7 +55,7 @@
           <a href="{% url 'document_list' %}">Tài liệu</a>
         </div>
 
-        <div class="sidebar-item {% if request.resolver_match.url_name in 'admin_test_list admin_test_add results admin_test_details result_delete test_delete test_edit' %}active{% endif %}">
+        <div class="sidebar-item {% if request.resolver_match.url_name in 'admin_test_list admin_test_add results admin_test_details result_detail result_delete test_delete test_edit' %}active{% endif %}">
           <i data-lucide="check-square" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'admin_test_list' %}">Bài kiểm tra</a>
         </div>
