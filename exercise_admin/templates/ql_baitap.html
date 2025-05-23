@@ -182,26 +182,30 @@
             <thead style="background-color: #eff6ff; border-bottom: 1px solid #e2e8f0;">
                 <tr>
                     <th style="text-align: center;">STT</th>
-                    <th style="text-align: center;">Tên khóa học</th>
+                    <th style="text-align: center;">Lớp học</th>
                     <th style="text-align: center;">Buổi học</th>
                     <th style="text-align: center;">Nội dung bài tập</th>
                     <th style="text-align: center;"></th>
                 </tr>
             </thead>
             <tbody>
-                {% for lesson in lessons %}
+                {% for exercise in exercises %}
                 <tr>
-                    <td style="text-align: center;">{{ lesson.lesson_id }}</td>
-                    <td>{{ lesson.course.course_name }}</td>
-                    <td>{{ lesson.lesson_name }}</td>
-                    <td>{{ lesson.description }}</td>
+                    <td style="text-align: center;">{{ forloop.counter }}</td>
+                    <td>{{ exercise.lessondetail.classes.class_name }}</td>
+                    <td>{{ exercise.lessondetail.lesson.lesson_name }}</td>
+                    <td>{{ exercise.lessondetail.lesson.description }}</td>
                     <td>
                         <div style="display: flex; gap: 8px;">
-                            <a href="{% url 'xem_baitap' lesson_id=lesson.lesson_id %}" class="btn-view">Xem</a>
-                            <a href="{% url 'sua_baitap' lesson_id=lesson.lesson_id %}" class="btn-edit">Sửa</a>
-                            <button type="button" class="btn-delete open-delete-modal" data-lesson-id="{{ lesson.lesson_id }}" data-lesson-name="{{ lesson.lesson_name }}">
+                            <a href="{% url 'xem_baitap' exercise.lessondetail.lessondetail_id %}" class="btn-view" style="text-decoration:none;">Xem</a>
+                            <a href="{% url 'sua_baitap' exercise.lessondetail.lessondetail_id %}" class="btn-edit" style="text-decoration:none;">Sửa</a>
+                            <button type="button"
+                                class="btn-delete open-delete-modal"
+                                data-url="{% url 'xoa_baitap' exercise.lessondetail.lessondetail_id %}"
+                                data-lesson-name="{{ exercise.lessondetail.lesson.lesson_name }}">
                                 Xóa
                             </button>
+
                         </div>
                     </td>
                 </tr>
@@ -237,15 +241,15 @@
     const deleteForm = document.getElementById("deleteForm");
 
     document.querySelectorAll(".open-delete-modal").forEach(button => {
-        button.addEventListener("click", function () {
-            const lessonId = this.dataset.lessonId;
-            const lessonName = this.dataset.lessonName;
+    button.addEventListener("click", function () {
+        const deleteUrl = this.dataset.url;
+        const lessonName = this.dataset.lessonName;
 
-            modal.classList.remove("hidden");
-            modalMessage.textContent = `Bạn có chắc chắn muốn xóa bài "${lessonName}" không?`;
-            deleteForm.action = `xoa_baitap/${lessonId}/`;
-        });
+        modal.classList.remove("hidden");
+        modalMessage.textContent = `Bạn có chắc chắn muốn xóa bài "${lessonName}" không?`;
+        deleteForm.action = deleteUrl;
     });
+});
 
     function closeModal() {
         modal.classList.add("hidden");
