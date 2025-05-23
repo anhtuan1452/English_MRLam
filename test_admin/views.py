@@ -1,13 +1,18 @@
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.shortcuts import render, redirect,get_object_or_404
 from english.models import  RESULT, TEST, QUESTION, QUESTION_MEDIA
 from .forms import TestForm, QuestionForm, CustomQuestionForm, QuestionMediaForm
 from django.forms import formset_factory
 from collections import OrderedDict, defaultdict
 
+from english.views import is_admin
+
+from english.views import is_staff
+
 
 # Create your views here.
-# @user_passes_test(lambda u: u.is_superuser)
+@login_required
+@user_passes_test(is_staff)
 def test_list(request):
     query = request.GET.get('q', '')  # Lấy từ khóa tìm kiếm từ query string
     if query:
@@ -16,7 +21,8 @@ def test_list(request):
         tests = TEST.objects.all()
     return render(request, 'test_list.html', {'tests': tests, 'query': query})
 
-@user_passes_test(lambda u: u.is_superuser)
+@login_required
+@user_passes_test(is_admin)
 def test_delete(request, test_id):
     test = get_object_or_404(TEST, pk=test_id)
 
@@ -25,7 +31,8 @@ def test_delete(request, test_id):
         # return redirect('results')
     return redirect('admin_test_list')
 
-# @user_passes_test(lambda u: u.is_superuser)
+@login_required
+@user_passes_test(is_staff)
 def test_detail_view(request, test_id):
     test = get_object_or_404(TEST, pk=test_id)
     questions = QUESTION.objects.filter(test=test).select_related('question_media')
@@ -46,7 +53,8 @@ def test_detail_view(request, test_id):
         'media_groups': media_groups.items(),  # Trả về list of tuples (media, [questions])
     })
 
-# @user_passes_test(lambda u: u.is_superuser)
+@login_required
+@user_passes_test(is_staff)
 def test_edit_view(request, test_id):
     test = get_object_or_404(TEST, pk=test_id)
     questions = QUESTION.objects.filter(test=test).select_related('question_media')
@@ -141,7 +149,8 @@ def test_edit_view(request, test_id):
         'question_groups': question_groups
     })
 
-@user_passes_test(lambda u: u.is_superuser)
+@login_required
+@user_passes_test(is_staff)
 def list_result_view(request):
     query = request.GET.get('q', '').strip()
     results = RESULT.objects.select_related('test', 'acc')
@@ -171,6 +180,9 @@ def list_result_view(request):
             'query': query
         }
     return render(request, 'test_results.html', context)
+
+@login_required
+@user_passes_test(is_admin)
 def result_delete(request, result_id):
     result = get_object_or_404(RESULT, result_id=result_id)
 
@@ -186,6 +198,8 @@ from django.contrib import messages
 from english.models import TEST, QUESTION, QUESTION_MEDIA
 from .forms import TestForm
 
+@login_required
+@user_passes_test(is_staff)
 def test_add_view(request):
     if request.method == 'POST':
         test_form = TestForm(request.POST)
@@ -261,7 +275,8 @@ def test_add_view(request):
         'test_form': test_form
     })
 
-@user_passes_test(lambda u: u.is_superuser)
+@login_required
+@user_passes_test(is_staff)
 def result_detail_view(request, result_id):
     import json
     result = get_object_or_404(RESULT, pk=result_id)

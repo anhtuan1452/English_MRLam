@@ -11,9 +11,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from english.models import LESSON, USER_CLASS, LESSON_DETAIL, EXERCISE, SUBMISSION, COURSE
-def is_student(user):
-    return user.groups.filter(name='Student').exists()
-
+from english.views import is_student
 
 # views.py
 from django.http import JsonResponse
@@ -88,7 +86,8 @@ def student_submission(request, class_id, lesson_id):
         if not user_class:
             messages.error(request, 'Bạn chưa được đăng ký vào lớp học này. Vui lòng liên hệ giáo viên.')
             return render(request, 'error.html', {
-                'message': 'Bạn chưa được đăng ký vào lớp học này. Vui lòng liên hệ giáo viên.'
+                'message': 'Bạn chưa được đăng ký vào lớp học này. Vui lòng liên hệ giáo viên.',
+                'class_id': class_id
             })
         # Get the lesson detail for the specific class and lesson
         lesson_detail = LESSON_DETAIL.objects.filter(
@@ -99,14 +98,16 @@ def student_submission(request, class_id, lesson_id):
         if not lesson_detail:
             messages.error(request, f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}.')
             return render(request, 'error.html', {
-                'message': f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}. Vui lòng liên hệ giáo viên.'
+                'message': f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}. Vui lòng liên hệ giáo viên.',
+                'class_id': class_id
             })
         # Get the exercise for the lesson detail
         exercise = EXERCISE.objects.filter(lessondetail=lesson_detail).first()
         if not exercise:
             messages.error(request, f'Không tìm thấy bài tập cho buổi học {lesson.lesson_name}.')
             return render(request, 'error.html', {
-                'message': f'Không tìm thấy bài tập cho buổi học {lesson.lesson_name}. Vui lòng liên hệ giáo viên.'
+                'message': f'Không tìm thấy bài tập cho buổi học {lesson.lesson_name}. Vui lòng liên hệ giáo viên.',
+                'class_id': class_id
             })
 
         course = lesson.course
@@ -167,14 +168,14 @@ def student_submission(request, class_id, lesson_id):
             if submission:
                 submission.submission_file_content = submission_file
                 submission.submit_date = timezone.now()
-                submission.status = 'done'
+                submission.status = 'Checking'
                 submission.review = None
                 submission.save()
             else:
                 submission = SUBMISSION.objects.create(
                     userclass=user_class,
                     exercise=exercise,
-                    status='done',
+                    status='Checking',
                     submit_date=timezone.now(),
                     submission_file_content=submission_file
                 )

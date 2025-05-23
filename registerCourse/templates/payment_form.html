@@ -31,7 +31,7 @@
           <label for="class_id">Lịch học</label>
           <select id="class_id" name="class_id" class="form-control" required>
             {% for cls in classes %}
-              <option value="{{ cls.class_id }}">{{ cls.class_name }}</option>
+              <option value="{{ cls.class_id }}">{{ cls.class_name }} – {{ cls.timetable }}</option>
             {% endfor %}
           </select>
         </div>

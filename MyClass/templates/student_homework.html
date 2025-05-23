@@ -195,21 +195,17 @@
       <li class="task-item">
         <div class="task-content">
           <span class="material-icon">📕</span>
-          <a href="{{ lesson.lesson_file }}"
+          <a href="{{ lesson.lesson_file.url }}"
              class="material-link {% if lesson.lesson_file == '#' %}disabled{% endif %}" target="_blank">
             Tài liệu học buổi {{ lesson.session_number }}
           </a>
-        </div>
-        <div class="task-actions">
-          <button class="action-btn request-btn">Xin nghỉ</button>
-          <button class="action-btn reschedule-btn">Học bù</button>
         </div>
       </li>
 
       <li class="task-item">
         <div class="task-content">
           <span class="material-icon">📕</span>
-          <a href="{{ lesson.exercise_file }}"
+          <a href="{{ lesson.exercise_file.url }}"
              class="material-link {% if lesson.exercise_file == '#' %}disabled{% endif %}" target="_blank">
             Bài tập buổi {{ lesson.session_number }}
           </a>
