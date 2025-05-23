@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404, redirect
 
 from english.models import USER_PROFILE, USER_CLASS,CLASS
@@ -9,7 +10,11 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.db.models import Q
 
+from English_MRLam1.english.views import is_admin
 
+
+@login_required
+@user_passes_test(is_admin)
 def user_list(request):
     search_query = request.GET.get('search', '')
     if search_query:
@@ -27,7 +32,8 @@ def user_list(request):
         'search_query': search_query
     }
     return render(request, 'user_list.html', context)
-
+@login_required
+@user_passes_test(is_admin)
 def user_detail(request, id):
     # Lấy thông tin chi tiết của người dùng
     user = get_object_or_404(User, id=id)
@@ -47,7 +53,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import redirect, render
 
-
+@login_required
+@user_passes_test(is_admin)
 def user_create(request):
     if request.method == 'POST':
         # Get form data
@@ -117,6 +124,9 @@ def user_create(request):
 
     # For GET requests, just show the empty form
     return render(request, 'user_create.html')
+
+@login_required
+@user_passes_test(is_admin)
 def user_edit(request, id):
     user = get_object_or_404(User, id=id)
     user_profile = get_object_or_404(USER_PROFILE, userprofile=user)
@@ -157,6 +167,9 @@ def user_edit(request, id):
         'user_profile': user_profile,
     }
     return render(request, 'user_edit.html', context)
+
+@login_required
+@user_passes_test(is_admin)
 def user_delete(request, id):
     user = get_object_or_404(User, id=id)
 

@@ -11,9 +11,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from english.models import LESSON, USER_CLASS, LESSON_DETAIL, EXERCISE, SUBMISSION, COURSE
-def is_student(user):
-    return user.groups.filter(name='Student').exists()
-
+from english.views import is_student
 
 # views.py
 from django.http import JsonResponse

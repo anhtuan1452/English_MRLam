@@ -1,4 +1,4 @@
-
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.forms import modelformset_factory
 from django.core.mail import send_mail
 from django.conf import settings
@@ -9,6 +9,8 @@ from english.models import (
     LESSON, LESSON_DETAIL
 )
 
+from English_MRLam1.english.views import is_admin, is_staff
+
 # Create a formset for LessonDetailForm (for class_detail view, editing dates only)
 LessonDetailFormSet = modelformset_factory(
     LESSON_DETAIL,
@@ -16,7 +18,8 @@ LessonDetailFormSet = modelformset_factory(
     fields=['date'],
     extra=0
 )
-
+@login_required
+@user_passes_test(is_staff)
 def class_list(request):
     query = request.GET.get("q")
     classes = CLASS.objects.all()
@@ -31,7 +34,8 @@ def class_list(request):
         'now': now().date(),
     })
 
-
+@login_required
+@user_passes_test(is_staff)
 def add_class(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)
@@ -81,7 +85,8 @@ LessonDetailFormSet = modelformset_factory(
     extra=0
 )
 
-
+@login_required
+@user_passes_test(is_staff)
 def class_detail(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
 
@@ -172,7 +177,8 @@ def class_detail(request, class_id):
     })
 
 
-
+@login_required
+@user_passes_test(is_staff)
 def class_exercise(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
     students = USER_CLASS.objects.filter(classes=class_instance).select_related('user')
@@ -244,7 +250,8 @@ def class_exercise(request, class_id):
 
 # views.py
 
-
+@login_required
+@user_passes_test(is_staff)
 @require_http_methods(["GET", "POST"])
 def class_rollcall(request, class_id):
     """
@@ -363,7 +370,8 @@ def add_student_to_class(request, class_id):
 
 # Placeholder ClassForm (needs proper implementation)
 
-
+@login_required
+@user_passes_test(is_admin)
 def add_class(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)
@@ -476,7 +484,8 @@ from django.views.decorators.csrf import csrf_exempt  # hoặc sử dụng @csrf
 #     # Nếu không phải AJAX hoặc thiếu tham số
 #     return JsonResponse({'error': 'Yêu cầu không hợp lệ.'}, status=400)
 
-
+@login_required
+@user_passes_test(is_staff)
 def exercise_detail_view(request, class_id, submission_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
     submission = get_object_or_404(SUBMISSION, pk=submission_id, userclass__classes=class_instance)

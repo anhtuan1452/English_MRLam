@@ -1,11 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from english.models import DOCUMENT
 from .forms import DocumentForm
 import os
+from english.views import is_admin
+
+from english.views import is_staff
 
 
+@login_required
+@user_passes_test(is_staff)
 def document_list(request):
     documents = DOCUMENT.objects.select_related('auth_user_id').all().order_by('-doc_id')
     context = {
@@ -15,7 +20,8 @@ def document_list(request):
     }
     return render(request, 'document_list.html', context)
 
-
+@login_required
+@user_passes_test(is_admin)
 def add_document(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
@@ -47,7 +53,8 @@ def add_document(request):
     })
 
 # Chi tiết và sửa tài liệu
-
+@login_required
+@user_passes_test(is_staff)
 def document_detail_edit(request, doc_id):
     document = get_object_or_404(DOCUMENT, pk=doc_id)
 
