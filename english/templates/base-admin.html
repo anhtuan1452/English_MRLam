@@ -27,7 +27,7 @@
       </div>
 
       <nav class="mt-2">
-        {% if user.is_superuser %}
+        {% if request.user.is_superuser %}
         <div class="sidebar-item {% if request.resolver_match.url_name in 'admin_ql_khoahoc admin_xemkhoahoc add_lesson_detail admin_themkhoahoc view_lesson_detail' %}active{% endif %}">
           <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'admin_ql_khoahoc' %}">Khóa học</a>
@@ -43,7 +43,7 @@
           <a href="{% url 'admin_ql_baitap' %}">Bài Tập</a>
         </div>
 
-        {% if user.is_superuser %}
+        {% if request.user.is_superuser %}
         <div class="sidebar-item {% if request.resolver_match.url_name in 'payment_detail payment_list add_payment' %}active{% endif %}">
           <i data-lucide="credit-card" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'payment_list' %}">Thanh toán</a>
@@ -59,7 +59,7 @@
           <i data-lucide="check-square" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'admin_test_list' %}">Bài kiểm tra</a>
         </div>
-        {% if user.is_superuser %}
+        {% if request.user.is_superuser %}
         <div class="sidebar-item {% if request.resolver_match.url_name in 'user_list user_edit user_detail user_create user_delete' %}active{% endif %}">
           <i data-lucide="users" style="width: 18px; height: 18px;"></i>
           <a href="{% url 'user_list' %}">Người dùng</a>
