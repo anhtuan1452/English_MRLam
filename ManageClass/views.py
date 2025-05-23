@@ -9,7 +9,7 @@ from english.models import (
     LESSON, LESSON_DETAIL
 )
 
-from English_MRLam1.english.views import is_admin, is_staff
+from english.views import is_admin, is_staff
 
 # Create a formset for LessonDetailForm (for class_detail view, editing dates only)
 LessonDetailFormSet = modelformset_factory(

@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.db.models import Q
 
-from English_MRLam1.english.views import is_admin
+from english.views import is_admin
 
 
 @login_required

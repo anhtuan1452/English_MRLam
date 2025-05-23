@@ -8,7 +8,7 @@ from english.models import PAYMENT, PAYMENT_INFO
 from english.views import superuser_required
 from qrPayment.forms import PaymentForm
 
-from English_MRLam1.english.views import is_admin
+from english.views import is_admin
 
 
 @login_required

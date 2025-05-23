@@ -9,7 +9,7 @@ from django.contrib import messages
 from english.models import LESSON, LESSON_DETAIL, EXERCISE, CLASS
 from exercise_admin.forms import ExerciseForm
 
-from English_MRLam1.english.views import is_admin, is_staff
+from english.views import is_admin, is_staff
 
 
 # Quản lý bài tập + tìm kiếm
