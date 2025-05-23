@@ -14,13 +14,15 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = COURSE
-        fields = ['course_name', 'description', 'price', 'teacher_name', 'des_teacher']
+        fields = ['course_name', 'description', 'price', 'teacher_name', 'des_teacher', 'image']
         labels = {
             'course_name': 'Tên khóa học',
             'description': 'Mô tả',
             'price': 'Giá (VND)',
             'des_teacher': 'Mô tả giáo viên',
         }
+
+    image = forms.ImageField(required=False, label='Ảnh khóa học')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,10 +62,18 @@ class LessonForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         required=True
     )
+    lesson_file = forms.FileField(
+        label='File Bài học',
+        required=True
+    )
+    exercise_file = forms.FileField(
+        label='File Bài tập',
+        required=True
+    )
 
     class Meta:
         model = LESSON
-        fields = ['lesson_name', 'description', 'session_number']  # các trường chính của LESSON
+        fields = [ 'session_number','lesson_name', 'description','lesson_file', 'exercise_file']  # các trường chính của LESSON
 from django.forms import modelformset_factory
 class LessonDetailForm(forms.ModelForm):
     class Meta:

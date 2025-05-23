@@ -149,7 +149,6 @@
 import json
 from collections import defaultdict
 
-from Tools.demo.sortvisu import distinct
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404

@@ -49,7 +49,7 @@
                     <img src="{% static 'images/avt.jpg' %}" alt="Avatar"
                         class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;">
                     {% endif %}
-                <p class="user-name" style="margin-right: 8px;">{{ user.username }}</p>
+                <p class="user-name" style="margin-right: 8px;">{{ user.username |slice:":12" }}</p>
                 <i class="fas fa-chevron-down"></i>
             </a>
 
@@ -63,22 +63,28 @@
                   border-radius: 8px;
                   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
                   display: none;
-                  min-width: 180px;
+                  min-width: 200px;
                   z-index: 1000;
-                  padding: 10px 0;
+                  padding: 15px 0;
                 ">
+
                 <a href="{%url 'Profile_User'%}?active_tab=personal-info" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
-                    <i class="fas fa-id-card" style="color: #5c6bc0; margin-right: 10px;"></i> Edit profile
+                    <i class="fas fa-id-card" style="color: #5c6bc0; margin-right: 10px;"></i> Thông tin cá nhân
                 </a>
                 <a href="{%url 'Profile_User'%}?active_tab=password" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
-                    <i class="fas fa-key" style="color: #5c6bc0; margin-right: 10px;"></i> Password
+                    <i class="fas fa-key" style="color: #5c6bc0; margin-right: 10px;"></i> Mật khẩu
                 </a>
                 <a href="{%url 'Profile_User'%}?active_tab=email" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
                     <i class="fas fa-envelope" style="color: #5c6bc0; margin-right: 10px;"></i> Email
                 </a>
                 <a href="{%url 'Profile_User'%}?active_tab=classes" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
-                    <i class="fas fa-users" style="color: #5c6bc0; margin-right: 10px;"></i> My class
+                    <i class="fas fa-users" style="color: #5c6bc0; margin-right: 10px;"></i> Lớp học của tôi
                 </a>
+                {% if user.is_staff %}
+                <a href="{%url 'class_list' %}?active_tab=classes" class="dropdown-item" style="display: flex; align-items: center; padding: 10px 16px; color: #333; text-decoration: none;">
+                    <i class="fas fa-user" style="color: #5c6bc0; margin-right: 10px;"></i> Admin
+                </a>
+                {% endif %}
             </div>
         </div>
             <form action="{% url 'logout' %}" method="post" style="display: inline;">

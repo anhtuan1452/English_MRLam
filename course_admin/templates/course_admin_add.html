@@ -31,7 +31,7 @@
     border-bottom: 2px solid;
     margin: 1.5rem 0 1rem;
     padding: 8px 0;
-    width:275px;
+    width:100%;
   }
 </style>
 
@@ -43,6 +43,10 @@
       <div class="form-group" id="courseNameGroup">
         {{ form.course_name.label_tag }}
         {{ form.course_name }}
+      </div>
+      <div class="form-group">
+        {{ form.image.label_tag }}
+        {{ form.image }}
       </div>
       <div class="form-group" id="courseDescriptionGroup">
         {{ form.description.label_tag }}
