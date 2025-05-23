@@ -158,7 +158,7 @@
 
                 <h3 class="course-title">{{ course.course_name }}</h3>
                 <p class="course-teacher">Giáo viên: {{ course.teacher_name }}</p>
-                <p class="course-price">{{ course.price }}</p>
+                <p class="course-price">{{ course.price }} VND</p>
                 <a href="{% url 'start_payment' course.course_id %}" class="register-btn">Đăng ký ngay</a>
             </div>
         {% endfor %}

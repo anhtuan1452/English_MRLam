@@ -2,6 +2,8 @@
 {% block title %}Chi tiết khóa học{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
 <style>
   /* --- CSS Grid 3 cột cho phần tổng quan --- */
   .course-overview {
@@ -99,7 +101,7 @@
       <div class="course-info" style="display:flex; align-items:center; gap:12px;">
         <button type="button" onclick="window.location.href='{% url 'admin_ql_khoahoc' %}'"
                 class="btn back-btn" style="font-size:20px; font-weight:600; cursor:pointer;">
-          ←
+            <i class="fa-solid fa-arrow-left" style="margin-top: 24px; color: #5c6bc0;"></i>
         </button>
         <h2 style="font-size: 1.8rem;
             font-weight: 700;
@@ -131,7 +133,10 @@
       <input type="file" name="image" id="image" />
     </div>
       {% if course.image %}
+      <div style="display: flex; align-items: center; gap: 12px;">
         <img src="{{ course.image.url }}" alt="Ảnh khóa học" style="max-width: 200px;">
+        <label><input type="checkbox" name="remove_image" value="1"> Xóa ảnh hiện tại</label>
+      </div>
       {% else %}
         <p>Chưa có ảnh.</p>
       {% endif %}

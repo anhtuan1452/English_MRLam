@@ -131,6 +131,9 @@ class CLASS(models.Model):
     end_time = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     timetable = models.CharField(max_length=1000,null=True,blank=True)
+
+    def __str__(self):
+        return self.class_name
     class Meta:
         db_table = 'CLASS'
 
@@ -165,6 +168,9 @@ class LESSON_DETAIL(models.Model):
     lesson = models.ForeignKey(LESSON, on_delete=models.CASCADE)
     classes = models.ForeignKey(CLASS, on_delete=models.CASCADE)
     date = models.DateField(null=True,blank=True)
+
+    def __str__(self):
+        return f"Buổi {self.lesson.session_number} - {self.lesson.lesson_name}"
     class Meta:
         db_table = 'LESSON_DETAIL'
 
