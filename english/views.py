@@ -18,6 +18,16 @@ def staff_required(view_func):
         lambda u: u.is_active and u.is_staff,
         login_url=''
     )(view_func)
+def is_teacher(user):
+    return user.groups.filter(name='Teacher').exists()
+def is_student(user):
+    return user.groups.filter(name='Student').exists()
+def is_admin(user):
+    return user.groups.filter(name='Admin').exists()
+def is_staff(user):
+    return user.groups.filter(name__in=['Admin', 'Teacher']).exists()
+
+
 # Create your views here.
 def home(request):
     return render(request, 'home.html')

@@ -2,14 +2,19 @@ import datetime
 import os
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from english.models import LESSON, LESSON_DETAIL, EXERCISE, CLASS
 from exercise_admin.forms import ExerciseForm
 
+from english.views import is_admin, is_staff
+
 
 # Quản lý bài tập + tìm kiếm
+@login_required
+@user_passes_test(is_staff)
 def admin_ql_baitap(request):
     q = request.GET.get('q', '').strip()
 
@@ -31,7 +36,8 @@ def admin_ql_baitap(request):
         'query': q,
     }
     return render(request, 'ql_baitap.html', context)
-
+@login_required
+@user_passes_test(is_staff)
 def them_baitap(request):
     if request.method == 'POST':
         form = ExerciseForm(request.POST, request.FILES)
@@ -74,7 +80,8 @@ def them_baitap(request):
     return render(request, 'thembt.html', {
         'form': form,
     })
-
+@login_required
+@user_passes_test(is_staff)
 def xem_baitap(request, lesson_detail_id):
     lesson_detail = get_object_or_404(LESSON_DETAIL, pk=lesson_detail_id)
 
@@ -154,7 +161,8 @@ def xem_baitap(request, lesson_detail_id):
         'exercise': exercise,
         'class_list': class_list,
     })
-
+@login_required
+@user_passes_test(is_staff)
 def sua_baitap(request, lesson_detail_id):
     lesson_detail = get_object_or_404(LESSON_DETAIL, pk=lesson_detail_id)
     lesson = lesson_detail.lesson
@@ -214,7 +222,8 @@ def sua_baitap(request, lesson_detail_id):
         'class_list': CLASS.objects.all(),
     })
 
-
+@login_required
+@user_passes_test(is_staff)
 def xoa_baitap(request, lesson_detail_id):
     lesson_detail = get_object_or_404(LESSON_DETAIL, pk=lesson_detail_id)
 

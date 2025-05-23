@@ -10,6 +10,7 @@
         background-color: #f9fafb;
         min-height: 100vh;
         width: 100%;
+        padding: 1.5rem;
     }
 
     .button-container {
@@ -136,7 +137,6 @@
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        margin-bottom: 1.5rem;
     }
 
     .back-link {
@@ -197,10 +197,10 @@
         <div class="title-with-icon">
             <h2 class="lesson-title">Chi tiết bài tập: {{ lesson_detail.lesson.lesson_name }}</h2>
         </div>
-
+    </div>
+    <div style="text-align: right; margin-bottom: 1rem;">
         <button type="button" id="editBtn" class="action-button edit-button">Sửa</button>
     </div>
-
     <form method="post" enctype="multipart/form-data" id="lessonForm">
     {% csrf_token %}
     <div class="info-container">

@@ -86,6 +86,7 @@
                             <td>{{ document.doc_name|default:"(Không có tên)" }}</td>
                             <td>{{ document.auth_user_id.first_name }} {{ document.auth_user_id.last_name }}</td>
                             <td class="text-center">PDF</td>
+
                             <td class="text-center">
                                 <a href="{% url 'document_detail_edit' document.doc_id %}" class="btn btn-sm btn-common">Sửa</a>
                                 <form method="post" action="{% url 'document_detail_edit' document.doc_id %}" style="display:inline;">
@@ -93,6 +94,7 @@
                                     <button type="submit" name="delete" class="btn btn-sm btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa tài liệu này?');">Xóa</button>
                                 </form>
                             </td>
+
                         </tr>
                         {% empty %}
                         <tr>

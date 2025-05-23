@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
@@ -9,10 +9,11 @@ from course_admin.forms import CourseForm, LessonForm
 from english.models import COURSE, LESSON_DETAIL, CLASS, LESSON, USER_PROFILE
 from django.contrib.auth.models import User
 
-from english.views import superuser_required
+from english.views import superuser_required, is_admin
 
 
-@superuser_required
+@login_required
+@user_passes_test(is_admin)
 def admin_ql_khoahoc(request):
     # 1) Lấy q từ querystring (URL ?q=...)
     q = request.GET.get('q', '').strip()
@@ -36,7 +37,8 @@ def admin_ql_khoahoc(request):
     })
 
 
-@superuser_required
+@login_required
+@user_passes_test(is_admin)
 def admin_xemkhoahoc(request, course_id):
     course = get_object_or_404(COURSE, pk=course_id)
     classes = CLASS.objects.filter(course=course)
@@ -92,7 +94,8 @@ def admin_xemkhoahoc(request, course_id):
 
 
 
-@superuser_required
+@login_required
+@user_passes_test(is_admin)
 def admin_themkhoahoc(request):
     if request.method == 'POST':
         form = CourseForm(request.POST, request.FILES)
@@ -105,7 +108,8 @@ def admin_themkhoahoc(request):
     return render(request, 'course_admin_add.html', {
         'form': form,
     })
-@superuser_required
+@login_required
+@user_passes_test(is_admin)
 def add_lesson(request, course_id=None):
     if not course_id:
         messages.error(request, "Không có khóa học để thêm buổi học.")
@@ -131,7 +135,8 @@ def add_lesson(request, course_id=None):
         'form': form,
     })
 
-@superuser_required
+@login_required
+@user_passes_test(is_admin)
 def view_lesson(request, course_id=None, lesson_id=None):
     course = get_object_or_404(COURSE, pk=course_id)
     lesson = get_object_or_404(LESSON, pk=lesson_id) if lesson_id else None
