@@ -194,20 +194,32 @@ def student_submission(request, class_id, lesson_id):
 @login_required
 @user_passes_test(is_student)
 def student_homework(request, class_id):
-    # Get the specific class the user is enrolled in
-    user_class = USER_CLASS.objects.filter(user=request.user, classes__class_id=class_id).first()
+    # Kiểm tra xem class_id có tồn tại trong bảng CLASS
+    class_instance = get_object_or_404(CLASS, class_id=class_id)
+
+    # Kiểm tra xem người dùng có được đăng ký vào lớp học này không
+    user_class = USER_CLASS.objects.filter(
+        user=request.user,
+        classes=class_instance
+    ).select_related('classes').first()
 
     if not user_class:
+        messages.error(
+            request,
+            f'Bạn chưa được đăng ký vào lớp học "{class_instance.class_name}". Vui lòng liên hệ giáo viên.'
+        )
         return render(request, 'student_homework.html', {
-            'error': 'Bạn chưa được đăng ký vào lớp học này. Vui lòng liên hệ giáo viên.',
+            'error': f'Bạn chưa được đăng ký vào lớp học "{class_instance.class_name}". Vui lòng liên hệ giáo viên.',
             'page_title': 'Bài tập về nhà'
         })
 
-    class_instance = user_class.classes
+    # Lấy thông tin khóa học
     course = class_instance.course
 
-    # Get lessons for the specific class through LESSON_DETAIL
-    lesson_details = LESSON_DETAIL.objects.filter(classes=class_instance).order_by('lesson__session_number')
+    # Lấy danh sách bài tập qua LESSON_DETAIL
+    lesson_details = LESSON_DETAIL.objects.filter(
+        classes=class_instance
+    ).select_related('lesson').order_by('lesson__session_number')
 
     lesson_data = []
     for lesson_detail in lesson_details:
@@ -229,7 +241,7 @@ def student_homework(request, class_id):
         'lessons': lesson_data,
         'page_title': f'Bài tập - {course.course_name}',
         'class_name': class_instance.class_name,
-        'class_id': class_id  # Add class_id to context
+        'class_id': class_id
     })
 @login_required
 @user_passes_test(is_student)

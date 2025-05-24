@@ -99,25 +99,28 @@ def profile_view(request):
     for uc in enrolled_classes:
         lessons = LESSON_DETAIL.objects.filter(classes=uc.classes).select_related('lesson')
         lesson_info = []
-
         for lesson in lessons:
             try:
                 exercise = EXERCISE.objects.get(lessondetail=lesson)
                 submission = SUBMISSION.objects.filter(userclass=uc, exercise=exercise).first()
                 lesson_date = lesson.date
+                lesson_file_exists = bool(lesson.lesson.exercise_file)
 
-                if submission and submission.submission_file_content:
-                    if lesson_date and submission.submit_date.date() <= lesson_date:
-                        status = "Đã nộp"
-                    elif lesson_date:
-                        status = "Nộp trễ"
-                    else:
-                        status = "Đã nộp"
+                if not lesson_file_exists:
+                    status = "Chưa có file bài tập"
                 else:
-                    if lesson_date and lesson_date < datetime.date.today():
-                        status = "Quá hạn"
+                    if submission and submission.submission_file_content:
+                        if lesson_date and submission.submit_date.date() <= lesson_date:
+                            status = "Đã nộp"
+                        elif lesson_date:
+                            status = "Nộp trễ"
+                        else:
+                            status = "Đã nộp"
                     else:
-                        status = "Chưa nộp"
+                        if lesson_date and lesson_date < datetime.date.today():
+                            status = "Quá hạn"
+                        else:
+                            status = "Chưa nộp"
 
                 lesson_info.append({
                     'lesson_name': lesson.lesson.lesson_name,
@@ -125,20 +128,43 @@ def profile_view(request):
                     'exercise': exercise,
                     'status': status
                 })
+
             except EXERCISE.DoesNotExist:
-                continue
-            # try:
-            #     exercise = EXERCISE.objects.get(lessondetail=lesson)
-            #     submission = SUBMISSION.objects.filter(userclass=uc, exercise=exercise).first()
-            #     status = "Đã nộp" if submission else "Chưa nộp"
-            #     lesson_info.append({
-            #         'lesson_name': lesson.lesson.lesson_name,
-            #         'date': lesson.date,
-            #         'exercise': exercise,
-            #         'status': status
-            #     })
-            # except EXERCISE.DoesNotExist:
-            #     continue
+                # Nếu không có bài tập liên kết
+                lesson_info.append({
+                    'lesson_name': lesson.lesson.lesson_name,
+                    'date': lesson.date,
+                    'exercise': None,
+                    'status': "Chưa có bài tập"
+                })
+
+        # for lesson in lessons:
+        #     try:
+        #         exercise = EXERCISE.objects.get(lessondetail=lesson)
+        #         submission = SUBMISSION.objects.filter(userclass=uc, exercise=exercise).first()
+        #         lesson_date = lesson.date
+        #
+        #         if submission and submission.submission_file_content:
+        #             if lesson_date and submission.submit_date.date() <= lesson_date:
+        #                 status = "Đã nộp"
+        #             elif lesson_date:
+        #                 status = "Nộp trễ"
+        #             else:
+        #                 status = "Đã nộp"
+        #         else:
+        #             if lesson_date and lesson_date < datetime.date.today():
+        #                 status = "Quá hạn"
+        #             else:
+        #                 status = "Chưa nộp"
+        #
+        #         lesson_info.append({
+        #             'lesson_name': lesson.lesson.lesson_name,
+        #             'date': lesson.date,
+        #             'exercise': exercise,
+        #             'status': status
+        #         })
+        #     except EXERCISE.DoesNotExist:
+        #         continue
 
         class_exercises.append({
             'class': uc.classes,
