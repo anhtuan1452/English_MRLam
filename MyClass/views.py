@@ -98,7 +98,8 @@ def student_submission(request, class_id, lesson_id):
         if not lesson_detail:
             messages.error(request, f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}.')
             return render(request, 'error.html', {
-                'message': f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}. Vui lòng liên hệ giáo viên.'
+                'message': f'Không tìm thấy thông tin buổi học {lesson.lesson_name} cho lớp {class_instance.class_name}. Vui lòng liên hệ giáo viên.',
+                'class_id': class_id
             })
         # Get the exercise for the lesson detail
         exercise = EXERCISE.objects.filter(lessondetail=lesson_detail).first()
@@ -167,14 +168,14 @@ def student_submission(request, class_id, lesson_id):
             if submission:
                 submission.submission_file_content = submission_file
                 submission.submit_date = timezone.now()
-                submission.status = 'done'
+                submission.status = 'Checking'
                 submission.review = None
                 submission.save()
             else:
                 submission = SUBMISSION.objects.create(
                     userclass=user_class,
                     exercise=exercise,
-                    status='done',
+                    status='Checking',
                     submit_date=timezone.now(),
                     submission_file_content=submission_file
                 )
