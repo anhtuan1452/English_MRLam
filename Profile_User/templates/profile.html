@@ -267,14 +267,17 @@
                                     <tr>
                                         <td>{{ lesson.lesson_name }}</td>
                                         <td>
-                                            {% if "nộp" in lesson.status|lower %}
-                                                <span class="badge bg-success">{{ lesson.status }}</span>
-                                            {% elif "quá hạn" in lesson.status|lower %}
-                                                <span class="badge bg-danger">{{ lesson.status }}</span>
-                                            {% else %}
-                                                <span class="badge bg-secondary">{{ lesson.status }}</span>
-                                            {% endif %}
-                                        </td>
+    {% if "nộp" in lesson.status|lower %}
+        <span class="badge bg-success">{{ lesson.status }}</span>
+    {% elif "quá hạn" in lesson.status|lower %}
+        <span class="badge bg-danger">{{ lesson.status }}</span>
+    {% elif "chưa có file" in lesson.status|lower or "chưa có bài tập" in lesson.status|lower %}
+        <span class="badge bg-warning text-dark">{{ lesson.status }}</span>
+    {% else %}
+        <span class="badge bg-secondary">{{ lesson.status }}</span>
+    {% endif %}
+</td>
+
                                     </tr>
                                     {% endfor %}
                                 </tbody>

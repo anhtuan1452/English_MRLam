@@ -2,6 +2,7 @@ import base64
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 
 from english.models import PAYMENT, PAYMENT_INFO
@@ -15,7 +16,15 @@ from english.views import is_admin
 @user_passes_test(is_admin)
 def payment_list(request):
     # Lấy tất cả các đối tượng PAYMENT từ cơ sở dữ liệu
-    payments = PAYMENT.objects.all()
+    q = request.GET.get('q', '').strip()  # Lấy giá trị tìm kiếm từ query param 'q'
+
+    if q:
+        # Tìm theo account_owner hoặc account_number chứa chuỗi q (không phân biệt hoa thường)
+        payments = PAYMENT.objects.filter(
+            Q(account_owner__icontains=q) | Q(account_number__icontains=q)
+        )
+    else:
+        payments = PAYMENT.objects.all()
 
     # Truyền payments vào context để hiển thị trong template
     return render(request, 'payment_list.html', {'payments': payments})
