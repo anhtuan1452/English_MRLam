@@ -151,30 +151,36 @@
             <div class="error-message">{{ lesson_detail_formset.non_form_errors }}</div>
         {% endif %}
         <table>
-            <thead>
-                <tr>
-                    <th>Tên buổi học</th>
-                    <th>Số buổi</th>
-                    <th>Ngày học</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for form in lesson_detail_formset %}
-                <tr>
-                    <td>{{ form.instance.lesson.lesson_name }}</td>
-                    <td>{{ form.instance.lesson.session_number }}</td>
-                    <td>
-                        <!-- Thêm hidden field lessondetail_id để xử lý -->
-                        <input type="hidden" name="form-{{ forloop.counter0 }}-lessondetail_id" value="{{ form.instance.lessondetail_id }}">
-                        {{ form.date }}
-                        {% if form.date.errors %}
-                            <div class="error-message">{{ form.date.errors }}</div>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <thead>
+        <tr>
+            <th>Tên buổi học</th>
+            <th>Số buổi</th>
+            <th>Ngày học</th>
+            <th>Hạn nộp bài tập</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for form in lesson_detail_formset %}
+        <tr>
+            <td>{{ form.instance.lesson.lesson_name }}</td>
+            <td>{{ form.instance.lesson.session_number }}</td>
+            <td>
+                <input type="hidden" name="form-{{ forloop.counter0 }}-lessondetail_id" value="{{ form.instance.lessondetail_id }}">
+                {{ form.date }}
+                {% if form.date.errors %}
+                    <div class="error-message">{{ form.date.errors }}</div>
+                {% endif %}
+            </td>
+            <td>
+                <!-- Trường nhập liệu cho duedate -->
+                {% with exercise=form.instance.exercise %}
+                <input type="date" name="form-{{ forloop.counter0 }}-duedate" value="{{ exercise.duedate|date:'Y-m-d' }}" class="form-control">
+                {% endwith %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
         <div class="text-end mt-4">
             <button type="submit" class="btn btn-save me-2">Lưu ngày học</button>
         </div>
@@ -182,10 +188,8 @@
     {% else %}
     <p>Chưa có buổi học nào trong khóa học này.</p>
     {% endif %}
-</div>
 
 <script>
-    // Kiểm tra định dạng ngày trước khi gửi form (tùy chọn)
     document.getElementById('update-lesson-dates-form').addEventListener('submit', function(event) {
         let dateInputs = document.querySelectorAll('input[type="date"]');
         let valid = true;
