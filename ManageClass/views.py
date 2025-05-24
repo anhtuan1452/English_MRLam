@@ -35,25 +35,23 @@ def class_list(request):
     })
 
 @login_required
-@user_passes_test(is_staff)
+@user_passes_test(is_admin)
 def add_class(request):
     if request.method == 'POST':
         form = ClassForm(request.POST)
         if form.is_valid():
             with transaction.atomic():
-                class_instance = form.save(commit=False)
-                # Gán status mặc định (ví dụ: 'active')
-                class_instance.status = 'active'
-                class_instance.save()
-
-                # Tạo LESSON_DETAIL cho tất cả LESSON của COURSE
-                lessons = LESSON.objects.filter(course=class_instance.course).order_by('session_number')
+                class_instance = form.save()
+                # Lấy các LESSON mặc định (class_specific_id=0) của COURSE
+                lessons = LESSON.objects.filter(
+                    course=class_instance.course,
+                    class_specific_id=0  # Chỉ lấy LESSON mặc định
+                ).order_by('session_number')
                 lesson_details = [
                     LESSON_DETAIL(lesson=lesson, classes=class_instance, date=None)
                     for lesson in lessons
                 ]
                 LESSON_DETAIL.objects.bulk_create(lesson_details)
-
                 messages.success(request, "Thêm lớp học thành công!")
                 return redirect('class_list')
         else:
@@ -62,13 +60,12 @@ def add_class(request):
         form = ClassForm()
     return render(request, 'add_class.html', {'form': form})
 
-
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Count, ProtectedError
+from django.db.models import Count, ProtectedError, Q
 from django.forms import modelformset_factory
 from django.utils.timezone import now
 from django.contrib.auth.models import User
@@ -90,14 +87,16 @@ LessonDetailFormSet = modelformset_factory(
 def class_detail(request, class_id):
     class_instance = get_object_or_404(CLASS, pk=class_id)
 
-    # Lấy tất cả các buổi học của khóa học
-    lessons = LESSON.objects.filter(course=class_instance.course).order_by('session_number')
+    # Lấy LESSON phù hợp: mặc định (class_specific_id=0) hoặc riêng cho lớp này (class_specific_id=class_id)
+    lessons = LESSON.objects.filter(
+        Q(course=class_instance.course, class_specific_id=0) |  # LESSON mặc định
+        Q(class_specific_id=class_id)  # LESSON riêng cho lớp này
+    ).order_by('session_number')
 
-    # Lấy hoặc tạo LESSON_DETAIL cho mỗi LESSON
+    # Lấy hoặc tạo LESSON_DETAIL cho mỗi LESSON phù hợp
     lesson_details = LESSON_DETAIL.objects.filter(classes=class_instance).select_related('lesson')
     lesson_detail_dict = {ld.lesson_id: ld for ld in lesson_details}
 
-    # Tự động tạo và lưu LESSON_DETAIL cho các LESSON chưa có
     with transaction.atomic():
         for lesson in lessons:
             if lesson.lesson_id not in lesson_detail_dict:
@@ -141,11 +140,8 @@ def class_detail(request, class_id):
                     with transaction.atomic():
                         instances = lesson_detail_formset.save(commit=False)
                         for instance in instances:
-                            # Không cần gán lại instance.classes = class_instance
-                            # vì instance đã có liên kết với class_instance
                             instance.save()
 
-                        # Lưu các mối quan hệ many-to-many (nếu có)
                         lesson_detail_formset.save_m2m()
 
                         messages.success(request, "Cập nhật ngày học thành công.")
@@ -175,7 +171,6 @@ def class_detail(request, class_id):
         'lesson_detail_formset': lesson_detail_formset,
         'zipped_form_details': zipped_form_details,
     })
-
 
 @login_required
 @user_passes_test(is_staff)
@@ -377,10 +372,12 @@ def add_class(request):
         form = ClassForm(request.POST)
         if form.is_valid():
             with transaction.atomic():
-                # Lưu CLASS
                 class_instance = form.save()
-                # Tự động tạo LESSON_DETAIL cho tất cả LESSON của COURSE
-                lessons = LESSON.objects.filter(course=class_instance.course).order_by('session_number')
+                # Lấy các LESSON mặc định (class_specific_id=0) của COURSE
+                lessons = LESSON.objects.filter(
+                    course=class_instance.course,
+                    class_specific_id=0  # Chỉ lấy LESSON mặc định
+                ).order_by('session_number')
                 lesson_details = [
                     LESSON_DETAIL(lesson=lesson, classes=class_instance, date=None)
                     for lesson in lessons
@@ -393,7 +390,6 @@ def add_class(request):
     else:
         form = ClassForm()
     return render(request, 'add_class.html', {'form': form})
-
 
 # views.py (tiếp tục bên dưới hoặc ở đoạn thích hợp)
 from django.utils.decorators import method_decorator

@@ -52,17 +52,28 @@ def them_baitap(request):
             # Kiểm tra xem class có tồn tại
             class_instance = get_object_or_404(CLASS, pk=class_selected.pk)
 
-            # Tạo LESSON
+            # Kiểm tra xem lớp đã có LESSON_DETAIL với session_number này chưa
+            existing_lesson_detail = LESSON_DETAIL.objects.filter(
+                classes=class_instance,
+                lesson__session_number=session_number
+            ).select_related('lesson').first()
+
+            if existing_lesson_detail:
+                messages.error(request, f"Buổi {session_number} đã tồn tại cho lớp {class_instance.class_name}. Vui lòng chọn số buổi khác hoặc chỉnh sửa.")
+                return render(request, 'thembt.html', {'form': form})
+
+            # Tạo LESSON mới với class_specific_id
             lesson = LESSON.objects.create(
-                lesson_name=f"Buổi {session_number}",
+                lesson_name=f"Buổi {session_number} - {class_instance.class_name}",
                 description=description,
                 session_number=session_number,
                 course=class_instance.course,
                 lesson_file=lesson_file,
-                exercise_file=exercise_file
+                exercise_file=exercise_file,
+                class_specific_id=class_instance.class_id  # Gán class_id để đánh dấu LESSON thuộc về lớp này
             )
 
-            # Tạo LESSON_DETAIL
+            # Tạo LESSON_DETAIL chỉ cho lớp này
             lesson_detail = LESSON_DETAIL.objects.create(
                 lesson=lesson,
                 classes=class_instance,
@@ -74,6 +85,7 @@ def them_baitap(request):
                 lessondetail=lesson_detail,
                 duedate=date
             )
+
             messages.success(request, "Thêm bài tập thành công!")
             return redirect('admin_ql_baitap')
         else:

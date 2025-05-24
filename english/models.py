@@ -156,6 +156,7 @@ class LESSON(models.Model):
     description = models.TextField(null=True, blank=True)
     course = models.ForeignKey(COURSE, on_delete=models.CASCADE)
     session_number = models.CharField(max_length=100, null=True)
+    class_specific_id = models.IntegerField(default=0)
     class Meta:
         db_table = 'LESSON'
 
