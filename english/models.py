@@ -33,7 +33,7 @@ class USER_PROFILE(models.Model):
 class TEST(models.Model):
     test_id = models.AutoField(primary_key=True)
     test_name = models.CharField(max_length=255)
-    test_description = models.TextField(null=True, blank=True)  # Adding this field if needed
+    test_description = models.TextField(null=True, blank=True)
     duration = models.PositiveIntegerField(default=30)
     class Meta:
         db_table = 'TEST'
@@ -71,7 +71,7 @@ class RESULT(models.Model):
     test = models.ForeignKey(TEST, on_delete=models.CASCADE)
     acc = models.ForeignKey(User, on_delete=models.CASCADE)
     create_at = models.DateTimeField(default=datetime.datetime.now)
-    user_answer = models.JSONField(null=True, blank=True)  # Lưu câu trả lời của người dùng
+    user_answer = models.JSONField(null=True, blank=True)
     class Meta:
         db_table = 'RESULT'
 
