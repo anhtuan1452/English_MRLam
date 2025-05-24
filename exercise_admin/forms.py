@@ -1,5 +1,7 @@
 
 from django import forms
+from pkg_resources import require
+
 from english.models import CLASS, LESSON_DETAIL
 
 class ExerciseForm(forms.Form):
@@ -22,7 +24,7 @@ class ExerciseForm(forms.Form):
 
     description = forms.CharField(
         label="Mô tả buổi học",
-        required=False,
+        required=True,
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3})
     )
     date = forms.DateField(
@@ -32,12 +34,12 @@ class ExerciseForm(forms.Form):
     )
     lesson_file = forms.FileField(
         label="File bài học",
-        required=False,
+        required=True,
         widget=forms.ClearableFileInput()
     )
     exercise_file = forms.FileField(
         label="File bài tập",
-        required=False,
+        required=True,
         widget=forms.ClearableFileInput()
     )
 
