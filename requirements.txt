@@ -3,3 +3,4 @@ gunicorn
 whitenoise
 Pillow
 django-widget-tweaks
+djangorestframework
